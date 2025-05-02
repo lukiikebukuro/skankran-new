@@ -1,27 +1,29 @@
-import globals from 'globals';
-import js from '@eslint/js';
-import css from '@eslint/css';
+import globals from "globals";
+import js from "@eslint/js";
+import css from "@eslint/css";
 
 export default [
   {
-    files: ['**/*.{js,mjs,cjs}'],
+    files: ["**/*.{js,mjs,cjs}"],
     languageOptions: {
-      sourceType: 'module',
+      sourceType: "module",
       globals: {
         ...globals.browser,
+        L: "readonly" // Dodajemy 'L' jako globalną zmienną
       },
     },
     rules: {
-      'no-undef': 'error', // Wykrywa niezdefiniowane zmienne (np. użycie zmiennej bez deklaracji)
-      'no-const-assign': 'error', // Wykrywa nadpisywanie const
+      "no-undef": "error",
+      "no-const-assign": "error",
     },
   },
   {
-    files: ['**/*.css'],
+    files: ["**/*.css"],
     plugins: { css },
-    language: 'css/css',
+    language: "css/css",
     rules: {
       ...css.configs.recommended.rules,
+      "css/use-baseline": "off" // Wyłączyliśmy ostrzeżenie o "baseline"
     },
   },
 ];

@@ -370,8 +370,8 @@ export function editPost(postId) {
                     username: localStorage.getItem('username'),
                 }),
             })
-                .then(response => response.json())
-                .then(data => {
+                .then(response => response.json().then(data => ({ response, data }))) // Przekazujemy 'response' i 'data'
+                .then(({ response, data }) => {
                     if (response.ok) {
                         fetchPosts();
                     } else {
@@ -409,8 +409,8 @@ export function editComment(commentId, postId) {
                     username: localStorage.getItem('username'),
                 }),
             })
-                .then(response => response.json())
-                .then(data => {
+                .then(response => response.json().then(data => ({ response, data }))) // Przekazujemy 'response' i 'data'
+                .then(({ response, data }) => {
                     if (response.ok) {
                         fetchPosts();
                     } else {

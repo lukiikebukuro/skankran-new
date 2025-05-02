@@ -1,23 +1,23 @@
 {
-  "name": "lpisk",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "@eslint/css": "^0.7.0",
-    "@eslint/js": "^9.25.1",
-    "eslint": "^9.25.1",
-    "globals": "^16.0.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.31.0",
-    "prettier": "^3.3.3"
+    "name": "lpisk",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+      "lint": "eslint .",
+      "lint:fix": "eslint . --fix",
+      "format": "prettier --write ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+      "@eslint/css": "^0.7.0",
+      "@eslint/js": "^9.25.1",
+      "eslint": "^9.25.1",
+      "globals": "^16.0.0",
+      "eslint-config-airbnb-base": "^15.0.0",
+      "eslint-plugin-import": "^2.31.0",
+      "prettier": "^3.3.3"
+    }
   }
-}

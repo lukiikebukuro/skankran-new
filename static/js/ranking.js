@@ -223,8 +223,11 @@ export function displayUserRankings(filterType = "wszystkie") {
 
 export function generateBottleRanking(parameter = "wapn") {
     try {
-        const rankingsDiv = document.getElementById('rankings');
-        if (!rankingsDiv) return;
+        const rankingsDiv = document.getElementById('bottle-rankings'); // Zmieniamy na #bottle-rankings
+        if (!rankingsDiv) {
+            console.error('Brak elementu #bottle-rankings');
+            return;
+        }
 
         let ranking = Object.keys(bottleData).map(bottle => ({
             bottle,
@@ -258,7 +261,7 @@ export function generateBottleRanking(parameter = "wapn") {
         rankingsDiv.innerHTML = result;
     } catch (error) {
         console.error('Błąd w generateBottleRanking:', error);
-        document.getElementById('rankings').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
+        document.getElementById('bottle-rankings').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12)."; // Zmieniamy na #bottle-rankings
     }
 }
 
