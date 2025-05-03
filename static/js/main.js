@@ -1,9 +1,9 @@
-import { setUsername, fetchUserStats, togglePremium, logout, suggestCities, suggestBottles } from './utils.js';
-import { fetchPosts, addPost, addComment, togglePostComments, markPostAsSolved } from './community.js';
-import { generateRanking, generateSUWRanking, displayUserRankings, submitUserRating, generateBottleRanking, displayUserBottleRankings } from './ranking.js';
-import { checkWater, findWaterStation, showAllStations, displayHistory, waterStations, showAllSUW, showAllMeasurementPoints } from './waterAnalysis.js';
-import { toggleQuiz, checkQuizSkin, checkQuizWellbeing } from './quiz.js';
-import { startAquaBot } from './aquaBot.js';
+import { setUsername, fetchUserStats, togglePremium, logout, suggestCities, suggestBottles } from '/static/js/utils.js';
+import { fetchPosts, addPost, addComment, togglePostComments, markPostAsSolved } from '/static/js/community.js';
+import { generateRanking, generateSUWRanking, displayUserRankings, submitUserRating, generateBottleRanking, displayUserBottleRankings } from '/static/js/ranking.js';
+import { checkWater, findWaterStation, showAllStations, displayHistory, waterStations, showAllSUW, showAllMeasurementPoints } from '/static/js/waterAnalysis.js';
+import { toggleQuiz, checkQuizSkin, checkQuizWellbeing } from '/static/js/quiz.js';
+import { startAquaBot } from '/static/js/aquaBot.js';
 
 export let currentUser = localStorage.getItem('username') || null;
 export let remindersActive = false;
@@ -34,20 +34,19 @@ window.onload = function() {
 
         // Inicjalizacja mapy
         const mapElement = document.getElementById('map');
-        let localMap = null;
-        if (mapElement && typeof L !== 'undefined') {
-            try {
-                localMap = L.map('map');
-                localMap.setView([50.2975, 18.9496], 12);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                }).addTo(localMap);
-            } catch (error) {
-                console.error('Błąd podczas inicjalizacji mapy Leaflet:', error);
-            }
-        } else {
-            console.warn('Mapa nie została zainicjalizowana: brak elementu #map lub biblioteki Leaflet');
-        }
+if (mapElement && typeof L !== 'undefined') {
+    try {
+        window.map = L.map('map', { center: [52.7325, 15.2369], zoom: 12 });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(window.map);
+        console.log('Mapa zainicjalizowana poprawnie');
+    } catch (error) {
+        console.error('Błąd podczas inicjalizacji mapy Leaflet:', error);
+    }
+} else {
+    console.warn('Mapa nie została zainicjalizowana: brak elementu #map lub biblioteki Leaflet');
+}
 
         // Event listener dla dropdownu rankingParameter
         const rankingParameter = document.getElementById('rankingParameter');

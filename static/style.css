@@ -242,9 +242,9 @@ input:focus {
     line-height: 15px;
 }
 
-.green { background-color: #4caf50; }
-.orange { background-color: #ff9800; }
-.red { background-color: #f44336; }
+.green-dot { background-color: #4caf50; }
+.orange-dot { background-color: #ff9800; }
+.red-dot { background-color: #f44336; }
 
 #aqua-bot-skin, #aqua-bot-wellbeing {
     margin: 20px 0;

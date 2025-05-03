@@ -1,4 +1,4 @@
-import { getColor, getParameterDescription } from './utils.js';
+import { getParameterDescription, getColor } from '/static/js/utils.js';
 
 export let map = null;
 
@@ -377,7 +377,327 @@ export const waterStations = {
         fun_facts: {
             water_sources: "SUW Zawada korzysta z ujęcia wody z rzeki Obrzycy."
         }
-    }
+    },"Gorzów Wielkopolski": {
+    average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
+    stations: [
+        {
+            name: "SUW Centralny",
+            coords: [52.7325, 15.2369],
+            address: "ul. Sikorskiego 1",
+            data: {
+                pH: "7.4",
+                twardosc: "294",
+                azotany: "1.10",
+                chlor: "0.20",
+                fluorki: "0",
+                zelazo: "<0.040",
+                mangan: "<0.025",
+                chlorki: "32.5",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.15",
+                barwa: "5"
+            },
+            history: []
+        },
+        {
+            name: "SUW Kłodawa",
+            coords: [52.8000, 15.2167],
+            address: "Kłodawa",
+            data: {
+                pH: "7.3",
+                twardosc: "260",
+                azotany: "0.82",
+                chlor: "0.15",
+                fluorki: "0",
+                zelazo: "<0.040",
+                mangan: "0.03",
+                chlorki: "24.9",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.16",
+                barwa: "5"
+            },
+            history: []
+        },
+        {
+            name: "SUW Siedlice",
+            coords: [52.7000, 15.3000],
+            address: "Siedlice",
+            data: {
+                pH: "7.4",
+                twardosc: "301",
+                azotany: "1.08",
+                chlor: "0.05",
+                fluorki: "0",
+                zelazo: "<0.040",
+                mangan: "<0.025",
+                chlorki: "33.6",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.43",
+                barwa: "5"
+            },
+            history: []
+        },
+        {
+            name: "SUW Małzewo",
+            coords: [52.6833, 15.3833],
+            address: "Małzewo",
+            data: {
+                pH: "7.6",
+                twardosc: "183",
+                azotany: "0.99",
+                chlor: "0",
+                fluorki: "0",
+                zelazo: "<0.040",
+                mangan: "<0.025",
+                chlorki: "12.4",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.11",
+                barwa: "10"
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [
+        {
+            name: "Punkt Wałczaka 47",
+            coords: [52.7378, 15.2389],
+            address: "ul. Wałczaka 47, Gorzów Wielkopolski",
+            data: {
+                pH: "7.4",
+                twardosc: "294",
+                azotany: "1.10",
+                chlor: "0.20",
+                fluorki: "0",
+                zelazo: "<0.040",
+                mangan: "<0.025",
+                chlorki: "32.5",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.15",
+                barwa: "5"
+            }
+        }
+    ],
+    zones: {
+        "Centrum": "SUW Centralny",
+        "Północ": "SUW Kłodawa",
+        "Południe-Wschód": "SUW Siedlice",
+        "Południe": "SUW Małzewo"
+    },
+    info: "Dane dla Gorzowa Wielkopolskiego. Strefy oparte na mapce z PWiK."
+},// Dodajemy po istniejących miastach (np. po "Gorzów Wielkopolski")
+"Legnica": {
+    average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
+    stations: [
+        {
+            name: "ZPW Przybków",
+            coords: [51.1833, 16.1333], // Orientacyjne dla Przybkowa
+            address: "ul. Nowodworska 1, 59-220 Legnica",
+            data: {
+                pH: "7.3",
+                twardosc: "226",
+                azotany: "4.8",
+                chlor: "0.079",
+                fluorki: "0",
+                zelazo: "0.015",
+                mangan: "0.015",
+                chlorki: "0",
+                siarczany: "55",
+                potas: "0",
+                metnosc: "0.12",
+                barwa: "2.5",
+                magnez: "18"
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [], // Na razie brak punktów pomiarowych
+    zones: {}, // Jedna SUW, brak zones
+    info: "Woda w Legnicy pochodzi z ZPW Przybków, uzdatniana z Kaczawy przez stawy infiltracyjne."
+},
+"Radom": {
+    average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
+    stations: [
+        {
+            name: "SUW Malczew",
+            coords: [51.3800, 21.1300], // Orientacyjne dla Malczewa
+            address: "ul. Wiernicka 30, 26-600 Radom",
+            data: {
+                pH: "7.5",
+                twardosc: "218",
+                azotany: "0",
+                chlor: "0.17",
+                fluorki: "0",
+                zelazo: "0.033",
+                mangan: "0",
+                chlorki: "0",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.34",
+                barwa: "2.5"
+            },
+            history: []
+        },
+        {
+            name: "SUW Shawnów",
+            coords: [51.4050, 21.1750], // Orientacyjne dla Shawnów
+            address: "ul. Wapienna 43, 26-600 Radom",
+            data: {
+                pH: "7.2",
+                twardosc: "316",
+                azotany: "0",
+                chlor: "0.18",
+                fluorki: "0",
+                zelazo: "0.078",
+                mangan: "0",
+                chlorki: "0",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.65",
+                barwa: "2.5"
+            },
+            history: []
+        },
+        {
+            name: "SUW Potkanów",
+            coords: [51.4300, 21.1500], // Orientacyjne dla Potkanowa
+            address: "ul. Warszawska 15, 26-600 Radom",
+            data: {
+                pH: "7.3",
+                twardosc: "345",
+                azotany: "0",
+                chlor: "0.22",
+                fluorki: "0",
+                zelazo: "0.01",
+                mangan: "0",
+                chlorki: "0",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.39",
+                barwa: "2.5"
+            },
+            history: []
+        },
+        {
+            name: "SUW Lesiów",
+            coords: [51.4500, 21.2000], // Orientacyjne dla Lesiowa
+            address: "Lesiów, gm. Jastrzębia",
+            data: {
+                pH: "7.4",
+                twardosc: "354",
+                azotany: "0",
+                chlor: "0.13",
+                fluorki: "0",
+                zelazo: "0.01",
+                mangan: "0",
+                chlorki: "0",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.29",
+                barwa: "2.5"
+            },
+            history: []
+        },
+        {
+            name: "SUW Firlej",
+            coords: [51.4400, 21.1800], // Orientacyjne dla Firleja
+            address: "ul. Błękitna 18, 26-600 Radom",
+            data: {
+                pH: "7.2",
+                twardosc: "309",
+                azotany: "0",
+                chlor: "0.28",
+                fluorki: "0",
+                zelazo: "0.01",
+                mangan: "0",
+                chlorki: "0",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.20",
+                barwa: "2.5"
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [
+        {
+            name: "Punkt 25-Czerwca",
+            coords: [51.4000, 21.1500], // Śródmieście, Radom
+            address: "ul. 25-Czerwca 70, 26-600 Radom",
+            data: {
+                pH: "7.2",
+                twardosc: "342",
+                azotany: "0",
+                chlor: "0.17",
+                fluorki: "0",
+                zelazo: "0.01",
+                mangan: "0",
+                chlorki: "0",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.26",
+                barwa: "2.5"
+            }
+        },
+        {
+            name: "Punkt Obózisko",
+            coords: [51.4100, 21.1450], // Śródmieście/Obózisko, Radom
+            address: "ul. Warszawska 2, 26-600 Radom",
+            data: {
+                pH: "7.7",
+                twardosc: "345",
+                azotany: "0",
+                chlor: "0.15",
+                fluorki: "0",
+                zelazo: "0.01",
+                mangan: "0",
+                chlorki: "0",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.20",
+                barwa: "2.5"
+            }
+        },
+        {
+            name: "Punkt Białostocka",
+            coords: [51.3900, 21.1700], // Wacyn, Radom
+            address: "ul. Białostocka 39, 26-600 Radom",
+            data: {
+                pH: "7.2",
+                twardosc: "290",
+                azotany: "0",
+                chlor: "0.16",
+                fluorki: "0",
+                zelazo: "0.01",
+                mangan: "0",
+                chlorki: "0",
+                siarczany: "0",
+                potas: "0",
+                metnosc: "0.25",
+                barwa: "2.5"
+            }
+        }
+    ],
+    zones: {
+        "Malczew": "SUW Malczew",
+        "Gołębiów": "SUW Malczew",
+        "Zamłynie": "SUW Malczew",
+        "Śródmieście": "SUW Malczew", // Punkty 25-Czerwca i Obózisko
+        "Halinów": "SUW Shawnów",
+        "Ustronie": "SUW Shawnów",
+        "Wacyn": "SUW Shawnów", // Punkt Białostocka
+        "Potkanów": "SUW Potkanów",
+        "Północ": "SUW Potkanów",
+        "Lesiów": "SUW Lesiów",
+        "Firlej": "SUW Firlej",
+        "Rajec": "SUW Firlej"
+    },
+    info: "Woda w Radomiu pochodzi z 5 SUW: Malczew, Shawnów, Potkanów, Lesiów i Firlej, zaopatrujących różne dzielnice miasta."
+}
 };
 
 export const bottleData = {
@@ -591,17 +911,17 @@ calculateCityAverages();
 export function checkWater(inputId) {
     try {
         let resultDiv;
-if (inputId === 'city') {
-    resultDiv = document.getElementById('city-result');
-} else if (inputId === 'bottle') {
-    resultDiv = document.getElementById('bottle-result');
-}
+        if (inputId === 'city') {
+            resultDiv = document.getElementById('city-result');
+        } else if (inputId === 'bottle') {
+            resultDiv = document.getElementById('bottle-result');
+        }
         if (!resultDiv) return;
 
-        let city; // Definiujemy city na poziomie funkcji
+        let city;
         let data, result = '';
         if (inputId === 'city') {
-            city = document.getElementById('city').value.trim(); // Przypisujemy wartość
+            city = document.getElementById('city').value.trim();
             if (!city) {
                 resultDiv.innerHTML = "Proszę wpisać miasto!";
                 return;
@@ -615,7 +935,7 @@ if (inputId === 'city') {
         } else if (inputId === 'bottle') {
             const bottle = document.getElementById('bottle').value.trim();
             if (!bottle) {
-               resultDiv.innerHTML = "Proszę wpisać nazwę wody butelkowanej!";
+                resultDiv.innerHTML = "Proszę wpisać nazwę wody butelkowanej!";
                 return;
             }
             data = bottleData[bottle];
@@ -630,15 +950,28 @@ if (inputId === 'city') {
         const twardoscColor = getColor("twardosc", parseFloat(data.twardosc));
         const azotanyColor = getColor("azotany", parseFloat(data.azotany));
         const chlorColor = getColor("chlor", parseFloat(data.chlor));
-        const fluorkiColor = getColor("fluorki", parseFloat(data.fluorki));
+        const zelazoColor = getColor("zelazo", parseFloat(data.zelazo));
+        const manganColor = getColor("mangan", parseFloat(data.mangan));
+        const metnoscColor = getColor("metnosc", parseFloat(data.metnosc));
 
         let parameters = [
-            `<div class="parameter"><span class="dot ${pHColor}"></span> pH: ${parseFloat(data.pH).toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', parseFloat(data.pH), pHColor)}</div>`,
-            `<div class="parameter"><span class="dot ${twardoscColor}"></span> Twardość: ${parseFloat(data.twardosc).toFixed(2)} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', parseFloat(data.twardosc), twardoscColor)}</div>`,
-            `<div class="parameter"><span class="dot ${azotanyColor}"></span> Azotany: ${parseFloat(data.azotany).toFixed(2)} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', parseFloat(data.azotany), azotanyColor)}</div>`,
-            `<div class="parameter"><span class="dot ${chlorColor}"></span> Chlor wolny: ${parseFloat(data.chlor).toFixed(2)} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', parseFloat(data.chlor), chlorColor)}</div>`,
-            `<div class="parameter"><span class="dot ${fluorkiColor}"></span> Fluorki: ${parseFloat(data.fluorki).toFixed(2)} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', parseFloat(data.fluorki), fluorkiColor)}</div>`
+            `<div class="parameter"><span class="dot ${pHColor}"></span> pH: ${parseFloat(data.pH).toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', parseFloat(data.pH), pHColor, parseFloat(data.azotany))}</div>`,
+            `<div class="parameter"><span class="dot ${twardoscColor}"></span> Twardość: ${parseFloat(data.twardosc).toFixed(2)} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', parseFloat(data.twardosc), twardoscColor, parseFloat(data.azotany))}</div>`,
+            `<div class="parameter"><span class="dot ${azotanyColor}"></span> Azotany: ${parseFloat(data.azotany).toFixed(2)} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', parseFloat(data.azotany), azotanyColor, parseFloat(data.azotany))}</div>`
         ];
+
+        if (parseFloat(data.chlor) > 0) {
+            parameters.push(`<div class="parameter"><span class="dot ${chlorColor}"></span> Chlor wolny: ${parseFloat(data.chlor).toFixed(3)} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', parseFloat(data.chlor), chlorColor, parseFloat(data.azotany))}</div>`);
+        }
+        if (parseFloat(data.zelazo) > 0) {
+            parameters.push(`<div class="parameter"><span class="dot ${zelazoColor}"></span> Żelazo: ${parseFloat(data.zelazo).toFixed(3)} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', parseFloat(data.zelazo), zelazoColor, parseFloat(data.azotany))}</div>`);
+        }
+        if (parseFloat(data.mangan) > 0 && parameters.length < 6) {
+            parameters.push(`<div class="parameter"><span class="dot ${manganColor}"></span> Mangan: ${parseFloat(data.mangan).toFixed(3)} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', parseFloat(data.mangan), manganColor, parseFloat(data.azotany))}</div>`);
+        }
+        if (parseFloat(data.metnosc) > 0 && parameters.length < 6) {
+            parameters.push(`<div class="parameter"><span class="dot ${metnoscColor}"></span> Mętność: ${parseFloat(data.metnosc).toFixed(2)} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', parseFloat(data.metnosc), metnoscColor, parseFloat(data.azotany))}</div>`);
+        }
 
         if (inputId === 'bottle') {
             parameters = [
@@ -830,7 +1163,10 @@ export async function findWaterStation() {
         const streetInput = document.getElementById('street');
         const cityInput = document.getElementById('city-premium');
         const waterInfo = document.getElementById('waterInfo');
-        if (!streetInput || !cityInput || !waterInfo) return;
+        if (!streetInput || !cityInput || !waterInfo) {
+            console.error('Brak wymaganych elementów HTML: street, city-premium, waterInfo');
+            return;
+        }
 
         const street = streetInput.value.trim();
         const city = cityInput.value.trim();
@@ -841,6 +1177,11 @@ export async function findWaterStation() {
         }
         if (!street) {
             waterInfo.innerHTML = "Proszę wpisać ulicę!";
+            return;
+        }
+
+        if (city.toLowerCase() === "wałbrzych") {
+            waterInfo.innerHTML = "Odmowa podania danych przez Wałbrzyskie Przedsiębiorstwo Wodociągów i Kanalizacji Sp. z o.o.";
             return;
         }
 
@@ -857,37 +1198,121 @@ export async function findWaterStation() {
         }
 
         const mapElement = document.getElementById('map');
-        if (mapElement && map) {
-            mapElement.style.display = 'block';
-            map.setView([stations[0]?.coords[0] || 54.1750, stations[0]?.coords[1] || 16.1750], 12);
-            setTimeout(() => map.invalidateSize(), 200);
+        if (!mapElement || !window.map) {
+            console.error('Mapa nie jest zainicjalizowana: brak elementu #map lub obiektu window.map');
+            waterInfo.innerHTML += '<p>Problem z załadowaniem mapy – sprawdź konsolę (F12).</p>';
+            return;
         }
 
-        let closestStation = null;
-        let closestPoint = null;
-        let minStationDistance = Infinity;
-        let minPointDistance = Infinity;
+        mapElement.style.display = 'block';
+        let userLat = 52.7325, userLon = 15.2369; // Domyślne dla Gorzowa
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(street + ', ' + city + ', Polska')}&format=json&limit=1`);
+        const data = await response.json();
+        if (data.length > 0) {
+            userLat = parseFloat(data[0].lat);
+            userLon = parseFloat(data[0].lon);
+            console.log(`Geokodowanie udane: ${street}, ${city} -> [${userLat}, ${userLon}]`);
+        } else {
+            console.warn(`Geokodowanie nieudane dla: ${street}, ${city}. Używam domyślnych współrzędnych.`);
+        }
+
+        window.map.setView([userLat, userLon], 14);
+        window.map.invalidateSize();
+        window.map.eachLayer(layer => {
+            if (layer instanceof L.Marker) window.map.removeLayer(layer);
+        });
+        L.marker([userLat, userLon]).addTo(window.map).bindPopup(`Lokalizacja: ${street}, ${city}`).openPopup();
 
         if (zones) {
             waterInfo.innerHTML = `
                 <h3>Wyniki dla adresu: ${street}, ${city}</h3>
-                <p>Wybierz swoją dzielnicę, aby zobaczyć dane:</p>
+                <p>Wybierz swoją strefę:</p>
                 <select id="district-select">
-                    <option value="">Wybierz dzielnicę</option>
-                    ${Object.keys(zones).map(district => `<option value="${district}">${district}</option>`).join('')}
+                    <option value="">Wybierz strefę</option>
+                    ${Object.keys(zones).map(z => `<option value="${z}">${z}</option>`).join('')}
                 </select>
                 <button id="show-district-data">Pokaż dane</button>
+                <div id="station-info"></div>
             `;
-            document.getElementById('show-district-data').addEventListener('click', () => showDistrictData(street, city, zones, stations, measurementPoints, map));
-        } else {
-            let userLat = 54.1750, userLon = 16.1750;
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(street + ', ' + city + ', Polska')}&format=json&limit=1`);
-            const data = await response.json();
-            if (data.length > 0) {
-                userLat = parseFloat(data[0].lat);
-                userLon = parseFloat(data[0].lon);
-            }
+            const showDistrictButton = document.getElementById('show-district-data');
+            const districtSelect = document.getElementById('district-select');
+            const stationInfo = document.getElementById('station-info');
 
+            const newButton = showDistrictButton.cloneNode(true);
+            showDistrictButton.parentNode.replaceChild(newButton, showDistrictButton);
+
+            newButton.addEventListener('click', () => {
+                const selectedDistrict = districtSelect.value;
+                if (!selectedDistrict) {
+                    stationInfo.innerHTML = '<p>Proszę wybrać strefę!</p>';
+                    return;
+                }
+                const stationName = zones[selectedDistrict];
+                const station = stations.find(s => s.name === stationName);
+                if (station) {
+                    const distance = getDistance(userLat, userLon, station.coords[0], station.coords[1]);
+                    window.map.setView(station.coords, 14);
+                    window.map.invalidateSize();
+                    window.map.eachLayer(layer => {
+                        if (layer instanceof L.Marker) window.map.removeLayer(layer);
+                    });
+                    L.marker(station.coords).addTo(window.map).bindPopup(`${station.name} (${station.address})`).openPopup();
+
+                    let closestPoint = null;
+                    let minPointDistance = Infinity;
+                    const relevantPoints = measurementPoints.filter(point => {
+                        const pointDistricts = Object.keys(zones).filter(d => zones[d] === stationName);
+                        return pointDistricts.includes(selectedDistrict);
+                    });
+                    relevantPoints.forEach(point => {
+                        const distance = getDistance(userLat, userLon, point.coords[0], point.coords[1]);
+                        if (distance < minPointDistance) {
+                            minPointDistance = distance;
+                            closestPoint = point;
+                        }
+                    });
+
+                    const params = station.data;
+                    const parameters = [
+                        `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('fluorki', params.fluorki)}"></span> Fluorki: ${params.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', params.fluorki, getColor('fluorki', params.fluorki), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('zelazo', params.zelazo)}"></span> Żelazo: ${params.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', params.zelazo, getColor('zelazo', params.zelazo), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('mangan', params.mangan)}"></span> Mangan: ${params.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', params.mangan, getColor('mangan', params.mangan), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('chlorki', params.chlorki)}"></span> Chlorki: ${params.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', params.chlorki, getColor('chlorki', params.chlorki), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc), params.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('barwa', params.barwa)}"></span> Barwa: ${params.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', params.barwa, getColor('barwa', params.barwa), params.azotany)}</div>`
+                    ];
+
+                    let stationInfoHTML = `<h4>Najbliższa stacja SUW: ${station.name} (${station.address})</h4><p>Odległość: ${distance} km</p>Jakość wody:<br>${parameters.join('')}`;
+
+                    if (closestPoint) {
+                        const pointParams = closestPoint.data;
+                        const pointDistance = minPointDistance;
+                        const pointParameters = [
+                            `<div class="parameter"><span class="dot ${getColor('pH', pointParams.pH)}"></span> pH: ${pointParams.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', pointParams.pH, getColor('pH', pointParams.pH), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('twardosc', pointParams.twardosc)}"></span> Twardość: ${pointParams.twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', pointParams.twardosc, getColor('twardosc', pointParams.twardosc), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('azotany', pointParams.azotany)}"></span> Azotany: ${pointParams.azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', pointParams.azotany, getColor('azotany', pointParams.azotany), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('chlor', pointParams.chlor)}"></span> Chlor wolny: ${pointParams.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', pointParams.chlor, getColor('chlor', pointParams.chlor), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('fluorki', pointParams.fluorki)}"></span> Fluorki: ${pointParams.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', pointParams.fluorki, getColor('fluorki', pointParams.fluorki), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('zelazo', pointParams.zelazo)}"></span> Żelazo: ${pointParams.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', pointParams.zelazo, getColor('zelazo', pointParams.zelazo), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('mangan', pointParams.mangan)}"></span> Mangan: ${pointParams.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', pointParams.mangan, getColor('mangan', pointParams.mangan), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('chlorki', pointParams.chlorki)}"></span> Chlorki: ${pointParams.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', pointParams.chlorki, getColor('chlorki', pointParams.chlorki), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('metnosc', pointParams.metnosc)}"></span> Mętność: ${pointParams.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', pointParams.metnosc, getColor('metnosc', pointParams.metnosc), pointParams.azotany)}</div>`,
+                            `<div class="parameter"><span class="dot ${getColor('barwa', pointParams.barwa)}"></span> Barwa: ${pointParams.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', pointParams.barwa, getColor('barwa', pointParams.barwa), pointParams.azotany)}</div>`
+                        ];
+                        stationInfoHTML += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${pointDistance} km</p>Jakość wody:<br>${pointParameters.join('')}`;
+                        L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
+                    }
+
+                    stationInfo.innerHTML = stationInfoHTML;
+                }
+            });
+        } else {
+            let closestStation = null;
+            let minStationDistance = Infinity;
             stations.forEach(station => {
                 const distance = getDistance(userLat, userLon, station.coords[0], station.coords[1]);
                 if (distance < minStationDistance) {
@@ -896,6 +1321,8 @@ export async function findWaterStation() {
                 }
             });
 
+            let closestPoint = null;
+            let minPointDistance = Infinity;
             measurementPoints.forEach(point => {
                 const distance = getDistance(userLat, userLon, point.coords[0], point.coords[1]);
                 if (distance < minPointDistance) {
@@ -904,107 +1331,57 @@ export async function findWaterStation() {
                 }
             });
 
-            if (map) {
-                map.eachLayer(layer => {
-                    if (layer instanceof L.Marker) map.removeLayer(layer);
-                });
-                if (closestStation) {
-                    L.marker(closestStation.coords)
-                        .addTo(map)
-                        .bindPopup(`${closestStation.name} (${closestStation.address})`)
-                        .openPopup();
-                }
-                if (closestPoint) {
-                    L.marker(closestPoint.coords, { icon: L.divIcon({ className: 'measurement-point', html: '<div style="background-color: blue; width: 10px; height: 10px; border-radius: 50%;"></div>' }) })
-                        .addTo(map)
-                        .bindPopup(`${closestPoint.name} (${closestPoint.address})`);
-                }
-            }
-
-            let result = `<h3>Wyniki dla adresu: ${street}, ${city}</h3>`;
-            if (city === "Grudziądz") {
-                result += '<p class="note">W Grudziądzu próbki wody są pobierane bezpośrednio na SUW Hallera 79, co zapewnia dokładne dane o jakości wody uzdatnionej.</p>';
-            }
-
             if (closestStation) {
-                const pH = parseFloat(closestStation.data.pH).toFixed(2);
-                const twardosc = parseFloat(closestStation.data.twardosc).toFixed(2);
-                const azotany = parseFloat(closestStation.data.azotany).toFixed(2);
-                const chlor = parseFloat(closestStation.data.chlor).toFixed(2);
-                const fluorki = parseFloat(closestStation.data.fluorki).toFixed(2);
-                const zelazo = parseFloat(closestStation.data.zelazo).toFixed(2);
-                const mangan = parseFloat(closestStation.data.mangan).toFixed(2);
-                const chlorki = parseFloat(closestStation.data.chlorki).toFixed(2);
-                const siarczany = parseFloat(closestStation.data.siarczany).toFixed(2);
-                const metnosc = parseFloat(closestStation.data.metnosc).toFixed(2);
-                const barwa = parseFloat(closestStation.data.barwa).toFixed(2);
-                const magnez = parseFloat(closestStation.data.magnez || 0).toFixed(2);
-                const parameters = [
-                    `<div class="parameter"><span class="dot ${getColor('pH', pH)}"></span> pH: ${pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', pH, getColor('pH', pH))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('twardosc', twardosc)}"></span> Twardość: ${twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', twardosc, getColor('twardosc', twardosc))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('azotany', azotany)}"></span> Azotany: ${azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', azotany, getColor('azotany', azotany))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('chlor', chlor)}"></span> Chlor wolny: ${chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', chlor, getColor('chlor', chlor))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('fluorki', fluorki)}"></span> Fluorki: ${fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', fluorki, getColor('fluorki', fluorki))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('zelazo', zelazo)}"></span> Żelazo: ${zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', zelazo, getColor('zelazo', zelazo))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('mangan', mangan)}"></span> Mangan: ${mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', mangan, getColor('mangan', mangan))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('chlorki', chlorki)}"></span> Chlorki: ${chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', chlorki, getColor('chlorki', chlorki))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('siarczany', siarczany)}"></span> Siarczany: ${siarczany} mg/l (norma: <250 mg/l) – ${getParameterDescription('siarczany', siarczany, getColor('siarczany', siarczany))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('metnosc', metnosc)}"></span> Mętność: ${metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', metnosc, getColor('metnosc', metnosc))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('barwa', barwa)}"></span> Barwa: ${barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', barwa, getColor('barwa', barwa))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('magnez', magnez)}"></span> Magnez: ${magnez} mg/l (korzyść: >50 mg/l) – ${getParameterDescription('magnez', magnez, getColor('magnez', magnez))}</div>`
-                ];
-                result += `
-                    <h4>Najbliższa stacja SUW: ${closestStation.name} (${closestStation.address})</h4>
-                    Odległość: ${(minStationDistance * 111).toFixed(2)} km<br>
-                    Jakość wody:<br>
-                    ${parameters.join('')}
-                `;
-            } else {
-                result += '<p>Brak stacji SUW dla tego miasta.</p>';
-            }
+                window.map.setView(closestStation.coords, 14);
+                window.map.invalidateSize();
+                window.map.eachLayer(layer => {
+                    if (layer instanceof L.Marker) window.map.removeLayer(layer);
+                });
+                L.marker(closestStation.coords).addTo(window.map).bindPopup(`${closestStation.name} (${closestStation.address})`).openPopup();
 
-            if (closestPoint) {
-                const pH = parseFloat(closestPoint.data.pH).toFixed(2);
-                const twardosc = parseFloat(closestPoint.data.twardosc).toFixed(2);
-                const azotany = parseFloat(closestPoint.data.azotany).toFixed(2);
-                const chlor = parseFloat(closestPoint.data.chlor).toFixed(2);
-                const fluorki = parseFloat(closestPoint.data.fluorki).toFixed(2);
-                const zelazo = parseFloat(closestPoint.data.zelazo).toFixed(2);
-                const mangan = parseFloat(closestPoint.data.mangan).toFixed(2);
-                const chlorki = parseFloat(closestPoint.data.chlorki).toFixed(2);
-                const siarczany = parseFloat(closestPoint.data.siarczany).toFixed(2);
-                const metnosc = parseFloat(closestPoint.data.metnosc).toFixed(2);
-                const barwa = parseFloat(closestPoint.data.barwa).toFixed(2);
-                const magnez = parseFloat(closestPoint.data.magnez || 0).toFixed(2);
+                const params = closestStation.data;
                 const parameters = [
-                    `<div class="parameter"><span class="dot ${getColor('pH', pH)}"></span> pH: ${pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', pH, getColor('pH', pH))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('twardosc', twardosc)}"></span> Twardość: ${twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', twardosc, getColor('twardosc', twardosc))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('azotany', azotany)}"></span> Azotany: ${azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', azotany, getColor('azotany', azotany))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('chlor', chlor)}"></span> Chlor wolny: ${chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', chlor, getColor('chlor', chlor))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('fluorki', fluorki)}"></span> Fluorki: ${fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', fluorki, getColor('fluorki', fluorki))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('zelazo', zelazo)}"></span> Żelazo: ${zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', zelazo, getColor('zelazo', zelazo))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('mangan', mangan)}"></span> Mangan: ${mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', mangan, getColor('mangan', mangan))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('chlorki', chlorki)}"></span> Chlorki: ${chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', chlorki, getColor('chlorki', chlorki))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('siarczany', siarczany)}"></span> Siarczany: ${siarczany} mg/l (norma: <250 mg/l) – ${getParameterDescription('siarczany', siarczany, getColor('siarczany', siarczany))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('metnosc', metnosc)}"></span> Mętność: ${metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', metnosc, getColor('metnosc', metnosc))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('barwa', barwa)}"></span> Barwa: ${barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', barwa, getColor('barwa', barwa))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('magnez', magnez)}"></span> Magnez: ${magnez} mg/l (korzyść: >50 mg/l) – ${getParameterDescription('magnez', magnez, getColor('magnez', magnez))}</div>`
+                    `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('fluorki', params.fluorki)}"></span> Fluorki: ${params.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', params.fluorki, getColor('fluorki', params.fluorki), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('zelazo', params.zelazo)}"></span> Żelazo: ${params.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', params.zelazo, getColor('zelazo', params.zelazo), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('mangan', params.mangan)}"></span> Mangan: ${params.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', params.mangan, getColor('mangan', params.mangan), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('chlorki', params.chlorki)}"></span> Chlorki: ${params.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', params.chlorki, getColor('chlorki', params.chlorki), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc), params.azotany)}</div>`,
+                    `<div class="parameter"><span class="dot ${getColor('barwa', params.barwa)}"></span> Barwa: ${params.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', params.barwa, getColor('barwa', params.barwa), params.azotany)}</div>`
                 ];
-                result += `
-                    <h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4>
-                    Odległość: ${(minPointDistance * 111).toFixed(2)} km<br>
-                    Jakość wody:<br>
-                    ${parameters.join('')}
-                `;
-            } else {
-                result += '<p>Brak punktów pomiarowych dla tego miasta.</p>';
-            }
 
-            result += '<div class="note">Odległości są szacunkowe. Skontaktuj się z wodociągami dla dokładnych danych.</div>';
-            if (city === "Zielona Góra" && waterStations[city]?.fun_facts?.water_sources) {
-                result += `<div class="fun-fact">Ciekawostka: ${waterStations[city].fun_facts.water_sources}</div>`;
+                let waterInfoHTML = `<h3>Wyniki dla adresu: ${street}, ${city}</h3>`;
+                if (stations.length === 1) {
+                    waterInfoHTML += `<p>To miasto ma tylko jeden SUW – dane poniżej.</p>`;
+                }
+                waterInfoHTML += `<h4>Najbliższa stacja SUW: ${closestStation.name} (${closestStation.address})</h4><p>Odległość: ${minStationDistance} km</p>Jakość wody:<br>${parameters.join('')}`;
+
+                if (closestPoint) {
+                    const pointParams = closestPoint.data;
+                    const pointDistance = minPointDistance;
+                    const pointParameters = [
+                        `<div class="parameter"><span class="dot ${getColor('pH', pointParams.pH)}"></span> pH: ${pointParams.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', pointParams.pH, getColor('pH', pointParams.pH), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('twardosc', pointParams.twardosc)}"></span> Twardość: ${pointParams.twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', pointParams.twardosc, getColor('twardosc', pointParams.twardosc), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('azotany', pointParams.azotany)}"></span> Azotany: ${pointParams.azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', pointParams.azotany, getColor('azotany', pointParams.azotany), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('chlor', pointParams.chlor)}"></span> Chlor wolny: ${pointParams.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', pointParams.chlor, getColor('chlor', pointParams.chlor), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('fluorki', pointParams.fluorki)}"></span> Fluorki: ${pointParams.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', pointParams.fluorki, getColor('fluorki', pointParams.fluorki), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('zelazo', pointParams.zelazo)}"></span> Żelazo: ${pointParams.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', pointParams.zelazo, getColor('zelazo', pointParams.zelazo), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('mangan', pointParams.mangan)}"></span> Mangan: ${pointParams.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', pointParams.mangan, getColor('mangan', pointParams.mangan), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('chlorki', pointParams.chlorki)}"></span> Chlorki: ${pointParams.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', pointParams.chlorki, getColor('chlorki', pointParams.chlorki), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('metnosc', pointParams.metnosc)}"></span> Mętność: ${pointParams.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', pointParams.metnosc, getColor('metnosc', pointParams.metnosc), pointParams.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot ${getColor('barwa', pointParams.barwa)}"></span> Barwa: ${pointParams.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', pointParams.barwa, getColor('barwa', pointParams.barwa), pointParams.azotany)}</div>`
+                    ];
+                    waterInfoHTML += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${pointDistance} km</p>Jakość wody:<br>${pointParameters.join('')}`;
+                    L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
+                }
+
+                waterInfo.innerHTML = waterInfoHTML;
+            } else {
+                waterInfo.innerHTML = `<h3>Wyniki dla adresu: ${street}, ${city}</h3><p>Brak stacji SUW dla tego miasta.</p>`;
             }
-            waterInfo.innerHTML = result;
         }
     } catch (error) {
         console.error('Błąd w findWaterStation:', error);
@@ -1014,9 +1391,15 @@ export async function findWaterStation() {
 
 export function getDistance(lat1, lon1, lat2, lon2) {
     try {
-        const dx = lat1 - lat2;
-        const dy = lon1 - lon2;
-        return Math.sqrt(dx * dx + dy * dy);
+        const R = 6371; // Promień Ziemi w kilometrach
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c; // Odległość w kilometrach
+        return distance.toFixed(2); // Zaokrąglamy do 2 miejsc po przecinku
     } catch (error) {
         console.error('Błąd w getDistance:', error);
         return Infinity;
@@ -1025,31 +1408,28 @@ export function getDistance(lat1, lon1, lat2, lon2) {
 
 export function showAllStations() {
     try {
+        const city = document.getElementById('city-premium')?.value?.trim();
         const waterInfo = document.getElementById('waterInfo');
-        if (!waterInfo) return;
-
-        let result = '<h3>Wszystkie stacje uzdatniania wody:</h3>';
-        for (const city in waterStations) {
-            const stations = waterStations[city].stations || [];
-            if (stations.length > 0) {
-                result += `<h4>${city}</h4>`;
-                result += '<div class="stations-grid">';
-                stations.forEach(station => {
-                    result += `
-                        <div class="station-card">
-                            <h4>${station.name} (${station.address})</h4>
-                            <div class="parameter"><span class="dot ${getColor('pH', parseFloat(station.data.pH))}"></span> pH: ${station.data.pH}</div>
-                            <div class="parameter"><span class="dot ${getColor('twardosc', parseFloat(station.data.twardosc))}"></span> Twardość: ${station.data.twardosc} mg/l</div>
-                            <div class="parameter"><span class="dot ${getColor('azotany', parseFloat(station.data.azotany))}"></span> Azotany: ${station.data.azotany} mg/l</div>
-                            <div class="parameter"><span class="dot ${getColor('zelazo', parseFloat(station.data.zelazo))}"></span> Żelazo: ${station.data.zelazo} mg/l</div>
-                            <div class="parameter"><span class="dot ${getColor('mangan', parseFloat(station.data.mangan))}"></span> Mangan: ${station.data.mangan} mg/l</div>
-                        </div>
-                    `;
-                });
-                result += '</div>';
-            }
+        if (!city || !waterInfo) {
+            console.error('Brak wymaganych elementów HTML: city-premium, waterInfo');
+            return;
         }
-        document.getElementById('waterInfo').innerHTML = result; // Tutaj zmieniliśmy na 'all-suw'
+
+        const stations = waterStations[city]?.stations || [];
+        if (stations.length === 0) {
+            if (waterStations[city]?.info) {
+                waterInfo.innerHTML = waterStations[city].info;
+            } else {
+                waterInfo.innerHTML = "Brak danych dla tego miasta.";
+            }
+            return;
+        }
+
+        let result = `<h3>Stacje uzdatniania wody w ${city}</h3>`;
+        stations.forEach(station => {
+            result += `<p>${station.name} (${station.address})</p>`;
+        });
+        waterInfo.innerHTML = result;
     } catch (error) {
         console.error('Błąd w showAllStations:', error);
         document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
@@ -1058,76 +1438,53 @@ export function showAllStations() {
 
 export function showAllSUW() {
     try {
-        const cityInput = document.getElementById('city-premium');
-        const waterInfo = document.getElementById('waterInfo');
-        if (!cityInput || !waterInfo) return;
+        const isPremium = localStorage.getItem('isPremium') === 'true';
+        if (!isPremium) {
+            alert('Funkcja dostępna tylko dla użytkowników Premium! Przejdź na Premium za 9,99 zł/mc na https://x.ai/grok.');
+            return;
+        }
 
-        const city = cityInput.value.trim();
-        if (!city) {
-            alert("Wpisz miasto!");
+        const city = document.getElementById('city-premium')?.value?.trim();
+        const waterInfo = document.getElementById('waterInfo');
+        if (!city || !waterInfo) {
+            console.error('Brak wymaganych elementów HTML: city-premium, waterInfo');
             return;
         }
 
         const stations = waterStations[city]?.stations || [];
-        if (stations.length === 0) {
-            waterInfo.innerHTML = "Brak stacji SUW dla tego miasta.";
+        const measurementPoints = waterStations[city]?.measurementPoints || [];
+        if (stations.length === 0 && measurementPoints.length === 0) {
+            if (waterStations[city]?.info) {
+                waterInfo.innerHTML = waterStations[city].info;
+            } else {
+                waterInfo.innerHTML = "Brak danych dla tego miasta.";
+            }
             return;
         }
 
-        const mapElement = document.getElementById('map');
-        if (mapElement && map) {
-            mapElement.style.display = 'block';
-            map.setView([stations[0].coords[0], stations[0].coords[1]], 12);
-            setTimeout(() => map.invalidateSize(), 200);
-            map.eachLayer(layer => {
-                if (layer instanceof L.Marker) map.removeLayer(layer);
-            });
+        let result = `<h3>Wyniki dla miasta: ${city}</h3>`;
+        if (stations.length === 1) {
+            result += `<p>To miasto ma tylko jeden SUW – dane poniżej.</p>`;
         }
 
-        let result = `<h3>Stacje uzdatniania wody w ${city}</h3>`;
-        result += `<div class="stations-grid">`;
         stations.forEach(station => {
-            const pH = parseFloat(station.data.pH).toFixed(2);
-            const twardosc = parseFloat(station.data.twardosc).toFixed(2);
-            const azotany = parseFloat(station.data.azotany).toFixed(2);
-            const chlor = parseFloat(station.data.chlor).toFixed(2);
-            const fluorki = parseFloat(station.data.fluorki).toFixed(2);
-            const zelazo = parseFloat(station.data.zelazo).toFixed(2);
-            const mangan = parseFloat(station.data.mangan).toFixed(2);
-            const chlorki = parseFloat(station.data.chlorki).toFixed(2);
-            const siarczany = parseFloat(station.data.siarczany).toFixed(2);
-            const metnosc = parseFloat(station.data.metnosc).toFixed(2);
-            const barwa = parseFloat(station.data.barwa).toFixed(2);
-            const magnez = parseFloat(station.data.magnez || 0).toFixed(2);
+            const params = station.data;
             const parameters = [
-                `<div class="parameter"><span class="dot ${getColor('pH', pH)}"></span> pH: ${pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', pH, getColor('pH', pH))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('twardosc', twardosc)}"></span> Twardość: ${twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', twardosc, getColor('twardosc', twardosc))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('azotany', azotany)}"></span> Azotany: ${azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', azotany, getColor('azotany', azotany))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('chlor', chlor)}"></span> Chlor wolny: ${chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', chlor, getColor('chlor', chlor))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('fluorki', fluorki)}"></span> Fluorki: ${fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', fluorki, getColor('fluorki', fluorki))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('zelazo', zelazo)}"></span> Żelazo: ${zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', zelazo, getColor('zelazo', zelazo))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('mangan', mangan)}"></span> Mangan: ${mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', mangan, getColor('mangan', mangan))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('chlorki', chlorki)}"></span> Chlorki: ${chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', chlorki, getColor('chlorki', chlorki))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('siarczany', siarczany)}"></span> Siarczany: ${siarczany} mg/l (norma: <250 mg/l) – ${getParameterDescription('siarczany', siarczany, getColor('siarczany', siarczany))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('metnosc', metnosc)}"></span> Mętność: ${metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', metnosc, getColor('metnosc', metnosc))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('barwa', barwa)}"></span> Barwa: ${barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', barwa, getColor('barwa', barwa))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('magnez', magnez)}"></span> Magnez: ${magnez} mg/l (korzysna: >50 mg/l) – ${getParameterDescription('magnez', magnez, getColor('magnez', magnez))}</div>`
+                `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('fluorki', params.fluorki)}"></span> Fluorki: ${params.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', params.fluorki, getColor('fluorki', params.fluorki), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('zelazo', params.zelazo)}"></span> Żelazo: ${params.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', params.zelazo, getColor('zelazo', params.zelazo), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('mangan', params.mangan)}"></span> Mangan: ${params.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', params.mangan, getColor('mangan', params.mangan), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('chlorki', params.chlorki)}"></span> Chlorki: ${params.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', params.chlorki, getColor('chlorki', params.chlorki), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('barwa', params.barwa)}"></span> Barwa: ${params.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', params.barwa, getColor('barwa', params.barwa), params.azotany)}</div>`
             ];
-            result += `
-                <div class="station-card">
-                    <h4>${station.name} (${station.address})</h4>
-                    Jakość wody:<br>
-                    ${parameters.join('')}
-                </div>
-            `;
-            if (map) {
-                L.marker(station.coords)
-                    .addTo(map)
-                    .bindPopup(`${station.name} (${station.address})`);
-            }
+            result += `<h4>Stacja SUW: ${station.name} (${station.address})</h4>Jakość wody:<br>${parameters.join('')}`;
         });
-        result += `</div>`;
-        document.getElementById('all-suw').innerHTML = result;
+
+        waterInfo.innerHTML = result;
     } catch (error) {
         console.error('Błąd w showAllSUW:', error);
         document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
@@ -1136,241 +1493,103 @@ export function showAllSUW() {
 
 export function showAllMeasurementPoints() {
     try {
-        const cityInput = document.getElementById('city-premium');
+        const city = document.getElementById('city-premium')?.value?.trim();
         const waterInfo = document.getElementById('waterInfo');
-        if (!cityInput || !waterInfo) return;
-
-        const city = cityInput.value.trim();
-        if (!city) {
-            alert("Wpisz miasto!");
+        if (!city || !waterInfo) {
+            console.error('Brak wymaganych elementów HTML: city-premium, waterInfo');
             return;
         }
 
         const measurementPoints = waterStations[city]?.measurementPoints || [];
         if (measurementPoints.length === 0) {
-            waterInfo.innerHTML = "Brak punktów pomiarowych dla tego miasta.";
+            if (waterStations[city]?.info) {
+                waterInfo.innerHTML = waterStations[city].info;
+            } else {
+                waterInfo.innerHTML = "Brak punktów pomiarowych dla tego miasta.";
+            }
             return;
         }
 
-        const mapElement = document.getElementById('map');
-        if (mapElement && map) {
-            mapElement.style.display = 'block';
-            map.setView([measurementPoints[0].coords[0], measurementPoints[0].coords[1]], 12);
-            setTimeout(() => map.invalidateSize(), 200);
-            map.eachLayer(layer => {
-                if (layer instanceof L.Marker) map.removeLayer(layer);
-            });
-        }
-
         let result = `<h3>Punkty pomiarowe w ${city}</h3>`;
-        result += `<div class="stations-grid">`;
         measurementPoints.forEach(point => {
-            const pH = parseFloat(point.data.pH).toFixed(2);
-            const twardosc = parseFloat(point.data.twardosc).toFixed(2);
-            const azotany = parseFloat(point.data.azotany).toFixed(2);
-            const chlor = parseFloat(point.data.chlor).toFixed(2);
-            const fluorki = parseFloat(point.data.fluorki).toFixed(2);
-            const zelazo = parseFloat(point.data.zelazo).toFixed(2);
-            const mangan = parseFloat(point.data.mangan).toFixed(2);
-            const chlorki = parseFloat(point.data.chlorki).toFixed(2);
-            const siarczany = parseFloat(point.data.siarczany).toFixed(2);
-            const metnosc = parseFloat(point.data.metnosc).toFixed(2);
-            const barwa = parseFloat(point.data.barwa).toFixed(2);
-            const magnez = parseFloat(point.data.magnez || 0).toFixed(2);
+            const params = point.data;
             const parameters = [
-                `<div class="parameter"><span class="dot ${getColor('pH', pH)}"></span> pH: ${pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', pH, getColor('pH', pH))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('twardosc', twardosc)}"></span> Twardość: ${twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', twardosc, getColor('twardosc', twardosc))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('azotany', azotany)}"></span> Azotany: ${azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', azotany, getColor('azotany', azotany))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('chlor', chlor)}"></span> Chlor wolny: ${chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', chlor, getColor('chlor', chlor))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('fluorki', fluorki)}"></span> Fluorki: ${fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', fluorki, getColor('fluorki', fluorki))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('zelazo', zelazo)}"></span> Żelazo: ${zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', zelazo, getColor('zelazo', zelazo))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('mangan', mangan)}"></span> Mangan: ${mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', mangan, getColor('mangan', mangan))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('chlorki', chlorki)}"></span> Chlorki: ${chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', chlorki, getColor('chlorki', chlorki))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('siarczany', siarczany)}"></span> Siarczany: ${siarczany} mg/l (norma: <250 mg/l) – ${getParameterDescription('siarczany', siarczany, getColor('siarczany', siarczany))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('metnosc', metnosc)}"></span> Mętność: ${metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', metnosc, getColor('metnosc', metnosc))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('barwa', barwa)}"></span> Barwa: ${barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', barwa, getColor('barwa', barwa))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('magnez', magnez)}"></span> Magnez: ${magnez} mg/l (korzysna: >50 mg/l) – ${getParameterDescription('magnez', magnez, getColor('magnez', magnez))}</div>`
+                `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('fluorki', params.fluorki)}"></span> Fluorki: ${params.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', params.fluorki, getColor('fluorki', params.fluorki), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('zelazo', params.zelazo)}"></span> Żelazo: ${params.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', params.zelazo, getColor('zelazo', params.zelazo), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('mangan', params.mangan)}"></span> Mangan: ${params.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', params.mangan, getColor('mangan', params.mangan), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('chlorki', params.chlorki)}"></span> Chlorki: ${params.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', params.chlorki, getColor('chlorki', params.chlorki), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('barwa', params.barwa)}"></span> Barwa: ${params.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', params.barwa, getColor('barwa', params.barwa), params.azotany)}</div>`
             ];
-            result += `
-                <div class="station-card">
-                    <h4>${point.name} (${point.address})</h4>
-                    Jakość wody:<br>
-                    ${parameters.join('')}
-                </div>
-            `;
-            if (map) {
-                L.marker(point.coords, { icon: L.divIcon({ className: 'measurement-point', html: '<div style="background-color: blue; width: 10px; height: 10px; border-radius: 50%;"></div>' }) })
-                    .addTo(map)
-                    .bindPopup(`${point.name} (${point.address})`);
-            }
+            result += `<h4>Punkt pomiarowy: ${point.name} (${point.address})</h4>Jakość wody:<br>${parameters.join('')}`;
         });
-        result += `</div>`;
-        document.getElementById('all-points').innerHTML = result;
+
+        waterInfo.innerHTML = result;
     } catch (error) {
         console.error('Błąd w showAllMeasurementPoints:', error);
         document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
     }
 }
 
-export function displayHistory(city) {
+export function displayHistory() {
     try {
-        const historyDiv = document.getElementById('history');
-        if (!historyDiv) return;
-        const stations = waterStations[city]?.stations || [];
-        const cityAverage = waterStations[city]?.average || null;
-        let result = `<h3>Historia parametrów wody w ${city}</h3>`;
-
-        if (stations.length === 0) {
-            result += "Brak danych dla tego miasta.";
-            historyDiv.innerHTML = result;
+        const city = document.getElementById('city-premium')?.value?.trim();
+        const waterInfo = document.getElementById('waterInfo');
+        if (!city || !waterInfo) {
+            console.error('Brak wymaganych elementów HTML: city-premium, waterInfo');
             return;
         }
 
-        result += `<div class="stations-grid">`;
-        let hasHistory = false;
-        stations.forEach(station => {
-            const history = station.history || [];
-            const currentData = station.data || {};
-            if (history.length > 0) {
-                hasHistory = true;
-                result += `<div class="station-card"><h4>${station.name} (${station.address})</h4>`;
-                result += `<div class="history-container">`;
-                result += `<div class="history-data"><div class="history-label">Historyczne</div>`;
-                history.forEach(record => {
-                    result += `<div class="parameter-history"><strong>${record.date}</strong></div>`;
-                    const parameters = [
-                        { key: 'pH', label: 'pH', unit: '', norm: '6.5–9.5' },
-                        { key: 'twardosc', label: 'Twardość', unit: 'mg/l', norm: '<120 mg/l' },
-                        { key: 'azotany', label: 'Azotany', unit: 'mg/l', norm: '<50 mg/l' },
-                        { key: 'chlor', label: 'Chlor wolny', unit: 'mg/l', norm: '<0.3 mg/l' },
-                        { key: 'fluorki', label: 'Fluorki', unit: 'mg/l', norm: '<1.5 mg/l' }
-                    ];
-                    const variableParams = [
-                        { key: 'zelazo', label: 'Żelazo', unit: 'mg/l', norm: '<0.2 mg/l' },
-                        { key: 'mangan', label: 'Mangan', unit: 'mg/l', norm: '<0.05 mg/l' },
-                        { key: 'chlorki', label: 'Chlorki', unit: 'mg/l', norm: '<250 mg/l' },
-                        { key: 'siarczany', label: 'Siarczany', unit: 'mg/l', norm: '<250 mg/l' },
-                        { key: 'metnosc', label: 'Mętność', unit: 'NTU', norm: '<1 NTU' },
-                        { key: 'barwa', label: 'Barwa', unit: 'mgPt/dm³', norm: '<15 mgPt/dm³' },
-                        { key: 'magnez', label: 'Magnez', unit: 'mg/l', norm: 'Korzystna: >50 mg/l' }
-                    ].filter(param => record[param.key] !== undefined);
-                    parameters.concat(variableParams.slice(0, 7)).forEach(param => {
-                        const value = record[param.key] !== undefined ? parseFloat(record[param.key]).toFixed(2) : 'Brak danych';
-                        result += `<div class="parameter-history">${param.label}: ${value}${param.unit}</div>`;
-                    });
-                });
-                result += `</div>`;
-                result += `<div class="current-data"><div class="current-label">Obecne</div>`;
-                const currentParameters = [
-                    { key: 'pH', label: 'pH', unit: '', norm: '6.5–9.5' },
-                    { key: 'twardosc', label: 'Twardość', unit: 'mg/l', norm: '<120 mg/l' },
-                    { key: 'azotany', label: 'Azotany', unit: 'mg/l', norm: '<50 mg/l' },
-                    { key: 'chlor', label: 'Chlor wolny', unit: 'mg/l', norm: '<0.3 mg/l' },
-                    { key: 'fluorki', label: 'Fluorki', unit: 'mg/l', norm: '<1.5 mg/l' }
-                ];
-                const currentVariableParams = [
-                    { key: 'zelazo', label: 'Żelazo', unit: 'mg/l', norm: '<0.2 mg/l' },
-                    { key: 'mangan', label: 'Mangan', unit: 'mg/l', norm: '<0.05 mg/l' },
-                    { key: 'chlorki', label: 'Chlorki', unit: 'mg/l', norm: '<250 mg/l' },
-                    { key: 'siarczany', label: 'Siarczany', unit: 'mg/l', norm: '<250 mg/l' },
-                    { key: 'metnosc', label: 'Mętność', unit: 'NTU', norm: '<1 NTU' },
-                    { key: 'barwa', label: 'Barwa', unit: 'mgPt/dm³', norm: '<15 mgPt/dm³' },
-                    { key: 'magnez', label: 'Magnez', unit: 'mg/l', norm: 'Korzystna: >50 mg/l' }
-                ].filter(param => currentData[param.key] !== undefined);
-                currentParameters.concat(currentVariableParams.slice(0, 7)).forEach(param => {
-                    let current = currentData[param.key];
-                    if (typeof current === 'string') {
-                        current = current.includes('–')
-                            ? ((parseFloat(current.split('–')[0]) + parseFloat(current.split('–')[1])) / 2).toFixed(2)
-                            : parseFloat(current).toFixed(2);
-                    } else {
-                        current = current ? parseFloat(current).toFixed(2) : 'Brak danych';
-                    }
-                    const color = getColor(param.key, current);
-                    const lastHistoricalValue = history.length > 0 && history[0][param.key] !== undefined ? parseFloat(history[0][param.key]) : null;
-                    let trend = '';
-                    if (lastHistoricalValue !== null) {
-                        if (parseFloat(current) > lastHistoricalValue) {
-                            trend = ' <span style="color: red;">▲</span>';
-                        } else if (parseFloat(current) < lastHistoricalValue) {
-                            trend = ' <span style="color: green;">▼</span>';
-                        } else {
-                            trend = ' <span style="color: gray;">—</span>';
-                        }
-                    }
-                    result += `<div class="parameter-history"><span class="dot ${color}"></span>${param.label}: ${current}${param.unit}${trend}</div>`;
-                });
-                result += `</div></div></div>`;
+        const stations = waterStations[city]?.stations || [];
+        if (stations.length === 0) {
+            if (waterStations[city]?.info) {
+                waterInfo.innerHTML = waterStations[city].info;
+            } else {
+                waterInfo.innerHTML = "Brak danych dla tego miasta.";
             }
-        });
-        result += `</div>`;
-
-        if (hasHistory && cityAverage) {
-            result += `<h4>Średnie dla ${city}</h4><div class="stations-grid"><div class="station-card">`;
-            const cityParams = [
-                { key: 'pH', label: 'pH', unit: '', norm: '6.5–9.5' },
-                { key: 'twardosc', label: 'Twardość', unit: 'mg/l', norm: '<120 mg/l' },
-                { key: 'azotany', label: 'Azotany', unit: 'mg/l', norm: '<50 mg/l' },
-                { key: 'chlor', label: 'Chlor wolny', unit: 'mg/l', norm: '<0.3 mg/l' },
-                { key: 'fluorki', label: 'Fluorki', unit: 'mg/l', norm: '<1.5 mg/l' },
-                { key: 'zelazo', label: 'Żelazo', unit: 'mg/l', norm: '<0.2 mg/l' },
-                { key: 'mangan', label: 'Mangan', unit: 'mg/l', norm: '<0.05 mg/l' },
-                { key: 'chlorki', label: 'Chlorki', unit: 'mg/l', norm: '<250 mg/l' },
-                { key: 'siarczany', label: 'Siarczany', unit: 'mg/l', norm: '<250 mg/l' },
-                { key: 'metnosc', label: 'Mętność', unit: 'NTU', norm: '<1 NTU' },
-                { key: 'barwa', label: 'Barwa', unit: 'mgPt/dm³', norm: '<15 mgPt/dm³' },
-                { key: 'magnez', label: 'Magnez', unit: 'mg/l', norm: 'Korzystna: >50 mg/l' }
-            ].filter(param => cityAverage[param.key] > 0);
-            result += `<div class="history-container">`;
-            result += `<div class="history-data"><div class="history-label">Historyczne</div>`;
-            cityParams.forEach(param => {
-                let historicalSum = 0, historicalCount = 0;
-                stations.forEach(station => {
-                    (station.history || []).forEach(entry => {
-                        if (entry[param.key]) {
-                            historicalSum += parseFloat(entry[param.key]);
-                            historicalCount++;
-                        }
-                    });
-                });
-                const historical = historicalCount > 0 ? (historicalSum / historicalCount).toFixed(2) : 'Brak danych';
-                result += `<div class="parameter-history">${param.label}: ${historical}${param.unit}</div>`;
-            });
-            result += `</div>`;
-            result += `<div class="current-data"><div class="current-label">Obecne</div>`;
-            cityParams.forEach(param => {
-                const current = parseFloat(cityAverage[param.key]).toFixed(2);
-                const color = getColor(param.key, current);
-                let historicalSum = 0, historicalCount = 0;
-                stations.forEach(station => {
-                    (station.history || []).forEach(entry => {
-                        if (entry[param.key]) {
-                            historicalSum += parseFloat(entry[param.key]);
-                            historicalCount++;
-                        }
-                    });
-                });
-                const historical = historicalCount > 0 ? (historicalSum / historicalCount).toFixed(2) : null;
-                let trend = '';
-                if (historical !== null) {
-                    if (parseFloat(current) > historical) {
-                        trend = ' <span style="color: red;">▲</span>';
-                    } else if (parseFloat(current) < historical) {
-                        trend = ' <span style="color: green;">▼</span>';
-                    } else {
-                        trend = ' <span style="color: gray;">—</span>';
-                    }
-                }
-                result += `<div class="parameter-history"><span class="dot ${color}"></span>${param.label}: ${current}${param.unit}${trend}</div>`;
-            });
-            result += `</div></div></div></div>`;
-        } else if (!hasHistory) {
-            result += `<p>Brak danych historycznych dla tego miasta.</p>`;
+            return;
         }
 
-        historyDiv.innerHTML = result;
+        let result = `<h3>Historia pomiarów w ${city}</h3>`;
+        stations.forEach(station => {
+            result += `<h4>${station.name} (${station.address})</h4>`;
+            if (station.history && station.history.length > 0) {
+                station.history.forEach(entry => {
+                    const parameters = [
+                        `<div class="parameter"><span class="dot"></span> pH: ${entry.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', entry.pH, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Twardość: ${entry.twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', entry.twardosc, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Azotany: ${entry.azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', entry.azotany, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Chlor wolny: ${entry.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', entry.chlor, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Fluorki: ${entry.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', entry.fluorki, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Żelazo: ${entry.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', entry.zelazo, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Mangan: ${entry.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', entry.mangan, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Chlorki: ${entry.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', entry.chlorki, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Mętność: ${entry.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', entry.metnosc, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Barwa: ${entry.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', entry.barwa, null, entry.azotany)}</div>`
+                    ];
+                    result += `<p>Data: ${entry.date}</p>Jakość wody:<br>${parameters.join('')}`;
+                });
+            } else {
+                result += `<p>Brak historii pomiarów dla tej stacji.</p>`;
+            }
+        });
+
+        waterInfo.innerHTML = result;
+
+        waterInfo.querySelectorAll('.parameter').forEach(paramDiv => {
+            const text = paramDiv.textContent;
+            const colorMatch = text.match(/red-dot|orange-dot|green-dot/);
+            if (colorMatch) {
+                const dot = paramDiv.querySelector('.dot');
+                if (dot) dot.classList.add(colorMatch[0]);
+            }
+        });
     } catch (error) {
         console.error('Błąd w displayHistory:', error);
-        document.getElementById('history').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
+        document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
     }
 }

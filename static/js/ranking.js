@@ -13,17 +13,23 @@ export function generateRanking(parameter = "twardosc") {
         const rankingsDiv = document.getElementById('rankings');
         if (!rankingsDiv) return;
 
-        let ranking = Object.keys(waterStations).map(city => ({
-            city,
-            value: parseFloat(waterStations[city].average[parameter])
-        }));
+        let ranking = Object.keys(waterStations)
+    .filter(city => waterStations[city].average[parameter] > 0) // Pomijamy miasta bez danych, np. Wałbrzych
+    .map(city => ({
+        city,
+        value: parseFloat(waterStations[city].average[parameter])
+    }));
 
-        ranking.sort((a, b) => {
-            if (parameter === "pH") {
-                return Math.abs(a.value - 7) - Math.abs(b.value - 7);
-            }
-            return a.value - b.value;
-        });
+if (!waterStations["Wałbrzych"].average[parameter] && document.getElementById('ranking-info')) {
+    document.getElementById('ranking-info').innerHTML = '<p>Wałbrzych odmówił podania danych, więc nie jest uwzględniony w rankingu.</p>';
+}
+
+ranking.sort((a, b) => {
+    if (parameter === "pH") {
+        return Math.abs(a.value - 7) - Math.abs(b.value - 7);
+    }
+    return a.value - b.value;
+});
 
         let result = `<h3>Ranking miast (${parameter})</h3>`;
         result += `<h4>5 najlepszych:</h4><ol>`;
