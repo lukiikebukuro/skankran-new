@@ -697,6 +697,297 @@ export const waterStations = {
         "Rajec": "SUW Firlej"
     },
     info: "Woda w Radomiu pochodzi z 5 SUW: Malczew, Shawnów, Potkanów, Lesiów i Firlej, zaopatrujących różne dzielnice miasta."
+},"Plock": {
+  average: {
+    pH: 7.3,
+    twardosc: 238,
+    azotany: 0.01, // Zmienione z 0 na 0.01, żeby uniknąć problemów z renderowaniem
+    chlorki: 0.01, // Zmienione z 0 na 0.01
+    zelazo: 0.01, // Zmienione z 0 na 0.01
+    mangan: 0.01, // Zmienione z 0 na 0.01
+    chlor: 0,
+    fluorki: 0,
+    siarczany: 0,
+    potas: 0,
+    metnosc: 0,
+    barwa: 0,
+    magnez: 0
+  },
+  stations: [
+    {
+      name: "Wodociąg Płock (ul. Górna 56B)",
+      coords: [52.5469, 19.7065],
+      address: "ul. Górna 56B, Płock",
+      data: {
+        pH: 7.3,
+        twardosc: 255.5,
+        azotany: 0.01, // Zmienione z 0 na 0.01
+        chlorki: 0.01, // Zmienione z 0 na 0.01
+        zelazo: 0.01, // Zmienione z 0 na 0.01
+        mangan: 0.01, // Zmienione z 0 na 0.01
+        metnosc: 0.20,
+        barwa: 2,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        siarczany: 0,
+        magnez: 0
+      },
+      history: []
+    },
+    {
+      name: "Wodociąg Góry",
+      coords: [52.5500, 19.7200],
+      address: "Góry, gm. Płock",
+      data: {
+        pH: 7.3,
+        twardosc: 264.5,
+        azotany: 0.01, // Zmienione z 0 na 0.01
+        chlorki: 0.01, // Zmienione z 0 na 0.01
+        zelazo: 0.01, // Zmienione z 0 na 0.01
+        mangan: 0.01, // Zmienione z 0 na 0.01
+        metnosc: 0.20,
+        barwa: 2,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        siarczany: 0,
+        magnez: 0
+      },
+      history: []
+    }
+  ],
+  measurementPoints: [],
+  zones: {},
+  info: "Woda w Płocku pochodzi z dwóch SUW: Wodociąg Płock i Wodociąg Góry, zaopatrujących całe miasto. Brak danych o chlorkach, azotanach, żelazie i manganie – zalecamy kontakt z Wodociągami Płockimi."
+},
+"Koszalin": {
+  average: {
+    pH: 7.8,
+    twardosc: 242.5,
+    azotany: 0.515,
+    chlorki: 29.05,
+    zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+    mangan: 0.015, // Poprawione wcześniej: 15 μg/l = 0.015 mg/l
+    chlor: 0,
+    fluorki: 0,
+    siarczany: 0,
+    potas: 0,
+    metnosc: 0,
+    barwa: 0,
+    magnez: 0
+  },
+  stations: [
+    {
+      name: "SUW Koszalin (Podgórna)",
+      coords: [54.1895, 16.1722],
+      address: "ul. Podgórna, Koszalin",
+      data: {
+        pH: 7.7,
+        twardosc: 330,
+        azotany: 0.47,
+        chlorki: 51.3,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.015, // Poprawione wcześniej: 15 μg/l = 0.015 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 89.7,
+        olow: 0.10,
+        kadm: 0.10,
+        chrom: 0.10,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      },
+      history: []
+    },
+    {
+      name: "SUW Mostowo",
+      coords: [54.1500, 16.2000],
+      address: "Mostowo, gm. Koszalin",
+      data: {
+        pH: 7.9,
+        twardosc: 155,
+        azotany: 0.56,
+        chlorki: 6.8,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.015, // Poprawione wcześniej: 15 μg/l = 0.015 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 15.6,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      },
+      history: []
+    }
+  ],
+  measurementPoints: [
+    {
+      name: "Punkt kontrolny - ul. Filtrowa 1",
+      coords: [54.1900, 16.1700],
+      address: "ul. Filtrowa 1, Koszalin",
+      data: {
+        pH: 7.5,
+        twardosc: 319,
+        azotany: 0.68,
+        chlorki: 36.2,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 82.9,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      }
+    },
+    {
+      name: "Punkt kontrolny - Góra Chełmska (zbiornik)",
+      coords: [54.2000, 16.1800],
+      address: "Góra Chełmska, Koszalin",
+      data: {
+        pH: 7.6,
+        twardosc: 210,
+        azotany: 0.41,
+        chlorki: 39.8,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.0293, // Poprawione wcześniej: 29.3 μg/l = 0.0293 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 92.8,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      }
+    },
+    {
+      name: "Punkt kontrolny - ul. Podgórna 28 (hydrofornia)",
+      coords: [54.1950, 16.1750],
+      address: "ul. Podgórna 28, Koszalin",
+      data: {
+        pH: 7.5,
+        twardosc: 332,
+        azotany: 0.68,
+        chlorki: 39.8,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 92.8,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      }
+    },
+    {
+      name: "Punkt kontrolny - ul. BoWiD 15 (komora)",
+      coords: [54.1800, 16.1600],
+      address: "ul. BoWiD 15, Koszalin",
+      data: {
+        pH: 8.2,
+        twardosc: 166,
+        azotany: 0.68,
+        chlorki: 36.2,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 82.9,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      }
+    },
+    {
+      name: "Punkt kontrolny - ul. BoWiD – Mieszka I-go (komora)",
+      coords: [54.1850, 16.1650],
+      address: "ul. BoWiD – Mieszka I-go, Koszalin",
+      data: {
+        pH: 7.9,
+        twardosc: 179,
+        azotany: 0.68,
+        chlorki: 36.2,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
+        metnosc: 0.72,
+        barwa: 5,
+        siarczany: 82.9,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      }
+    },
+    {
+      name: "Punkt kontrolny - ul. Niepodległości 44–46 (Szpital)",
+      coords: [54.1750, 16.1550],
+      address: "ul. Niepodległości 44–46, Koszalin",
+      data: {
+        pH: 7.3,
+        twardosc: 337,
+        azotany: 0.68,
+        chlorki: 36.2,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 82.9,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      }
+    },
+    {
+      name: "Punkt kontrolny - wodociągowa 01000 Manowo",
+      coords: [54.1300, 16.2100],
+      address: "wodociągowa 01000 Manowo",
+      data: {
+        pH: 7.8,
+        twardosc: 204,
+        azotany: 0.68,
+        chlorki: 36.2,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 82.9,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      }
+    },
+    {
+      name: "Punkt kontrolny - ul. Powstańców Wielkopolskich 14 (hydrofornia)",
+      coords: [54.1700, 16.1500],
+      address: "ul. Powstańców Wielkopolskich 14, Koszalin",
+      data: {
+        pH: 7.7,
+        twardosc: 216,
+        azotany: 0.68,
+        chlorki: 36.2,
+        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
+        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
+        metnosc: 0.20,
+        barwa: 5,
+        siarczany: 82.9,
+        chlor: 0,
+        fluorki: 0,
+        potas: 0,
+        magnez: 0
+      }
+    }
+  ],
+  zones: {},
+  info: "Woda w Koszalinie pochodzi z dwóch SUW: Koszalin (Podgórna) i Mostowo, zaopatrujących całe miasto."
 }
 };
 
