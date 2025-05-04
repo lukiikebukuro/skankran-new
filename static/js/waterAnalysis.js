@@ -1514,7 +1514,7 @@ export async function findWaterStation() {
         });
         L.marker([userLat, userLon]).addTo(window.map).bindPopup(`Lokalizacja: ${street}, ${city}`).openPopup();
 
-        if (zones) {
+        if (zones && Object.keys(zones).length > 0) {
             waterInfo.innerHTML = `
                 <h3>Wyniki dla adresu: ${street}, ${city}</h3>
                 <p>Wybierz swoją strefę:</p>
@@ -1667,6 +1667,8 @@ export async function findWaterStation() {
                     ];
                     waterInfoHTML += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${pointDistance} km</p>Jakość wody:<br>${pointParameters.join('')}`;
                     L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
+                } else {
+                    waterInfoHTML += `<p>Brak punktów pomiarowych dla tego miasta.</p>`;
                 }
 
                 waterInfo.innerHTML = waterInfoHTML;
