@@ -19,6 +19,7 @@
             <button onclick="scrollToSection('quizzes')">Quizy</button>
             <button onclick="scrollToSection('community-section')">Społeczność</button>
             <button onclick="scrollToSection('user-rankings')">Rankingi</button>
+            <button onclick="submitVote()">Głosuj</button>
         </nav>
 
         <section id="water-check" class="section">
@@ -33,6 +34,78 @@
                 <div class="result-section">
                     <h3>Wyniki dla miasta</h3>
                     <div id="city-result" class="result-box"></div>
+                    <div id="norms-section" style="display: none; margin-top: 20px;">
+                        <h3>Normy dla parametrów wody</h3>
+                        <table class="norms-table">
+                            <thead>
+                                <tr>
+                                    <th>Parametr</th>
+                                    <th>Polskie</th>
+                                    <th>WHO</th>
+                                    <th>UE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>pH</td>
+                                    <td>6.5–9.5</td>
+                                    <td>6.5–8.5</td>
+                                    <td>6.5–9.5</td>
+                                </tr>
+                                <tr>
+                                    <td>Twardość (mg/l CaCO₃)</td>
+                                    <td>60–500</td>
+                                    <td>Brak limitu (<200 zalecane)</td>
+                                    <td>Brak limitu (<150 zalecane)</td>
+                                </tr>
+                                <tr>
+                                    <td>Azotany (mg/l)</td>
+                                    <td><50</td>
+                                    <td>≤50</td>
+                                    <td>≤50</td>
+                                </tr>
+                                <tr>
+                                    <td>Żelazo (mg/l)</td>
+                                    <td><0.2</td>
+                                    <td>≤0.3</td>
+                                    <td>≤0.2</td>
+                                </tr>
+                                <tr>
+                                    <td>Mangan (mg/l)</td>
+                                    <td><0.05</td>
+                                    <td>≤0.4 (zdrowie), ≤0.1 (smak)</td>
+                                    <td>≤0.05</td>
+                                </tr>
+                                <tr>
+                                    <td>Chlorki (mg/l)</td>
+                                    <td><250</td>
+                                    <td>≤250</td>
+                                    <td>≤250</td>
+                                </tr>
+                                <tr>
+                                    <td>Fluorki (mg/l)</td>
+                                    <td><1.5</td>
+                                    <td>≤1.5</td>
+                                    <td>≤1.5</td>
+                                </tr>
+                                <tr>
+                                    <td>Mętność (NTU)</td>
+                                    <td><1</td>
+                                    <td>≤1</td>
+                                    <td>≤1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h3>Głosowanie: Które normy są dla Ciebie najbardziej wiarygodne?</h3>
+                        <div id="voting-section">
+                            <label><input type="radio" name="norms" value="polish"> Polskie</label><br>
+                            <label><input type="radio" name="norms" value="who"> WHO</label><br>
+                            <label><input type="radio" name="norms" value="eu"> EU</label><br>
+                            <button onclick="submitVote()">Głosuj</button>
+                            <p id="vote-results"></p>
+                        </div>
+                        <p class="norms-note">Normy Polskie, WHO i EU znajdziesz w sekcji <em>Normy wody</em> w przyszłości!</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -143,7 +216,6 @@
                         <input type="radio" name="q1" value="sucha"> Sucha<br>
                         <input type="radio" name="q1" value="normalna"> Normalna<br>
                         <input type="radio" name="q1" value="tłusta"> Tłusta<br><br>
-                        <!-- Pozostałe pytania quizu pozostają bez zmian -->
                         <button type="button" id="check-skin-quiz-btn">Sprawdź wynik</button>
                     </form>
                     <div id="quiz-skin-result"></div>
@@ -160,7 +232,6 @@
                         <input type="radio" name="q1" value="tak"> Tak<br>
                         <input type="radio" name="q1" value="czasami"> Czasami<br>
                         <input type="radio" name="q1" value="nie"> Nie<br><br>
-                        <!-- Pozostałe pytania quizu pozostają bez zmian -->
                         <button type="button" id="check-wellbeing-quiz-btn">Sprawdź wynik</button>
                     </form>
                     <div id="quiz-wellbeing-result"></div>
@@ -268,5 +339,5 @@
             document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9398f46fbc84bd16',t:'MTc0NjIwMzk2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

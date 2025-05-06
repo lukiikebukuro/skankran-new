@@ -1,6 +1,6 @@
 import { fetchPosts } from './community.js';
 
-export const cities = ["Chorzów", "Płock", "Olsztyn", "Tychy", "Poznań", "Gorzów Wielkopolski", "Warszawa", "Wrocław", "Kraków", "Gdańsk", "Kalisz", "Koszalin", "Grudziądz", "Wałbrzych", "Bydgoszcz", "Toruń", "Zielona Góra", "Legnica", "Radom"];
+export const cities = ["Chorzów", "Lublin", "Częstochowa", "Płock", "Olsztyn", "Tychy", "Poznań", "Gorzów Wielkopolski", "Warszawa", "Wrocław", "Kraków", "Gdańsk", "Kalisz", "Koszalin", "Grudziądz", "Wałbrzych", "Bydgoszcz", "Toruń", "Zielona Góra", "Legnica", "Radom", "Olsztyn"];
 export const bottles = ["Nałęczowianka", "Muszynianka", "Cisowianka", "Staropolanka", "Żywiec Zdrój", "Polaris"];
 
 export function suggestCities(val, inputId = 'city') {
@@ -88,8 +88,8 @@ export function getColor(parameter, value) {
             if (value < 7.0 || value > 8.5) return 'orange-dot';
             return 'green-dot';
         case 'twardosc':
-            if (value > 500) return 'red-dot';
-            if (value > 120) return 'orange-dot';
+            if (value >= 200) return 'red-dot';
+            if (value > 150) return 'orange-dot';
             return 'green-dot';
         case 'azotany':
             if (value > 50) return 'red-dot';
@@ -99,9 +99,9 @@ export function getColor(parameter, value) {
             if (value > 0.3) return 'red-dot';
             if (value >= 0.15) return 'orange-dot';
             return 'green-dot';
-        case 'fluorki':
-            if (value > 1.5) return 'red-dot';
-            if (value > 0.7) return 'orange-dot';
+        case 'metnosc':
+            if (value > 1) return 'red-dot';
+            if (value > 0.5) return 'orange-dot';
             return 'green-dot';
         case 'zelazo':
             if (value > 0.2) return 'red-dot';
@@ -111,150 +111,172 @@ export function getColor(parameter, value) {
             if (value > 0.05) return 'red-dot';
             if (value > 0.02) return 'orange-dot';
             return 'green-dot';
-        case 'chlorki':
-            if (value > 250) return 'red-dot';
-            if (value > 150) return 'orange-dot';
-            return 'green-dot';
-        case 'metnosc':
-            if (value > 1) return 'red-dot';
-            if (value > 0.5) return 'orange-dot';
-            return 'green-dot';
-        case 'barwa':
-            if (value > 15) return 'red-dot';
-            if (value > 5) return 'orange-dot';
+        case 'fluorki':
+            if (value > 1.5) return 'red-dot';
+            if (value > 0.7) return 'orange-dot';
             return 'green-dot';
         default:
             return 'green-dot';
     }
 }
 
-export function getParameterDescription(parameter, value, color, azotanyValue = null) {
+export function getParameterDescription(parameter, value, color) {
     let description = '';
     let filterRecommendation = '';
-
-    const skipFilterRecommendation = azotanyValue === 0;
 
     switch (parameter) {
         case 'pH':
             if (color === 'red-dot') {
-                description = 'pH poza normą – może wpływać na smak i zdrowie.';
-                filterRecommendation = 'Zalecamy filtr korygujący pH.';
+                description = 'pH poza normą – podrażnia skórę i zmienia smak wody.';
+                filterRecommendation = 'Polecamy filtr premium.';
             } else if (color === 'orange-dot') {
-                description = 'pH nieoptymalne – może wpływać na smak.';
-                filterRecommendation = 'Rozważ filtr korygujący pH.';
+                description = 'pH nieoptymalne – może powodować dyskomfort skóry i zmienia smak wody.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
             } else {
-                description = 'pH w normie – woda bezpieczna.';
+                description = 'pH w normie – bezpieczne dla skóry, dobry smak wody.';
             }
             break;
         case 'twardosc':
             if (color === 'red-dot') {
-                description = 'Woda bardzo twarda – może powodować osad.';
-                filterRecommendation = 'Zalecamy filtr zmiękczający.';
+                description = 'Wysoka twardość – wysusza cerę, szczególnie u kobiet, i zostawia kamień.';
+                filterRecommendation = 'Polecamy filtr zmiękczający.';
             } else if (color === 'orange-dot') {
-                description = 'Woda twarda – może wpływać na urządzenia.';
-                filterRecommendation = 'Rozważ filtr zmiękczający.';
+                description = 'Podwyższona twardość – może wysuszać cerę i powodować kamień.';
+                filterRecommendation = 'Polecamy filtr zmiękczający.';
             } else {
-                description = 'Twardość w normie – woda dobra.';
+                description = 'Twardość w normie – bezpieczna dla cery, minimalny kamień.';
             }
             break;
         case 'azotany':
             if (color === 'red-dot') {
-                description = 'Wysokie stężenie azotanów – może być szkodliwe.';
-                filterRecommendation = 'Zalecamy filtr usuwający azotany.';
+                description = 'Wysokie azotany – szkodliwe, zwłaszcza dla dzieci i kobiet w ciąży!';
+                filterRecommendation = 'Polecamy filtr eko.';
             } else if (color === 'orange-dot') {
-                description = 'Podwyższone azotany – warto monitorować.';
-                filterRecommendation = 'Rozważ filtr usuwający azotany.';
+                description = 'Podwyższone azotany – mogą szkodzić dzieciom i zdrowiu.';
+                filterRecommendation = 'Polecamy filtr eko.';
             } else {
-                description = 'Azotany w normie – woda bezpieczna.';
-            }
-            break;
-        case 'chlor':
-            if (color === 'red-dot') {
-                description = 'Wysoki poziom chloru – może wpływać na smak i zapach.';
-                filterRecommendation = 'Zalecamy filtr smakowy.';
-            } else if (color === 'orange-dot') {
-                description = 'Chlor może wpływać na smak wody.';
-                filterRecommendation = 'Rozważ filtr smakowy.';
-            } else {
-                description = 'Chlor w normie – woda dobra.';
-            }
-            break;
-        case 'zelazo':
-            if (color === 'red-dot') {
-                description = 'Wysoki poziom żelaza – może wpływać na smak i wygląd.';
-                filterRecommendation = 'Zalecamy filtr usuwający żelazo.';
-            } else if (color === 'orange-dot') {
-                description = 'Podwyższony poziom żelaza – może wpływać na smak.';
-                filterRecommendation = 'Rozważ filtr usuwający żelazo.';
-            } else {
-                description = 'Żelazo w normie – woda dobra.';
-            }
-            break;
-        case 'mangan':
-            if (color === 'red-dot') {
-                description = 'Wysoki poziom manganu – może wpływać na smak i wygląd.';
-                filterRecommendation = 'Zalecamy filtr usuwający mangan.';
-            } else if (color === 'orange-dot') {
-                description = 'Podwyższony poziom manganu – może wpływać na smak.';
-                filterRecommendation = 'Rozważ filtr usuwający mangan.';
-            } else {
-                description = 'Mangan w normie – woda dobra.';
-            }
-            break;
-        case 'chlorki':
-            if (color === 'red-dot') {
-                description = 'Wysoki poziom chlorków – może wpływać na smak.';
-                filterRecommendation = 'Zalecamy filtr usuwający chlorki.';
-            } else if (color === 'orange-dot') {
-                description = 'Podwyższony poziom chlorków – może wpływać na smak.';
-                filterRecommendation = 'Rozważ filtr usuwający chlorki.';
-            } else {
-                description = 'Chlorki w normie – woda dobra.';
+                description = 'Azotany w normie, ale mogą być szkodliwe dla dzieci.';
+                filterRecommendation = 'Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa, ale to niekonieczne.';
             }
             break;
         case 'metnosc':
             if (color === 'red-dot') {
-                description = 'Wysoka mętność – woda może być nieatrakcyjna wizualnie.';
-                filterRecommendation = 'Zalecamy filtr eko usuwający mętność.';
+                description = 'Wysoka mętność – pogarsza wygląd wody i może wpływać na zdrowie.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
             } else if (color === 'orange-dot') {
-                description = 'Podwyższona mętność – może wpływać na wygląd wody.';
-                filterRecommendation = 'Rozważ filtr eko usuwający mętność.';
+                description = 'Podwyższona mętność – sprawia, że woda wygląda nieczysto.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
             } else {
-                description = 'Mętność w normie – woda klarowna.';
+                description = 'Mętność w normie – woda klarowna i bezpieczna dla zdrowia.';
             }
             break;
-        case 'barwa':
+        case 'chlor':
             if (color === 'red-dot') {
-                description = 'Wysoka barwa – woda może być nieatrakcyjna wizualnie.';
-                filterRecommendation = 'Zalecamy filtr eko poprawiający barwę.';
+                description = 'Wysoki chlor – podrażnia skórę i zmienia smak wody.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
             } else if (color === 'orange-dot') {
-                description = 'Podwyższona barwa – może wpływać na wygląd wody.';
-                filterRecommendation = 'Rozważ filtr eko poprawiający barwę.';
+                description = 'Podwyższony chlor – może podrażniać skórę i zmienia smak wody.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
             } else {
-                description = 'Barwa w normie – woda dobra.';
+                description = 'Chlor w normie – bezpieczny dla zdrowia, minimalny wpływ na smak.';
+                if (value >= 0.1) {
+                    description += ' Może lekko zmieniać smak wody.';
+                    filterRecommendation = 'Opcjonalnie rozważ filtr poprawiający smak dla większego bezpieczeństwa, ale to niekonieczne.';
+                }
+            }
+            break;
+        case 'zelazo':
+            if (color === 'red-dot') {
+                description = 'Wysokie żelazo – może wpływać na zdrowie i zmienia smak wody.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
+            } else if (color === 'orange-dot') {
+                description = 'Podwyższone żelazo – może zmieniać smak wody i powodować osad.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
+            } else {
+                description = 'Żelazo w normie – bezpieczne dla zdrowia, bez wpływu na smak.';
+            }
+            break;
+        case 'mangan':
+            if (color === 'red-dot') {
+                description = 'Wysoki mangan – może wpływać na zdrowie i zmienia smak wody.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
+            } else if (color === 'orange-dot') {
+                description = 'Podwyższony mangan – może zmieniać smak wody i powodować osad.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
+            } else {
+                description = 'Mangan w normie – bezpieczny dla zdrowia, bez wpływu na smak.';
+            }
+            break;
+        case 'fluorki':
+            if (color === 'red-dot') {
+                description = 'Wysokie fluorki – mogą wpływać na zdrowie zębów i kości.';
+                filterRecommendation = 'Polecamy filtr premium.';
+            } else if (color === 'orange-dot') {
+                description = 'Podwyższone fluorki – mogą wpływać na zdrowie przy długim spożyciu.';
+                filterRecommendation = 'Polecamy filtr poprawiający smak.';
+            } else {
+                description = 'Fluorki w normie – bezpieczne dla zdrowia, wspierają zęby.';
             }
             break;
         default:
             description = 'Parametr w normie.';
     }
 
-    if (skipFilterRecommendation) {
-        filterRecommendation = '';
-    }
-
     return filterRecommendation ? `${description} ${filterRecommendation}` : description;
 }
 
-export function recommendFilter(params) {
+export function suggestWaterFilter(params) {
     try {
         let issues = [];
-        if (getColor("twardosc", params.twardosc) !== "green") issues.push("zmiękczający na osad i skórę");
-        if (getColor("azotany", params.azotany) !== "green") issues.push("eko-filtr na zanieczyszczenia");
-        if (getColor("zelazo", params.zelazo) !== "green" || getColor("mangan", params.mangan) !== "green") issues.push("eko-filtr na metale");
-        return issues.length > 0 ? issues.join(", ") : "smakowy dla lepszego komfortu";
+        let summary = '';
+
+        if (getColor('twardosc', params.twardosc) !== 'green-dot') {
+            issues.push({ param: 'twardość', reason: 'może wysuszać cerę i zostawiać kamień', filter: 'zmiękczający' });
+        }
+        if (getColor('azotany', params.azotany) !== 'green-dot') {
+            issues.push({ param: 'azotany', reason: 'mogą być szkodliwe dla dzieci', filter: 'eko' });
+        }
+        if (getColor('metnosc', params.metnosc) !== 'green-dot') {
+            issues.push({ param: 'mętność', reason: 'pogarsza wygląd wody', filter: 'poprawiający smak' });
+        }
+        if (getColor('chlor', params.chlor) !== 'green-dot') {
+            issues.push({ param: 'chlor', reason: 'może podrażniać skórę i zmieniać smak', filter: 'poprawiający smak' });
+        }
+        if (params.zelazo && getColor('zelazo', params.zelazo) !== 'green-dot') {
+            issues.push({ param: 'żelazo', reason: 'może zmieniać smak i powodować osad', filter: 'poprawiający smak' });
+        }
+        if (params.mangan && getColor('mangan', params.mangan) !== 'green-dot') {
+            issues.push({ param: 'mangan', reason: 'może zmieniać smak i powodować osad', filter: 'poprawiający smak' });
+        }
+        if (params.fluorki && getColor('fluorki', params.fluorki) !== 'green-dot') {
+            issues.push({ param: 'fluorki', reason: 'mogą wpływać na zdrowie zębów', filter: 'poprawiający smak' });
+        }
+
+        if (issues.length === 0) {
+            const hasChlorIssue = params.chlor >= 0.1;
+            const hasAzotanyIssue = params.azotany > 0;
+            if (hasChlorIssue && hasAzotanyIssue) {
+                summary = '<strong>Woda w normie, ale możesz rozważyć filtr eko lub poprawiający smak dla większego bezpieczeństwa ze względu na chlor i azotany, które mogą być szkodliwe dla dzieci.</strong> <a href="/dropshipping/eko" target="_blank">Sprawdź filtry</a>.';
+                return { filter: 'eko', summary };
+            } else if (hasChlorIssue) {
+                summary = '<strong>Woda w normie, ale możesz rozważyć filtr poprawiający smak dla większego bezpieczeństwa ze względu na chlor.</strong> Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa dzieci ze względu na azotany. <a href="/dropshipping/poprawiajacy-smak" target="_blank">Sprawdź filtr</a>.';
+                return { filter: 'poprawiający smak', summary };
+            } else {
+                summary = '<strong>Woda w normie – bezpieczna dla zdrowia.</strong> Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa dzieci ze względu na azotany. <a href="/dropshipping/eko" target="_blank">Sprawdź filtr</a>.';
+                return { filter: 'eko', summary };
+            }
+        } else if (issues.length === 1) {
+            const issue = issues[0];
+            summary = `<strong>Polecamy filtr ${issue.filter}, ponieważ ${issue.param} ${issue.reason}.</strong> Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa dzieci ze względu na azotany. <a href="/dropshipping/${issue.filter.replace(' ', '-')}" target="_blank">Sprawdź filtr</a>.`;
+            return { filter: issue.filter, summary };
+        } else {
+            const reasons = issues.map(issue => issue.param).join(' i ');
+            summary = `<strong>Polecamy filtr premium, ponieważ podwyższone są ${reasons}.</strong> Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa dzieci ze względu na azotany. <a href="/dropshipping/premium" target="_blank">Sprawdź filtr</a>.`;
+            return { filter: 'premium', summary };
+        }
     } catch (error) {
-        console.error('Błąd w recommendFilter:', error);
-        return "smakowy dla lepszego komfortu";
+        console.error('Błąd w suggestWaterFilter:', error);
+        return { filter: 'poprawiający smak', summary: '<strong>Rozważ filtr poprawiający smak dla większego komfortu.</strong> Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa dzieci ze względu na azotany. <a href="/dropshipping/poprawiajacy-smak" target="_blank">Sprawdź filtr</a>.' };
     }
 }
 

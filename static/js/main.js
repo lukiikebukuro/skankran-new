@@ -96,7 +96,12 @@ if (mapElement && typeof L !== 'undefined') {
         }
 
         if (elements['city']) elements['city'].addEventListener('keyup', (e) => suggestCities(e.target.value));
-        if (elements['check-kranowka-btn']) elements['check-kranowka-btn'].addEventListener('click', () => checkWater('city'));
+        if (elements['check-kranowka-btn']) {
+            elements['check-kranowka-btn'].addEventListener('click', () => {
+                checkWater('city');
+                showNormsSection(); // Dodaj to
+            });
+        }
         if (elements['city-premium']) elements['city-premium'].addEventListener('keyup', (e) => suggestCities(e.target.value, 'city-premium'));
         if (elements['find-station-btn']) elements['find-station-btn'].addEventListener('click', findWaterStation);
         if (elements['show-suw-btn']) elements['show-suw-btn'].addEventListener('click', showAllSUW);
@@ -259,3 +264,68 @@ export function toggleAlerts() {
         alert('Wystąpił błąd w alertach. Sprawdź konsolę (F12).');
     }
 }
+// Funkcja wyświetlająca sekcję norm po wybraniu miasta
+export function showNormsSection() {
+    try {
+        const normsSection = document.getElementById('norms-section');
+        if (normsSection) {
+            normsSection.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Błąd w showNormsSection:', error);
+    }
+}
+
+// Funkcja obsługująca głosowanie
+export function submitVote() {
+    try {
+        const selectedNorm = document.querySelector('input[name="norms"]:checked');
+        if (!selectedNorm) {
+            alert('Wybierz jedną opcję!');
+            return;
+        }
+
+        // Pobierz aktualne głosy z localStorage
+        let votes = JSON.parse(localStorage.getItem('normsVotes')) || {
+            polish: 0,
+            who: 0,
+            eu: 0
+        };
+
+        // Zwiększ licznik dla wybranej normy
+        votes[selectedNorm.value]++;
+        localStorage.setItem('normsVotes', JSON.stringify(votes));
+        console.log('Zapisano głos:', votes); // Debugowanie
+
+        // Aktualizuj wyniki
+        updateVoteResults();
+    } catch (error) {
+        console.error('Błąd w submitVote:', error);
+        alert('Wystąpił błąd podczas głosowania. Sprawdź konsolę (F12).');
+    }
+}
+
+// Funkcja aktualizująca wyniki głosowania
+export function updateVoteResults() {
+    try {
+        const votes = JSON.parse(localStorage.getItem('normsVotes')) || {
+            polish: 0,
+            who: 0,
+            eu: 0
+        };
+        const voteResults = document.getElementById('vote-results');
+        if (voteResults) {
+            voteResults.innerText = `Polskie: ${votes.polish} głosów, WHO: ${votes.who} głosów, EU: ${votes.eu} głosów`;
+            console.log('Wyniki głosowania:', votes); // Debugowanie
+        }
+    } catch (error) {
+        console.error('Błąd w updateVoteResults:', error);
+    }
+}
+
+// Ustaw funkcje w globalnym zakresie
+window.submitVote = submitVote;
+window.updateVoteResults = updateVoteResults;
+
+// Inicjalizacja wyników głosowania przy ładowaniu strony
+document.addEventListener('DOMContentLoaded', updateVoteResults);
