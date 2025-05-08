@@ -1,7 +1,7 @@
 import { setUsername, fetchUserStats, togglePremium, logout, suggestCities, suggestBottles } from '/static/js/utils.js';
 import { fetchPosts, addPost, addComment, togglePostComments, markPostAsSolved } from '/static/js/community.js';
 import { generateRanking, generateSUWRanking, displayUserRankings, submitUserRating, generateBottleRanking, displayUserBottleRankings } from '/static/js/ranking.js';
-import { checkWater, findWaterStation, showAllStations, displayHistory, waterStations, showAllSUW, showAllMeasurementPoints } from '/static/js/waterAnalysis.js';
+import { checkWater, findWaterStation, displayHistory, waterStations, showAllSUW, showAllMeasurementPoints } from '/static/js/waterAnalysis.js';
 import { toggleQuiz, checkQuizSkin, checkQuizWellbeing } from '/static/js/quiz.js';
 import { startAquaBot } from '/static/js/aquaBot.js';
 

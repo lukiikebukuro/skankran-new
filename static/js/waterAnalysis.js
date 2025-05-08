@@ -1,6 +1,21 @@
-import { getParameterDescription, getColor, suggestWaterFilter } from '/static/js/utils.js';
-
+import { getParameterDescription, getColor, suggestWaterFilter, getSelectedParameters, getPremiumParameters } from '/static/js/utils.js';
 export let map = null;
+export function getDistance(lat1, lon1, lat2, lon2) {
+    try {
+        const R = 6371; // Promień Ziemi w kilometrach
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c; // Odległość w kilometrach
+        return distance.toFixed(2); // Zaokrąglamy do 2 miejsc po przecinku
+    } catch (error) {
+        console.error('Błąd w getDistance:', error);
+        return Infinity;
+    }
+}
 
 export const waterStations = {
     "Grudziądz": {
@@ -63,15 +78,32 @@ export const waterStations = {
                     barwa: "10"
                 }
             }
-        ]
+        ],
+        zones: {
+            "Błonie": "SUW Hallera",
+            "Chełmińskie": "SUW Hallera",
+            "Lotnisko": "SUW Hallera",
+            "Mniszek": "SUW Hallera",
+            "Osiedle Tarpno": "SUW Hallera",
+            "Osiedle Strzemięcin": "SUW Hallera",
+            "Osiedle Rządz": "SUW Hallera",
+            "Osiedle Kopernika": "SUW Hallera",
+            "Osiedle Kawalerii": "SUW Hallera",
+            "Osiedle Śródmieście": "SUW Hallera",
+            "Osiedle Piaski": "SUW Hallera",
+            "Osiedle Węgrowo": "SUW Hallera",
+            "Osiedle Zielone": "SUW Hallera",
+            "Osiedle Południe": "SUW Hallera",
+            "Osiedle Marusza": "SUW Hallera"
+        }
     },
     "Wałbrzych": {
         average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
         stations: [
             {
-                name: "Brak danych",
-                coords: [50.7714, 16.2843],
-                address: "Wałbrzyskie Przedsiębiorstwo Wodociągów i Kanalizacji Sp. z o.o., ul. Zatorze 7",
+                name: "SUW Mała Woda",
+                coords: [50.8414, 16.0347],
+                address: "Marciszów",
                 data: {
                     pH: "0",
                     twardosc: "0",
@@ -84,16 +116,95 @@ export const waterStations = {
                     potas: "0",
                     metnosc: "0",
                     barwa: "0",
-                    mangan: "0"
+                    mangan: "0",
+                    magnez: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Szyb Pokój",
+                coords: [50.7206, 16.3597],
+                address: "Jedlina-Zdrój",
+                data: {
+                    pH: "0",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "0"
+                },
+                history: []
+            },
+            {
+                name: "Ujęcie Unisław Śląski",
+                coords: [50.7125, 16.2248],
+                address: "Unisław Śląski",
+                data: {
+                    pH: "0",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "0"
                 },
                 history: []
             }
         ],
         measurementPoints: [],
-        info: "Wałbrzyskie Przedsiębiorstwo Wodociągów i Kanalizacji Sp. z o.o. poinformowało, że nie jest zobowiązane do podawania parametrów wody. Jeśli mieszkasz w Wałbrzychu, możesz samodzielnie zlecić badanie wody – skontaktuj się z nami, a pomożemy!"
+        info: "Wałbrzyskie Przedsiębiorstwo Wodociągów i Kanalizacji Sp. z o.o. poinformowało, że nie jest zobowiązane do podawania parametrów wody. Jeśli mieszkasz w Wałbrzychu, możesz samodzielnie zlecić badanie wody – skontaktuj się z nami, a pomożemy!",
+        zones: {
+            "Biały Kamień": "SUW Mała Woda",
+            "Śródmieście": "SUW Mała Woda",
+            "Gaj": "SUW Mała Woda",
+            "Glinik Nowy": "SUW Mała Woda",
+            "Glinik Stary": "SUW Mała Woda",
+            "Konradów": "SUW Szyb Pokój",
+            "Kozice": "Ujęcie Unisław Śląski",
+            "Książ": "SUW Szyb Pokój",
+            "Lubiechów": "Ujęcie Unisław Śląski",
+            "Nowe Miasto": "SUW Mała Woda",
+            "Nowy Poniatów": "SUW Mała Woda",
+            "Osiedle Wanda": "SUW Mała Woda",
+            "Piaskowa Góra": "SUW Mała Woda",
+            "Podgórze I": "SUW Mała Woda",
+            "Podgórze II": "SUW Mała Woda",
+            "Podzamcze": "SUW Mała Woda",
+            "Poniatów": "SUW Mała Woda",
+            "Rusinowa": "SUW Mała Woda",
+            "Sobięcin": "SUW Mała Woda",
+            "Stary Zdrój": "SUW Mała Woda",
+            "Szczawienko": "SUW Szyb Pokój"
+        }
     },
     "Bydgoszcz": {
-        average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, magnez: 0 },
+        average: {
+            pH: 0,
+            twardosc: 0,
+            azotany: 0,
+            zelazo: 0,
+            fluorki: 0,
+            chlor: 0,
+            chlorki: 0,
+            siarczany: 0,
+            potas: 0,
+            metnosc: 0,
+            barwa: 0,
+            magnez: 0
+        },
         stations: [
             {
                 name: "SUW Czyżkówko",
@@ -101,17 +212,17 @@ export const waterStations = {
                 address: "ul. Toruńska 103",
                 data: {
                     pH: "7.8",
-                    twardosc: "78.4",
+                    twardosc: "196",
                     azotany: "1.1",
-                    chlor: "0.30",
+                    chlor: "<0.01",
                     fluorki: "0.13",
-                    zelazo: "0.01",
-                    mangan: "0.01",
-                    chlorki: "6.68",
+                    zelazo: "<0.01",
+                    mangan: "<0.004",
+                    chlorki: "15",
                     siarczany: "32",
-                    potas: "0",
+                    potas: "Brak danych",
                     metnosc: "0.10",
-                    barwa: "2",
+                    barwa: "<2",
                     magnez: "7.65"
                 },
                 history: []
@@ -122,17 +233,17 @@ export const waterStations = {
                 address: "ul. Gdańska 242",
                 data: {
                     pH: "7.9",
-                    twardosc: "164",
+                    twardosc: "410",
                     azotany: "2.1",
-                    chlor: "0",
+                    chlor: "Brak danych",
                     fluorki: "0.23",
-                    zelazo: "0.02",
-                    mangan: "0.01",
-                    chlorki: "64.8",
+                    zelazo: "<0.02",
+                    mangan: "0.04",
+                    chlorki: "29",
                     siarczany: "94",
-                    potas: "0",
+                    potas: "Brak danych",
                     metnosc: "0.09",
-                    barwa: "5",
+                    barwa: "<5",
                     magnez: "28.9"
                 },
                 history: []
@@ -250,7 +361,33 @@ export const waterStations = {
                     magnez: "0"
                 }
             }
-        ]
+        ],
+        zones: {
+            "Barbarka": "SUW Przy Kaszowniku",
+            "Bielany": "SUW Przy Kaszowniku",
+            "Bielawy": "SUW Przy Kaszowniku",
+            "Bydgoskie Przedmieście": "SUW Przy Kaszowniku",
+            "Chełmińskie Przedmieście": "SUW Przy Kaszowniku",
+            "Czerniewice": "SUW Przy Kaszowniku",
+            "Glinki": "SUW Przy Kaszowniku",
+            "Grębocin nad Strugą": "SUW Przy Kaszowniku",
+            "Jakubskie Przedmieście": "SUW Przy Kaszowniku",
+            "Kaszczorek": "SUW Przy Kaszowniku",
+            "Katarzynka": "SUW Przy Kaszowniku",
+            "Koniuchy": "SUW Przy Kaszowniku",
+            "Mokre": "SUW Przy Kaszowniku",
+            "Na Skarpie": "SUW Przy Kaszowniku",
+            "Piaski": "SUW Przy Kaszowniku",
+            "Podgórz": "SUW Przy Kaszowniku",
+            "Rubinkowo": "SUW Przy Kaszowniku",
+            "Rudak": "SUW Przy Kaszowniku",
+            "Rybaki": "SUW Przy Kaszowniku",
+            "Stare Miasto": "SUW Przy Kaszowniku",
+            "Starotoruńskie Przedmieście": "SUW Przy Kaszowniku",
+            "Stawki": "SUW Przy Kaszowniku",
+            "Winnica": "SUW Przy Kaszowniku",
+            "Wrzosy": "SUW Przy Kaszowniku"
+        }
     },
     "Zielona Góra": {
     average: {
@@ -290,7 +427,6 @@ export const waterStations = {
                 pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
                 twardosc: "Twardość poniżej optimum (<150 mg/l) – dobra dla cery.",
                 azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci.",
-               
                 fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
                 zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
                 mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
@@ -323,7 +459,6 @@ export const waterStations = {
                 pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
                 twardosc: "Twardość powyżej optimum (<150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
                 azotany: "Brak azotanów – woda bardzo bezpieczna dla dzieci.",
-                
                 fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
                 zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
                 mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
@@ -356,7 +491,6 @@ export const waterStations = {
                 pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
                 twardosc: "Twardość wysoka (>150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
                 azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci.",
-                
                 fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
                 zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
                 mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
@@ -389,7 +523,6 @@ export const waterStations = {
                 pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
                 twardosc: "Twardość wysoka (>150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
                 azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci.",
-                
                 fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
                 zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
                 mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
@@ -408,7 +541,6 @@ export const waterStations = {
                 pH: 7.6,
                 twardosc: 181,
                 azotany: 3.6,
-                
                 fluorki: 0,
                 zelazo: 0.05,
                 mangan: 0,
@@ -423,7 +555,6 @@ export const waterStations = {
                 pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
                 twardosc: "Twardość wysoka (>150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
                 azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci.",
-               
                 fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
                 zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
                 mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
@@ -445,31 +576,66 @@ export const waterStations = {
         "Racula": "SUW Zatonie",
         "Ochla": "SUW Ochla",
         "Kiełpin": "SUW Ochla",
-        "Barcikowiczki": "SUW Ochla"
+        "Barcikowiczki": "SUW Ochla",
+        "Centrum": "SUW Zawada",
+        "Osiedle Piastowskie": "SUW Zawada",
+        "Osiedle Pomorskie": "SUW Zawada",
+        "Osiedle Braniborskie": "SUW Zawada",
+        "Osiedle Zastalowskie": "SUW Zawada",
+        "Osiedle Łużyckie": "SUW Zawada",
+        "Osiedle Przyjaźni": "SUW Zawada",
+        "Osiedle Zacisze": "SUW Zacisze",
+        "Osiedle Śląskie": "SUW Zatonie",
+        "Osiedle Mazurskie": "SUW Zatonie",
+        "Osiedle Warmińskie": "SUW Zatonie",
+        "Osiedle Kaszubskie": "SUW Zatonie",
+        "Osiedle Dolina Zielona": "SUW Zatonie",
+        "Osiedle Leśne": "SUW Zatonie",
+        "Osiedle Słoneczne": "SUW Zatonie",
+        "Osiedle Morelowe": "SUW Zatonie",
+        "Osiedle Przylesie": "SUW Zatonie",
+        "Osiedle Raculka": "SUW Zatonie"
     },
     info: "Brak szczegółowych danych o strefach zaopatrywania dla większości miasta. Dane dla SUW Zawada (zaopatruje ~60% Zielonej Góry) są domyślne.",
     fun_facts: {
         water_sources: "SUW Zawada korzysta z ujęcia wody z rzeki Obrzycy."
     }
-},"Gorzów Wielkopolski": {
-    average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
+},
+"Gorzów Wielkopolski": {
+    average: {
+        pH: 0,
+        twardosc: 0,
+        azotany: 0,
+        zelazo: 0,
+        fluorki: 0,
+        chlor: 0,
+        chlorki: 0,
+        siarczany: 0,
+        potas: 0,
+        metnosc: 0,
+        barwa: 0,
+        mangan: 0,
+        magnez: 0
+    },
     stations: [
         {
             name: "SUW Centralny",
             coords: [52.7325, 15.2369],
             address: "ul. Sikorskiego 1",
             data: {
-                pH: 7.4,
-                twardosc: 294,
-                azotany: 1.10,
-                fluorki: 0,
-                zelazo: 0.04,
-                mangan: 0.025,
-                chlorki: 32.5,
-                siarczany: 0,
-                potas: 0,
-                metnosc: 0.15,
-                barwa: 5
+                pH: "7.4",
+                twardosc: "294",
+                azotany: "1.10",
+                fluorki: "Brak danych",
+                zelazo: "<0.040",
+                chlor: "0.20",
+                mangan: "<0.025",
+                chlorki: "32.2",
+                siarczany: "Brak danych",
+                potas: "Brak danych",
+                metnosc: "0.15",
+                barwa: "5",
+                magnez: "Brak danych"
             },
             history: []
         },
@@ -478,17 +644,19 @@ export const waterStations = {
             coords: [52.8000, 15.2167],
             address: "Kłodawa",
             data: {
-                pH: 7.3,
-                twardosc: 260,
-                azotany: 0.82,
-                fluorki: 0,
-                zelazo: 0.04,
-                mangan: 0.03,
-                chlorki: 24.9,
-                siarczany: 0,
-                potas: 0,
-                metnosc: 0.16,
-                barwa: 5
+                pH: "7.3",
+                twardosc: "267",
+                azotany: "0.82",
+                fluorki: "Brak danych",
+                zelazo: "<0.040",
+                chlor: "0.15",
+                mangan: "0.03",
+                chlorki: "24.9",
+                siarczany: "Brak danych",
+                potas: "Brak danych",
+                metnosc: "0.16",
+                barwa: "<5",
+                magnez: "Brak danych"
             },
             history: []
         },
@@ -497,17 +665,19 @@ export const waterStations = {
             coords: [52.7000, 15.3000],
             address: "Siedlice",
             data: {
-                pH: 7.4,
-                twardosc: 301,
-                azotany: 1.08,
-                fluorki: 0,
-                zelazo: 0.04,
-                mangan: 0.025,
-                chlorki: 33.6,
-                siarczany: 0,
-                potas: 0,
-                metnosc: 0.43,
-                barwa: 5
+                pH: "7.4",
+                twardosc: "301",
+                azotany: "1.08",
+                fluorki: "Brak danych",
+                zelazo: "<0.040",
+                chlor: "0.05",
+                mangan: "<0.025",
+                chlorki: "33.6",
+                siarczany: "Brak danych",
+                potas: "Brak danych",
+                metnosc: "0.43",
+                barwa: "5",
+                magnez: "Brak danych"
             },
             history: []
         },
@@ -516,38 +686,105 @@ export const waterStations = {
             coords: [52.6833, 15.3833],
             address: "Maszewo",
             data: {
-                pH: 7.6,
-                twardosc: 183,
-                azotany: 0.99,
-                fluorki: 0,
-                zelazo: 0.04,
-                mangan: 0.025,
-                chlorki: 12.4,
-                siarczany: 0,
-                potas: 0,
-                metnosc: 0.11,
-                barwa: 10
+                pH: "7.6",
+                twardosc: "183",
+                azotany: "0.99",
+                fluorki: "Brak danych",
+                zelazo: "<0.040",
+                chlor: "<0.05",
+                mangan: "<0.025",
+                chlorki: "12.4",
+                siarczany: "Brak danych",
+                potas: "Brak danych",
+                metnosc: "0.11",
+                barwa: "10",
+                magnez: "Brak danych"
+            },
+            history: []
+        },
+        {
+            name: "SUW Kosynierów Gdyńskich",
+            coords: [52.7500, 15.2500],
+            address: "Kosynierów Gdyńskich",
+            data: {
+                pH: "7.5",
+                twardosc: "412",
+                azotany: "1.53",
+                fluorki: "Brak danych",
+                zelazo: "0.051",
+                chlor: "0.16",
+                mangan: "<0.025",
+                chlorki: "32.2",
+                siarczany: "Brak danych",
+                potas: "Brak danych",
+                metnosc: "0.59",
+                barwa: "5",
+                magnez: "Brak danych"
+            },
+            history: []
+        },
+        {
+            name: "SUW Ursus",
+            coords: [52.7400, 15.2600],
+            address: "Ursus",
+            data: {
+                pH: "7.4",
+                twardosc: "292",
+                azotany: "1.02",
+                fluorki: "Brak danych",
+                zelazo: "<0.040",
+                chlor: "<0.05",
+                mangan: "<0.025",
+                chlorki: "34.3",
+                siarczany: "Brak danych",
+                potas: "Brak danych",
+                metnosc: "0.10",
+                barwa: "5",
+                magnez: "Brak danych"
+            },
+            history: []
+        },
+        {
+            name: "SUW Piłsudskiego",
+            coords: [52.7600, 15.2700],
+            address: "Piłsudskiego",
+            data: {
+                pH: "7.4",
+                twardosc: "294",
+                azotany: "1.10",
+                fluorki: "Brak danych",
+                zelazo: "<0.040",
+                chlor: "0.20",
+                mangan: "<0.025",
+                chlorki: "32.2",
+                siarczany: "Brak danych",
+                potas: "Brak danych",
+                metnosc: "0.15",
+                barwa: "5",
+                magnez: "Brak danych"
             },
             history: []
         }
     ],
     measurementPoints: [
         {
-            name: "Punkt Wałczaka 47",
-            coords: [52.7378, 15.2389],
-            address: "ul. Wałczaka 47, Gorzów Wielkopolski",
+            name: "Punkt Mickiewicza 50A",
+            coords: [52.7320, 15.2400],
+            address: "ul. Mickiewicza 50A, Gorzów Wielkopolski",
             data: {
                 pH: 7.4,
-                twardosc: 294,
-                azotany: 1.10,
+                twardosc: 289,
+                azotany: 1.06,
                 fluorki: 0,
                 zelazo: 0.04,
+                chlor: 0.05,
                 mangan: 0.025,
-                chlorki: 32.5,
+                chlorki: 35.6,
                 siarczany: 0,
                 potas: 0,
                 metnosc: 0.15,
-                barwa: 5
+                barwa: 6,
+                magnez: 0
             }
         }
     ],
@@ -555,18 +792,19 @@ export const waterStations = {
         "Centrum": "SUW Centralny",
         "Śródmieście": "SUW Centralny",
         "Zakanale": "SUW Centralny",
-        "Górczyn": "SUW Kłodawa",
+        "Górczyn": "SUW Kosynierów Gdyńskich", // Domyślny SUW dla Górczyna, ale Ursus i Piłsudskiego dostępne w dropdownie
+        "Kłodawa": "SUW Kłodawa",
         "Siedlice": "SUW Siedlice",
-        "Maszewo": "SUW Maszewo",
-        "Kłodawa": "SUW Kłodawa"
-    }
-},// Dodajemy po istniejących miastach (np. po "Gorzów Wielkopolski")
+        "Maszewo": "SUW Maszewo"
+    },
+    info: "Woda w Gorzowie pochodzi z kilku SUW-ów. Górczyn obejmuje SUW Kosynierów Gdyńskich, Ursus i Piłsudskiego – wybierz w dropdownie, aby porównać dane. Twoja woda pochodzi z najbliższego SUW-a."
+},
 "Legnica": {
     average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
     stations: [
         {
             name: "ZPW Przybków",
-            coords: [51.1833, 16.1333], // Orientacyjne dla Przybkowa
+            coords: [51.1833, 16.1333],
             address: "ul. Nowodworska 1, 59-220 Legnica",
             data: {
                 pH: "7.3",
@@ -586,16 +824,36 @@ export const waterStations = {
             history: []
         }
     ],
-    measurementPoints: [], // Na razie brak punktów pomiarowych
-    zones: {}, // Jedna SUW, brak zones
-    info: "Woda w Legnicy pochodzi z ZPW Przybków, uzdatniana z Kaczawy przez stawy infiltracyjne."
+    measurementPoints: [],
+    zones: {
+        "Centrum": "ZPW Przybków",
+        "Tarninów": "ZPW Przybków",
+        "Piekary": "ZPW Przybków",
+        "Kartuzy": "ZPW Przybków",
+        "Stare Miasto": "ZPW Przybków",
+        "Fabryczna": "ZPW Przybków",
+        "Złotoryjska": "ZPW Przybków",
+        "Bielany": "ZPW Przybków",
+        "Osiedle Kopernika": "ZPW Przybków",
+        "Osiedle Piekary": "ZPW Przybków",
+        "Osiedle Tarninów": "ZPW Przybków",
+        "Osiedle Zosinek": "ZPW Przybków",
+        "Osiedle Sienkiewicza": "ZPW Przybków",
+        "Osiedle Asnyka": "ZPW Przybków",
+        "Osiedle Ptasie": "ZPW Przybków",
+        "Osiedle Przybyszów": "ZPW Przybków",
+        "Osiedle Słoneczne": "ZPW Przybków",
+        "Osiedle Nad Stawem": "ZPW Przybków",
+        "Osiedle Zielone": "ZPW Przybków"
+    },
+    info: "Woda w Legnicy pochodzi z ZPW Przybków, uzdatniana z Kaczawy przez stawy infiltracyjne. Brak zones, wszystkie dzielnice przypisane do jedynej stacji."
 },
 "Radom": {
     average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
     stations: [
         {
             name: "SUW Malczew",
-            coords: [51.3800, 21.1300], // Orientacyjne dla Malczewa
+            coords: [51.3800, 21.1300],
             address: "ul. Wiernicka 30, 26-600 Radom",
             data: {
                 pH: "7.5",
@@ -615,7 +873,7 @@ export const waterStations = {
         },
         {
             name: "SUW Shawnów",
-            coords: [51.4050, 21.1750], // Orientacyjne dla Shawnów
+            coords: [51.4050, 21.1750],
             address: "ul. Wapienna 43, 26-600 Radom",
             data: {
                 pH: "7.2",
@@ -635,7 +893,7 @@ export const waterStations = {
         },
         {
             name: "SUW Potkanów",
-            coords: [51.4300, 21.1500], // Orientacyjne dla Potkanowa
+            coords: [51.4300, 21.1500],
             address: "ul. Warszawska 15, 26-600 Radom",
             data: {
                 pH: "7.3",
@@ -655,7 +913,7 @@ export const waterStations = {
         },
         {
             name: "SUW Lesiów",
-            coords: [51.4500, 21.2000], // Orientacyjne dla Lesiowa
+            coords: [51.4500, 21.2000],
             address: "Lesiów, gm. Jastrzębia",
             data: {
                 pH: "7.4",
@@ -675,7 +933,7 @@ export const waterStations = {
         },
         {
             name: "SUW Firlej",
-            coords: [51.4400, 21.1800], // Orientacyjne dla Firleja
+            coords: [51.4400, 21.1800],
             address: "ul. Błękitna 18, 26-600 Radom",
             data: {
                 pH: "7.2",
@@ -697,7 +955,7 @@ export const waterStations = {
     measurementPoints: [
         {
             name: "Punkt 25-Czerwca",
-            coords: [51.4000, 21.1500], // Śródmieście, Radom
+            coords: [51.4000, 21.1500],
             address: "ul. 25-Czerwca 70, 26-600 Radom",
             data: {
                 pH: "7.2",
@@ -716,7 +974,7 @@ export const waterStations = {
         },
         {
             name: "Punkt Obózisko",
-            coords: [51.4100, 21.1450], // Śródmieście/Obózisko, Radom
+            coords: [51.4100, 21.1450],
             address: "ul. Warszawska 2, 26-600 Radom",
             data: {
                 pH: "7.7",
@@ -735,7 +993,7 @@ export const waterStations = {
         },
         {
             name: "Punkt Białostocka",
-            coords: [51.3900, 21.1700], // Wacyn, Radom
+            coords: [51.3900, 21.1700],
             address: "ul. Białostocka 39, 26-600 Radom",
             data: {
                 pH: "7.2",
@@ -757,10 +1015,10 @@ export const waterStations = {
         "Malczew": "SUW Malczew",
         "Gołębiów": "SUW Malczew",
         "Zamłynie": "SUW Malczew",
-        "Śródmieście": "SUW Malczew", // Punkty 25-Czerwca i Obózisko
+        "Śródmieście": "SUW Malczew",
         "Halinów": "SUW Shawnów",
         "Ustronie": "SUW Shawnów",
-        "Wacyn": "SUW Shawnów", // Punkt Białostocka
+        "Wacyn": "SUW Shawnów",
         "Potkanów": "SUW Potkanów",
         "Północ": "SUW Potkanów",
         "Lesiów": "SUW Lesiów",
@@ -768,333 +1026,379 @@ export const waterStations = {
         "Rajec": "SUW Firlej"
     },
     info: "Woda w Radomiu pochodzi z 5 SUW: Malczew, Shawnów, Potkanów, Lesiów i Firlej, zaopatrujących różne dzielnice miasta."
-},"Plock": {
-  average: {
-    pH: 7.3,
-    twardosc: 238,
-    azotany: 0.01, // Zmienione z 0 na 0.01, żeby uniknąć problemów z renderowaniem
-    chlorki: 0.01, // Zmienione z 0 na 0.01
-    zelazo: 0.01, // Zmienione z 0 na 0.01
-    mangan: 0.01, // Zmienione z 0 na 0.01
-    chlor: 0,
-    fluorki: 0,
-    siarczany: 0,
-    potas: 0,
-    metnosc: 0,
-    barwa: 0,
-    magnez: 0
-  },
-  stations: [
-    {
-      name: "Wodociąg Płock (ul. Górna 56B)",
-      coords: [52.5469, 19.7065],
-      address: "ul. Górna 56B, Płock",
-      data: {
+},
+"Plock": {
+    average: {
         pH: 7.3,
-        twardosc: 255.5,
-        azotany: 0.01, // Zmienione z 0 na 0.01
-        chlorki: 0.01, // Zmienione z 0 na 0.01
-        zelazo: 0.01, // Zmienione z 0 na 0.01
-        mangan: 0.01, // Zmienione z 0 na 0.01
-        metnosc: 0.20,
-        barwa: 2,
+        twardosc: 238,
+        azotany: 0.01,
+        chlorki: 0.01,
+        zelazo: 0.01,
+        mangan: 0.01,
         chlor: 0,
         fluorki: 0,
-        potas: 0,
         siarczany: 0,
+        potas: 0,
+        metnosc: 0,
+        barwa: 0,
         magnez: 0
-      },
-      history: []
     },
-    {
-      name: "Wodociąg Góry",
-      coords: [52.5500, 19.7200],
-      address: "Góry, gm. Płock",
-      data: {
-        pH: 7.3,
-        twardosc: 264.5,
-        azotany: 0.01, // Zmienione z 0 na 0.01
-        chlorki: 0.01, // Zmienione z 0 na 0.01
-        zelazo: 0.01, // Zmienione z 0 na 0.01
-        mangan: 0.01, // Zmienione z 0 na 0.01
-        metnosc: 0.20,
-        barwa: 2,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        siarczany: 0,
-        magnez: 0
-      },
-      history: []
-    }
-  ],
-  measurementPoints: [],
-  zones: {},
-  info: "Woda w Płocku pochodzi z dwóch SUW: Wodociąg Płock i Wodociąg Góry, zaopatrujących całe miasto. Brak danych o chlorkach, azotanach, żelazie i manganie – zalecamy kontakt z Wodociągami Płockimi."
+    stations: [
+        {
+            name: "Wodociąg Płock (ul. Górna 56B)",
+            coords: [52.5469, 19.7065],
+            address: "ul. Górna 56B, Płock",
+            data: {
+                pH: 7.3,
+                twardosc: 255.5,
+                azotany: 0.01,
+                chlorki: 0.01,
+                zelazo: 0.01,
+                mangan: 0.01,
+                metnosc: 0.20,
+                barwa: 2,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                siarczany: 0,
+                magnez: 0
+            },
+            history: []
+        },
+        {
+            name: "Wodociąg Góry",
+            coords: [52.5500, 19.7200],
+            address: "Góry, gm. Płock",
+            data: {
+                pH: 7.3,
+                twardosc: 264.5,
+                azotany: 0.01,
+                chlorki: 0.01,
+                zelazo: 0.01,
+                mangan: 0.01,
+                metnosc: 0.20,
+                barwa: 2,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                siarczany: 0,
+                magnez: 0
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [],
+    zones: {
+        "Śródmieście": "Wodociąg Płock",
+        "Podolszyce": "Wodociąg Płock",
+        "Międzytorze": "Wodociąg Płock",
+        "Radziwie": "Wodociąg Płock",
+        "Winiary": "Wodociąg Płock",
+        "Imielnica": "Wodociąg Płock",
+        "Trzepowo": "Wodociąg Płock",
+        "Borowiczki": "Wodociąg Płock",
+        "Skarpa": "Wodociąg Płock",
+        "Zielony Jar": "Wodociąg Płock",
+        "Wielka Płyta": "Wodociąg Płock",
+        "Tysiąclecia": "Wodociąg Płock",
+        "Podgórze": "Wodociąg Płock",
+        "Osiedle Dworcowa": "Wodociąg Płock",
+        "Osiedle Kochanowskiego": "Wodociąg Płock",
+        "Osiedle Łukasiewicza": "Wodociąg Płock",
+        "Osiedle Miodowa": "Wodociąg Płock",
+        "Osiedle Skarpa": "Wodociąg Płock",
+        "Osiedle Wyszogrodzka": "Wodociąg Płock",
+        "Osiedle Zielony Jar": "Wodociąg Płock",
+        "Góry": "Wodociąg Góry"
+    },
+    info: "Woda w Płocku pochodzi z dwóch SUW: Wodociąg Płock i Wodociąg Góry, zaopatrujących całe miasto. Brak danych o chlorkach, azotanach, żelazie i manganie – zalecamy kontakt z Wodociągami Płockimi."
 },
 "Koszalin": {
-  average: {
-    pH: 7.8,
-    twardosc: 242.5,
-    azotany: 0.515,
-    chlorki: 29.05,
-    zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-    mangan: 0.015, // Poprawione wcześniej: 15 μg/l = 0.015 mg/l
-    chlor: 0,
-    fluorki: 0,
-    siarczany: 0,
-    potas: 0,
-    metnosc: 0,
-    barwa: 0,
-    magnez: 0
-  },
-  stations: [
-    {
-      name: "SUW Koszalin (Podgórna)",
-      coords: [54.1895, 16.1722],
-      address: "ul. Podgórna, Koszalin",
-      data: {
-        pH: 7.7,
-        twardosc: 330,
-        azotany: 0.47,
-        chlorki: 51.3,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.015, // Poprawione wcześniej: 15 μg/l = 0.015 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 89.7,
-        olow: 0.10,
-        kadm: 0.10,
-        chrom: 0.10,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      },
-      history: []
-    },
-    {
-      name: "SUW Mostowo",
-      coords: [54.1500, 16.2000],
-      address: "Mostowo, gm. Koszalin",
-      data: {
-        pH: 7.9,
-        twardosc: 155,
-        azotany: 0.56,
-        chlorki: 6.8,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.015, // Poprawione wcześniej: 15 μg/l = 0.015 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 15.6,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      },
-      history: []
-    }
-  ],
-  measurementPoints: [
-    {
-      name: "Punkt kontrolny - ul. Filtrowa 1",
-      coords: [54.1900, 16.1700],
-      address: "ul. Filtrowa 1, Koszalin",
-      data: {
-        pH: 7.5,
-        twardosc: 319,
-        azotany: 0.68,
-        chlorki: 36.2,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 82.9,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      }
-    },
-    {
-      name: "Punkt kontrolny - Góra Chełmska (zbiornik)",
-      coords: [54.2000, 16.1800],
-      address: "Góra Chełmska, Koszalin",
-      data: {
-        pH: 7.6,
-        twardosc: 210,
-        azotany: 0.41,
-        chlorki: 39.8,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.0293, // Poprawione wcześniej: 29.3 μg/l = 0.0293 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 92.8,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      }
-    },
-    {
-      name: "Punkt kontrolny - ul. Podgórna 28 (hydrofornia)",
-      coords: [54.1950, 16.1750],
-      address: "ul. Podgórna 28, Koszalin",
-      data: {
-        pH: 7.5,
-        twardosc: 332,
-        azotany: 0.68,
-        chlorki: 39.8,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 92.8,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      }
-    },
-    {
-      name: "Punkt kontrolny - ul. BoWiD 15 (komora)",
-      coords: [54.1800, 16.1600],
-      address: "ul. BoWiD 15, Koszalin",
-      data: {
-        pH: 8.2,
-        twardosc: 166,
-        azotany: 0.68,
-        chlorki: 36.2,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 82.9,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      }
-    },
-    {
-      name: "Punkt kontrolny - ul. BoWiD – Mieszka I-go (komora)",
-      coords: [54.1850, 16.1650],
-      address: "ul. BoWiD – Mieszka I-go, Koszalin",
-      data: {
-        pH: 7.9,
-        twardosc: 179,
-        azotany: 0.68,
-        chlorki: 36.2,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
-        metnosc: 0.72,
-        barwa: 5,
-        siarczany: 82.9,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      }
-    },
-    {
-      name: "Punkt kontrolny - ul. Niepodległości 44–46 (Szpital)",
-      coords: [54.1750, 16.1550],
-      address: "ul. Niepodległości 44–46, Koszalin",
-      data: {
-        pH: 7.3,
-        twardosc: 337,
-        azotany: 0.68,
-        chlorki: 36.2,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 82.9,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      }
-    },
-    {
-      name: "Punkt kontrolny - wodociągowa 01000 Manowo",
-      coords: [54.1300, 16.2100],
-      address: "wodociągowa 01000 Manowo",
-      data: {
+    average: {
         pH: 7.8,
-        twardosc: 204,
-        azotany: 0.68,
-        chlorki: 36.2,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 82.9,
+        twardosc: 242.5,
+        azotany: 0.515,
+        chlorki: 29.05,
+        zelazo: 0.06,
+        mangan: 0.015,
         chlor: 0,
         fluorki: 0,
+        siarczany: 0,
         potas: 0,
+        metnosc: 0,
+        barwa: 0,
         magnez: 0
-      }
     },
-    {
-      name: "Punkt kontrolny - ul. Powstańców Wielkopolskich 14 (hydrofornia)",
-      coords: [54.1700, 16.1500],
-      address: "ul. Powstańców Wielkopolskich 14, Koszalin",
-      data: {
-        pH: 7.7,
-        twardosc: 216,
-        azotany: 0.68,
-        chlorki: 36.2,
-        zelazo: 0.06, // Poprawione wcześniej: 60 μg/l = 0.06 mg/l
-        mangan: 0.0255, // Poprawione wcześniej: 25.5 μg/l = 0.0255 mg/l
-        metnosc: 0.20,
-        barwa: 5,
-        siarczany: 82.9,
-        chlor: 0,
-        fluorki: 0,
-        potas: 0,
-        magnez: 0
-      }
-    }
-  ],
-  zones: {},
-  info: "Woda w Koszalinie pochodzi z dwóch SUW: Koszalin (Podgórna) i Mostowo, zaopatrujących całe miasto."
-},"Olsztyn": {
-    average: { pH: 7.5, twardosc: 267.2, azotany: 3.06, zelazo: 0.038, mangan: 0.032, chlor: 0, fluorki: 0.38, chlorki: 17.34, siarczany: 23.16, potas: 0, metnosc: 0.14, barwa: 9.4, magnez: 12.4 },
+    stations: [
+        {
+            name: "SUW Koszalin (Podgórna)",
+            coords: [54.1895, 16.1722],
+            address: "ul. Podgórna, Koszalin",
+            data: {
+                pH: 7.7,
+                twardosc: 330,
+                azotany: 0.47,
+                chlorki: 51.3,
+                zelazo: 0.06,
+                mangan: 7.5,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 89.7,
+                olow: 0.10,
+                kadm: 0.10,
+                chrom: 0.10,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            },
+            history: []
+        },
+        {
+            name: "SUW Mostowo",
+            coords: [54.1500, 16.2000],
+            address: "Mostowo, gm. Koszalin",
+            data: {
+                pH: 7.9,
+                twardosc: 155,
+                azotany: 0.56,
+                chlorki: 6.8,
+                zelazo: 0.06,
+                mangan: 7.5,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 15.6,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [
+        {
+            name: "Punkt kontrolny - ul. Filtrowa 1",
+            coords: [54.1900, 16.1700],
+            address: "ul. Filtrowa 1, Koszalin",
+            data: {
+                pH: 7.5,
+                twardosc: 319,
+                azotany: 0.68,
+                chlorki: 36.2,
+                zelazo: 0.06,
+                mangan: 12.5,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 82.9,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            }
+        },
+        {
+            name: "Punkt kontrolny - Góra Chełmska (zbiornik)",
+            coords: [54.2000, 16.1800],
+            address: "Góra Chełmska, Koszalin",
+            data: {
+                pH: 7.6,
+                twardosc: 210,
+                azotany: 0.41,
+                chlorki: 39.8,
+                zelazo: 0.06,
+                mangan: 20,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 92.8,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            }
+        },
+        {
+            name: "Punkt kontrolny - ul. Podgórna 28 (hydrofornia)",
+            coords: [54.1950, 16.1750],
+            address: "ul. Podgórna 28, Koszalin",
+            data: {
+                pH: 7.5,
+                twardosc: 332,
+                azotany: 0.68,
+                chlorki: 39.8,
+                zelazo: 0.06,
+                mangan: 13,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 92.8,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            }
+        },
+        {
+            name: "Punkt kontrolny - ul. BoWiD 15 (komora)",
+            coords: [54.1800, 16.1600],
+            address: "ul. BoWiD 15, Koszalin",
+            data: {
+                pH: 8.2,
+                twardosc: 166,
+                azotany: 0.68,
+                chlorki: 36.2,
+                zelazo: 0.06,
+                mangan: 13,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 82.9,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            }
+        },
+        {
+            name: "Punkt kontrolny - ul. BoWiD – Mieszka I-go (komora)",
+            coords: [54.1850, 16.1650],
+            address: "ul. BoWiD – Mieszka I-go, Koszalin",
+            data: {
+                pH: 7.9,
+                twardosc: 179,
+                azotany: 0.68,
+                chlorki: 36.2,
+                zelazo: 0.06,
+                mangan: 13,
+                metnosc: 0.72,
+                barwa: 5,
+                siarczany: 82.9,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            }
+        },
+        {
+            name: "Punkt kontrolny - ul. Niepodległości 44–46 (Szpital)",
+            coords: [54.1750, 16.1550],
+            address: "ul. Niepodległości 44–46, Koszalin",
+            data: {
+                pH: 7.3,
+                twardosc: 337,
+                azotany: 0.68,
+                chlorki: 36.2,
+                zelazo: 0.06,
+                mangan: 13,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 82.9,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            }
+        },
+        {
+            name: "Punkt kontrolny - wodociągowa 01000 Manowo",
+            coords: [54.1300, 16.2100],
+            address: "wodociągowa 01000 Manowo",
+            data: {
+                pH: 7.8,
+                twardosc: 204,
+                azotany: 0.68,
+                chlorki: 36.2,
+                zelazo: 0.06,
+                mangan: 13,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 82.9,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            }
+        },
+        {
+            name: "Punkt kontrolny - ul. Powstańców Wielkopolskich 14 (hydrofornia)",
+            coords: [54.1700, 16.1500],
+            address: "ul. Powstańców Wielkopolskich 14, Koszalin",
+            data: {
+                pH: 7.7,
+                twardosc: 216,
+                azotany: 0.68,
+                chlorki: 36.2,
+                zelazo: 0.06,
+                mangan: 13,
+                metnosc: 0.20,
+                barwa: 5,
+                siarczany: 82.9,
+                chlor: 0,
+                fluorki: 0,
+                potas: 0,
+                magnez: 0
+            }
+        }
+    ],
+    zones: {
+        "Śródmieście": "SUW Koszalin (Podgórna)",
+        "Rokosowo": "SUW Koszalin (Podgórna)",
+        "Na Skarpie": "SUW Koszalin (Podgórna)",
+        "Przylesie": "SUW Koszalin (Podgórna)",
+        "Morskie": "SUW Koszalin (Podgórna)",
+        "Lubiatowo": "SUW Koszalin (Podgórna)",
+        "Raduszka": "SUW Koszalin (Podgórna)",
+        "Kotarwice": "SUW Koszalin (Podgórna)",
+        "Jamno": "SUW Koszalin (Podgórna)",
+        "Łabusz": "SUW Koszalin (Podgórna)",
+        "Wilkowo": "SUW Koszalin (Podgórna)",
+        "Kretomino": "SUW Koszalin (Podgórna)",
+        "Sarzyno": "SUW Koszalin (Podgórna)",
+        "Dzierżęcino": "SUW Koszalin (Podgórna)",
+        "Zagórzyno": "SUW Koszalin (Podgórna)",
+        "Chełmoniewo": "SUW Koszalin (Podgórna)",
+        "Niekłonice": "SUW Koszalin (Podgórna)",
+        "Stary Koszalin": "SUW Koszalin (Podgórna)",
+        "Nowe Bielice": "SUW Koszalin (Podgórna)",
+        "Stare Bielice": "SUW Koszalin (Podgórna)",
+        "Mostowo": "SUW Mostowo"
+    },
+    info: "Woda w Koszalinie pochodzi z dwóch SUW: Koszalin (Podgórna) i Mostowo, zaopatrujących całe miasto."
+},
+"Olsztyn": {
+    average: { pH: 7.46, twardosc: 267.2, azotany: 2.6, zelazo: 0.0378, mangan: 32, chlor: 0, fluorki: 0.378, chlorki: 9.86, siarczany: 15.68, potas: 0, metnosc: 0.144, barwa: 9.2, magnez: 12.4 },
     stations: [
         {
             name: "SUW Karolin",
             coords: [53.765, 20.466],
             address: "ul. Kalinowskiego",
-            data: { pH: 7.4, twardosc: 283, azotany: 2.6, zelazo: 0.057, mangan: 0.048, chlor: 0, fluorki: 0.26, chlorki: 17.9, siarczany: 62.0, potas: 0, metnosc: 0.21, barwa: 10, magnez: 10 },
+            data: { pH: 7.4, twardosc: 283, azotany: 2.6, zelazo: 0.057, mangan: 48, chlor: 0, fluorki: 0.26, chlorki: 17.9, siarczany: 27, potas: 0, metnosc: 0.21, barwa: 10, magnez: 10 },
             history: []
         },
         {
             name: "SUW Zachód",
             coords: [53.769, 20.452],
             address: "ul. Leśna",
-            data: { pH: 7.6, twardosc: 239, azotany: 2.8, zelazo: 0.035, mangan: 0.027, chlor: 0, fluorki: 0.52, chlorki: 13.2, siarczany: 5.0, potas: 0, metnosc: 0.14, barwa: 9, magnez: 14 },
+            data: { pH: 7.6, twardosc: 239, azotany: 2.8, zelazo: 0.035, mangan: 27, chlor: 0, fluorki: 0.52, chlorki: 13.2, siarczany: 6, potas: 0, metnosc: 0.14, barwa: 9, magnez: 14 },
             history: []
         },
         {
             name: "SUW Kortowo",
             coords: [53.757, 20.456],
             address: "ul. Słoneczna",
-            data: { pH: 7.5, twardosc: 272, azotany: 2.4, zelazo: 0.031, mangan: 0.026, chlor: 0, fluorki: 0.33, chlorki: 20.3, siarczany: 20.1, potas: 0, metnosc: 0.11, barwa: 9, magnez: 13 },
+            data: { pH: 7.4, twardosc: 272, azotany: 2.4, zelazo: 0.031, mangan: 26, chlor: 0, fluorki: 0.33, chlorki: 7.6, siarczany: 20.3, potas: 0, metnosc: 0.11, barwa: 8, magnez: 13 },
             history: []
         },
         {
             name: "SUW Jaroty",
             coords: [53.747, 20.475],
             address: "ul. Jarocka",
-            data: { pH: 7.4, twardosc: 307, azotany: 2.3, zelazo: 0.037, mangan: 0.032, chlor: 0, fluorki: 0.27, chlorki: 20.1, siarczany: 23.7, potas: 0, metnosc: 0.14, barwa: 9, magnez: 11 },
+            data: { pH: 7.4, twardosc: 307, azotany: 2.3, zelazo: 0.037, mangan: 32, chlor: 0, fluorki: 0.27, chlorki: 5.4, siarczany: 20.1, potas: 0, metnosc: 0.14, barwa: 9, magnez: 11 },
             history: []
         },
         {
             name: "SUW Likusy",
             coords: [53.805, 20.465],
             address: "ul. Bałtycka",
-            data: { pH: 7.5, twardosc: 235, azotany: 5.2, zelazo: 0.029, mangan: 0.027, chlor: 0, fluorki: 0.51, chlorki: 15.2, siarczany: 5.0, potas: 0, metnosc: 0.12, barwa: 10, magnez: 14 },
+            data: { pH: 7.5, twardosc: 235, azotany: 2.9, zelazo: 0.029, mangan: 27, chlor: 0, fluorki: 0.51, chlorki: 5.2, siarczany: 5, potas: 0, metnosc: 0.12, barwa: 10, magnez: 14 },
             history: []
         }
     ],
@@ -1117,24 +1421,23 @@ export const waterStations = {
         who: { azotany: "≤50", zelazo: "≤0.3", mangan: "≤0.4", fluorki: "≤1.5" },
         german: { twardosc: "<150", azotany: "≤50", pH: "6.5–9.5" }
     }
-},// Zaktualizowany wpis dla Lublina w waterStations
+},
 "Lublin": {
-    // Zerowe average, zgodne z innymi miastami
     average: {
-        pH: 0,
-        twardosc: 0,
-        azotany: 0,
-        zelazo: 0,
-        fluorki: 0,
-        chlor: 0,
-        chlorki: 0,
-        siarczany: 0,
-        potas: 0,
-        metnosc: 0,
-        barwa: 0,
-        magnez: 0
+        pH: 7.28,
+        twardosc: 363.5,
+        azotany: 9.46,
+        zelazo: 0.051,
+        mangan: 0.009,
+        chlor: 0.21,
+        fluorki: 0.4,
+        chlorki: 28.56,
+        siarczany: 44.25,
+        potas: 0.01,
+        metnosc: 0.25,
+        barwa: 4.9,
+        magnez: 18.05
     },
-    // Lista stacji uzdatniania wody (SUW)
     stations: [
         {
             name: "SUW Zemborzycka-Dziesiąta",
@@ -1306,54 +1609,141 @@ export const waterStations = {
         }
     ],
     measurementPoints: [],
-    // Tymczasowo bez zones, aby wykluczyć problem z dropdownem stref
-    zones: {},
+    zones: {
+        "Dziesiąta": "SUW Zemborzycka-Dziesiąta",
+        "Kośminek": "SUW Zemborzycka-Dziesiąta",
+        "Za Cukrownią": "SUW Zemborzycka-Dziesiąta",
+        "Zemborzyce": "SUW Zemborzycka-Stawinek",
+        "Głusk": "SUW Zemborzycka-Stawinek",
+        "Wieniawa": "SUW Choiny",
+        "Kalinowszczyzna": "SUW Choiny",
+        "Wrotków": "SUW Wrotków",
+        "Bronowice": "SUW Wrotków",
+        "Czechów Południowy": "SUW Bursaki",
+        "Czechów Północny": "SUW Bursaki",
+        "Felin": "SUW Ruta",
+        "Hajdów-Zadębie": "SUW Ruta",
+        "Śródmieście": "SUW Centralna",
+        "Stare Miasto": "SUW Centralna",
+        "Tatary": "SUW Mełgiewska",
+        "Rury": "SUW Mełgiewska"
+    },
     info: "Woda w Lublinie pochodzi z 8 SUW, zaopatrujących różne dzielnice miasta. Średnia twardość jest wysoka – może wysuszać cerę, szczególnie u kobiet (zalecamy filtr zmiękczający 99 zł). Azotany w normie, bezpieczne dla dzieci. Mangan i żelazo niskie, nie wpływają na smak. pH neutralne, bezpieczne."
-},"Częstochowa": {
+},
+"Częstochowa": {
     average: {
-        pH: 7.2,
-        twardosc: 212,
-        azotany: 7.08,
-        zelazo: 0.043,
-        mangan: 0.047,
-        chlor: 0,
-        fluorki: 0.20,
-        chlorki: 31.8,
-        siarczany: 114,
-        potas: 9.06,
-        metnosc: 0.87,
-        barwa: 6,
-        magnez: 5.35
+        pH: "0",
+        twardosc: "0",
+        azotany: "0",
+        zelazo: "0",
+        fluorki: "0",
+        chlor: "0",
+        chlorki: "0",
+        siarczany: "0",
+        potas: "0",
+        metnosc: "0",
+        barwa: "0",
+        mangan: "0",
+        magnez: "0"
     },
     stations: [
         {
-            name: "SUW Częstochowa",
-            coords: [50.8118, 19.1133],
-            address: "Częstochowa (ogólne dane dla miasta)",
+            name: "SDW Mirów",
+            coords: [50.8216, 19.1167],
+            address: "Rejon Mirów, 42-208",
             data: {
-                pH: 7.2,
-                twardosc: 212,
-                azotany: 7.08,
-                zelazo: 0.043,
-                mangan: 0.047,
-                chlor: 0,
-                fluorki: 0.20,
-                chlorki: 31.8,
-                siarczany: 114,
-                potas: 9.06,
-                metnosc: 0.87,
-                barwa: 6,
-                magnez: 5.35
+                pH: "7.6",
+                twardosc: "189",
+                azotany: "18.2",
+                fluorki: "<0.20",
+                zelazo: "0.041",
+                mangan: "0",
+                chlorki: "17.9",
+                siarczany: "3.79",
+                potas: "1.58",
+                metnosc: "0.14",
+                barwa: "<5",
+                magnez: "1.94",
+                chlor: "0"
+            },
+            history: []
+        },
+        {
+            name: "SUW Wielki Bór",
+            coords: [50.8389, 19.1458],
+            address: "Ul. Łomżyńska 134, 42-280",
+            data: {
+                pH: "7.6",
+                twardosc: "192",
+                azotany: "41.7",
+                fluorki: "<0.20",
+                zelazo: "0.063",
+                mangan: "0",
+                chlorki: "26.4",
+                siarczany: "78.4",
+                potas: "1.18",
+                metnosc: "0.33",
+                barwa: "<5",
+                magnez: "3.41",
+                chlor: "0"
+            },
+            history: []
+        },
+        {
+            name: "SDW Rząsawa",
+            coords: [50.7847, 19.0942],
+            address: "Rejon Rząsawa, 42-209",
+            data: {
+                pH: "7.7",
+                twardosc: "198",
+                azotany: "17.3",
+                fluorki: "<0.20",
+                zelazo: "0.051",
+                mangan: "0",
+                chlorki: "23.8",
+                siarczany: "58.0",
+                potas: "1.52",
+                metnosc: "0.29",
+                barwa: "<5",
+                magnez: "3.28",
+                chlor: "0"
+            },
+            history: []
+        },
+        {
+            name: "SUW Wierzchowisko",
+            coords: [50.8733, 19.2233],
+            address: "Kolonia Wierzchowisko, 42-233",
+            data: {
+                pH: "7.5",
+                twardosc: "221",
+                azotany: "39.2",
+                fluorki: "<0.20",
+                zelazo: "0.041",
+                mangan: "0",
+                chlorki: "36.8",
+                siarczany: "57.5",
+                potas: "1.51",
+                metnosc: "0.11",
+                barwa: "<5",
+                magnez: "3.89",
+                chlor: "0"
             },
             history: []
         }
     ],
     measurementPoints: [],
-    zones: {},
-    info: "Dane ogólne dla Częstochowy (brak szczegółowych SUW-ów). Twardość (212 mg/l) powyżej optimum – może wysuszać cerę, szczególnie u kobiet (zalecamy filtr zmiękczający 99 zł). Azotany (7.08 mg/l) w normie, bezpieczne dla dzieci. Mangan (0.047 mg/l) blisko normy – może wpływać na smak (filtr smakowy 109 zł). Sód: 17.6 mg/l (niski, bezpieczny).",
-    norms: {
-        polish: { pH: "6.5–9.5", twardosc: "60–500", azotany: "<50", zelazo: "<0.2", mangan: "<0.05", chlorki: "<250", siarczany: "<250", metnosc: "<1", barwa: "<15", chlor: "<0.3", fluorki: "<1.5" }
-    }
+    zones: {
+        "Mirów": "SDW Mirów",
+        "Podjasnogórska": "SDW Mirów",
+        "Śródmieście": "SDW Mirów",
+        "Kiedrzyn": "SUW Wielki Bór",
+        "Wyczerpy – Aniołów": "SUW Wielki Bór",
+        "Północ": "SUW Wielki Bór",
+        "Zawodzie – Dąbie": "SDW Rząsawa",
+        "Tysiąclecie": "SUW Wierzchowisko"
+    },
+    info: "Data from the second half of 2024."
 }
 };
 
@@ -1417,146 +1807,70 @@ export const bottleData = {
 export function calculateCityAverages() {
     try {
         for (let city in waterStations) {
-            let stations = waterStations[city].stations;
-            let avg = { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, mangan: 0, potas: 0, siarczany: 0, metnosc: 0, chlor: 0, fluorki: 0 };
-            let count = stations.length;
+            const stations = waterStations[city].stations || [];
+            const avg = { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, mangan: 0 };
+            const displayValues = { pH: [], twardosc: [], azotany: [], zelazo: [], fluorki: [], chlor: [], mangan: [] };
+            const count = stations.length;
+
+            if (count === 0) {
+                waterStations[city].average = avg;
+                continue;
+            }
 
             stations.forEach(station => {
-                if (typeof station.data.pH === 'string') {
-                    if (station.data.pH.includes("–")) {
-                        const pHRange = station.data.pH.split("–");
-                        avg.pH += (parseFloat(pHRange[0]) + parseFloat(pHRange[1])) / 2;
+                const params = ['pH', 'twardosc', 'azotany', 'zelazo', 'fluorki', 'chlor', 'mangan'];
+                params.forEach(param => {
+                    let value = station.data[param];
+                    let displayValue = value;
+
+                    if (typeof value === 'string') {
+                        if (value.includes('–')) {
+                            const range = value.split('–').map(v => parseFloat(v));
+                            value = (range[0] + range[1]) / 2;
+                            displayValue = `${value.toFixed(2)}`;
+                        } else if (value.includes('<')) {
+                            const match = value.match(/<([\d.]+)/);
+                            if (match) {
+                                const boundary = parseFloat(match[1]);
+                                if (param === 'mangan') {
+                                    // Wartość w µg/l, więc połowa granicy w µg/l
+                                    value = boundary / 2;
+                                    displayValue = `<${boundary}`;
+                                } else {
+                                    value = boundary / 2;
+                                    displayValue = `<${boundary}`;
+                                }
+                            } else {
+                                value = 0;
+                                displayValue = 'Brak danych';
+                            }
+                        } else {
+                            value = parseFloat(value);
+                            displayValue = value;
+                        }
                     } else {
-                        avg.pH += parseFloat(station.data.pH);
+                        value = parseFloat(value) || 0;
+                        displayValue = value;
                     }
+
+                    avg[param] += value;
+                    displayValues[param].push(displayValue);
+                });
+            });
+
+            const finalAvg = {};
+            Object.keys(avg).forEach(param => {
+                const values = displayValues[param];
+                const allSame = values.every(val => val === values[0]);
+                if (allSame && typeof values[0] === 'string' && values[0].includes('<')) {
+                    finalAvg[param] = values[0];
                 } else {
-                    avg.pH += station.data.pH;
-                }
-
-                if (typeof station.data.twardosc === 'string') {
-                    if (station.data.twardosc.includes("–")) {
-                        const twardoscRange = station.data.twardosc.split("–");
-                        avg.twardosc += (parseFloat(twardoscRange[0]) + parseFloat(twardoscRange[1])) / 2;
-                    } else {
-                        avg.twardosc += parseFloat(station.data.twardosc);
-                    }
-                } else {
-                    avg.twardosc += station.data.twardosc;
-                }
-
-                if (typeof station.data.azotany === 'string') {
-                    if (station.data.azotany.includes("–")) {
-                        const azotanyRange = station.data.azotany.split("–");
-                        avg.azotany += (parseFloat(azotanyRange[0]) + parseFloat(azotanyRange[1])) / 2;
-                    } else {
-                        avg.azotany += parseFloat(station.data.azotany);
-                    }
-                } else {
-                    avg.azotany += station.data.azotany;
-                }
-
-                if (typeof station.data.zelazo === 'string') {
-                    if (station.data.zelazo.includes("–")) {
-                        const zelazoRange = station.data.zelazo.split("–");
-                        avg.zelazo += (parseFloat(zelazoRange[0]) + parseFloat(zelazoRange[1])) / 2;
-                    } else {
-                        avg.zelazo += parseFloat(station.data.zelazo);
-                    }
-                } else {
-                    avg.zelazo += station.data.zelazo;
-                }
-
-                if (station.data.mangan) {
-                    if (typeof station.data.mangan === 'string') {
-                        if (station.data.mangan.includes("–")) {
-                            const manganRange = station.data.mangan.split("–");
-                            avg.mangan += (parseFloat(manganRange[0]) + parseFloat(manganRange[1])) / 2;
-                        } else {
-                            avg.mangan += parseFloat(station.data.mangan);
-                        }
-                    } else {
-                        avg.mangan += station.data.mangan;
-                    }
-                }
-
-                if (station.data.potas) {
-                    if (typeof station.data.potas === 'string') {
-                        if (station.data.potas.includes("–")) {
-                            const potasRange = station.data.potas.split("–");
-                            avg.potas += (parseFloat(potasRange[0]) + parseFloat(potasRange[1])) / 2;
-                        } else {
-                            avg.potas += parseFloat(station.data.potas);
-                        }
-                    } else {
-                        avg.potas += station.data.potas;
-                    }
-                }
-
-                if (station.data.siarczany) {
-                    if (typeof station.data.siarczany === 'string') {
-                        if (station.data.siarczany.includes("–")) {
-                            const siarczanyRange = station.data.siarczany.split("–");
-                            avg.siarczany += (parseFloat(siarczanyRange[0]) + parseFloat(siarczanyRange[1])) / 2;
-                        } else {
-                            avg.siarczany += parseFloat(station.data.siarczany);
-                        }
-                    } else {
-                        avg.siarczany += station.data.siarczany;
-                    }
-                }
-
-                if (station.data.metnosc) {
-                    if (typeof station.data.metnosc === 'string') {
-                        if (station.data.metnosc.includes("–")) {
-                            const metnoscRange = station.data.metnosc.split("–");
-                            avg.metnosc += (parseFloat(metnoscRange[0]) + parseFloat(metnoscRange[1])) / 2;
-                        } else {
-                            avg.metnosc += parseFloat(station.data.metnosc);
-                        }
-                    } else {
-                        avg.metnosc += station.data.metnosc;
-                    }
-                }
-
-                if (station.data.chlor) {
-                    if (typeof station.data.chlor === 'string') {
-                        if (station.data.chlor.includes("–")) {
-                            const chlorRange = station.data.chlor.split("–");
-                            avg.chlor += (parseFloat(chlorRange[0]) + parseFloat(chlorRange[1])) / 2;
-                        } else {
-                            avg.chlor += parseFloat(station.data.chlor);
-                        }
-                    } else {
-                        avg.chlor += station.data.chlor;
-                    }
-                }
-
-                if (station.data.fluorki) {
-                    if (typeof station.data.fluorki === 'string') {
-                        if (station.data.fluorki.includes("–")) {
-                            const fluorkiRange = station.data.fluorki.split("–");
-                            avg.fluorki += (parseFloat(fluorkiRange[0]) + parseFloat(fluorkiRange[1])) / 2;
-                        } else {
-                            avg.fluorki += parseFloat(station.data.fluorki);
-                        }
-                    } else {
-                        avg.fluorki += station.data.fluorki;
-                    }
+                    finalAvg[param] = count > 0 ? (avg[param] / count).toFixed(2) : 0;
                 }
             });
 
-            waterStations[city].average = {
-                pH: count > 0 ? (avg.pH / count).toFixed(2) : 0,
-                twardosc: count > 0 ? (avg.twardosc / count).toFixed(2) : 0,
-                azotany: count > 0 ? (avg.azotany / count).toFixed(2) : 0,
-                zelazo: count > 0 ? (avg.zelazo / count).toFixed(2) : 0,
-                mangan: count > 0 ? (avg.mangan / count).toFixed(2) : 0,
-                potas: count > 0 ? (avg.potas / count).toFixed(2) : 0,
-                siarczany: count > 0 ? (avg.siarczany / count).toFixed(2) : 0,
-                metnosc: count > 0 ? (avg.metnosc / count).toFixed(2) : 0,
-                chlor: count > 0 ? (avg.chlor / count).toFixed(2) : 0,
-                fluorki: count > 0 ? (avg.fluorki / count).toFixed(2) : 0
-            };
+            waterStations[city].average = finalAvg;
+
             console.log(`Miasto: ${city}, Średnia twardość: ${waterStations[city].average.twardosc} mg/l, Chlor: ${waterStations[city].average.chlor}, Fluorki: ${waterStations[city].average.fluorki}`);
         }
     } catch (error) {
@@ -1566,191 +1880,66 @@ export function calculateCityAverages() {
 calculateCityAverages();
 
 export function checkWater(inputId) {
+    let resultDiv; // Deklarujemy zmienną na poziomie funkcji
     try {
-        let resultDiv;
-        if (inputId === 'city') {
-            resultDiv = document.getElementById('city-result');
-        } else if (inputId === 'bottle') {
-            resultDiv = document.getElementById('bottle-result');
+      // Przypisujemy wartość w zależności od inputId
+      resultDiv = inputId === 'city' ? document.getElementById('city-result') : document.getElementById('bottle-result');
+      if (!resultDiv) return;
+  
+      if (inputId === 'city') {
+        const city = document.getElementById('city').value.trim();
+        if (!city) {
+          resultDiv.innerHTML = "Proszę wpisać miasto!";
+          return;
         }
-        if (!resultDiv) return;
-
-        let city;
-        let data, result = '';
-        if (inputId === 'city') {
-            city = document.getElementById('city').value.trim();
-            if (!city) {
-                resultDiv.innerHTML = "Proszę wpisać miasto!";
-                return;
-            }
-            data = waterStations[city]?.average;
-            if (!data || parseFloat(data.pH) === 0) {
-                resultDiv.innerHTML = "Brak danych dla tego miasta lub dane są niekompletne.";
-                return;
-            }
-            result = `<h3>Jakość wody w ${city}</h3>`;
-        } else if (inputId === 'bottle') {
-            const bottle = document.getElementById('bottle').value.trim();
-            if (!bottle) {
-                resultDiv.innerHTML = "Proszę wpisać nazwę wody butelkowanej!";
-                return;
-            }
-            data = bottleData[bottle];
-            if (!data) {
-                resultDiv.innerHTML = "Brak danych dla tej wody butelkowanej.";
-                return;
-            }
-            result = `<h3>Jakość wody ${bottle}</h3>`;
+        const data = waterStations[city]?.average;
+        if (!data) {
+          resultDiv.innerHTML = "Brak danych dla tego miasta.";
+          return;
         }
-
-        const pHColor = getColor("pH", parseFloat(data.pH));
-        const twardoscColor = getColor("twardosc", parseFloat(data.twardosc));
-        const azotanyColor = getColor("azotany", parseFloat(data.azotany));
-        const chlorColor = getColor("chlor", parseFloat(data.chlor));
-        const zelazoColor = getColor("zelazo", parseFloat(data.zelazo));
-        const manganColor = getColor("mangan", parseFloat(data.mangan));
-        const metnoscColor = getColor("metnosc", parseFloat(data.metnosc));
-
-        let parameters = [
-            `<div class="parameter"><span class="dot ${pHColor}"></span> pH: ${parseFloat(data.pH).toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', parseFloat(data.pH), pHColor, parseFloat(data.azotany))}</div>`,
-            `<div class="parameter"><span class="dot ${twardoscColor}"></span> Twardość: ${parseFloat(data.twardosc).toFixed(2)} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', parseFloat(data.twardosc), twardoscColor, parseFloat(data.azotany))}</div>`,
-            `<div class="parameter"><span class="dot ${azotanyColor}"></span> Azotany: ${parseFloat(data.azotany).toFixed(2)} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', parseFloat(data.azotany), azotanyColor, parseFloat(data.azotany))}</div>`
-        ];
-
-        if (parseFloat(data.chlor) > 0) {
-            parameters.push(`<div class="parameter"><span class="dot ${chlorColor}"></span> Chlor wolny: ${parseFloat(data.chlor).toFixed(3)} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', parseFloat(data.chlor), chlorColor, parseFloat(data.azotany))}</div>`);
-        }
-        if (parseFloat(data.zelazo) > 0) {
-            parameters.push(`<div class="parameter"><span class="dot ${zelazoColor}"></span> Żelazo: ${parseFloat(data.zelazo).toFixed(3)} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', parseFloat(data.zelazo), zelazoColor, parseFloat(data.azotany))}</div>`);
-        }
-        if (parseFloat(data.mangan) > 0 && parameters.length < 6) {
-            parameters.push(`<div class="parameter"><span class="dot ${manganColor}"></span> Mangan: ${parseFloat(data.mangan).toFixed(3)} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', parseFloat(data.mangan), manganColor, parseFloat(data.azotany))}</div>`);
-        }
-        if (parseFloat(data.metnosc) > 0 && parameters.length < 6) {
-            parameters.push(`<div class="parameter"><span class="dot ${metnoscColor}"></span> Mętność: ${parseFloat(data.metnosc).toFixed(2)} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', parseFloat(data.metnosc), metnoscColor, parseFloat(data.azotany))}</div>`);
-        }
-
-        if (inputId === 'bottle') {
-            parameters = [
-                `<div class="parameter"><span class="dot ${data.pH.color}"></span> pH: ${data.pH.value.toFixed(2)} (${data.pH.norm}) – ${data.pH.desc}</div>`,
-                `<div class="parameter"><span class="dot ${data.wapn.color}"></span> Wapń: ${data.wapn.value.toFixed(2)} mg/l (${data.wapn.norm}) – ${data.wapn.desc}</div>`,
-                `<div class="parameter"><span class="dot ${data.magnez.color}"></span> Magnez: ${data.magnez.value.toFixed(2)} mg/l (${data.magnez.norm}) – ${data.magnez.desc}</div>`,
-                `<div class="parameter"><span class="dot ${data.sod.color}"></span> Sód: ${data.sod.value.toFixed(2)} mg/l (${data.sod.norm}) – ${data.sod.desc}</div>`,
-                `<div class="parameter"><span class="dot ${data.fluorki.color}"></span> Fluorki: ${data.fluorki.value.toFixed(2)} mg/l (${data.fluorki.norm}) – ${data.fluorki.desc}</div>`,
-                `<div class="parameter">${data.mikroplastik.desc}</div>`
-            ];
-        }
-
+        let result = `<h3>Jakość wody w ${city}</h3>`;
+        const selectedParams = getSelectedParameters(data);
+        const parameters = selectedParams.map(param => {
+          const color = getColor(param.name, param.value);
+          const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : param.name === 'mangan' ? `${param.displayValue}` : `${param.displayValue} ${param.unit}`;
+          return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+        });
         result += `Jakość wody:<br>${parameters.join('')}`;
-        if (inputId === 'city' && waterStations[city]?.info) {
-            result += `<div class="note">${waterStations[city].info}</div>`;
+        if (waterStations[city]?.info) {
+          result += `<div class="note">${waterStations[city].info}</div>`;
         }
         resultDiv.innerHTML = result;
-    } catch (error) {
-        console.error('Błąd w checkWater:', error);
-        document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
-    }
-}
-
-export function showDistrictData() {
-    try {
-        const city = document.getElementById('city-premium')?.value?.trim();
-        const districtSelect = document.getElementById('district-select');
-        const stationInfo = document.getElementById('station-info');
-        if (!city || !districtSelect || !stationInfo) {
-            console.error('Brak wymaganych elementów HTML: city-premium, district-select, station-info');
-            return;
+      } else if (inputId === 'bottle') {
+        const bottle = document.getElementById('bottle').value.trim();
+        if (!bottle) {
+          resultDiv.innerHTML = "Proszę wpisać nazwę wody butelkowanej!";
+          return;
         }
-
-        const selectedDistrict = districtSelect.value;
-        if (!selectedDistrict) {
-            stationInfo.innerHTML = '<p>Proszę wybrać strefę!</p>';
-            return;
+        const data = bottleData[bottle];
+        if (!data) {
+          resultDiv.innerHTML = "Brak danych dla tej wody butelkowanej.";
+          return;
         }
-
-        const stations = waterStations[city]?.stations || [];
-        const measurementPoints = waterStations[city]?.measurementPoints || [];
-        const zones = waterStations[city]?.zones || {};
-        const stationName = zones[selectedDistrict];
-        const station = stations.find(s => s.name === stationName);
-
-        if (!station) {
-            stationInfo.innerHTML = '<p>Brak danych dla wybranej strefy!</p>';
-            return;
-        }
-
-        const params = {
-            pH: parseFloat(station.data.pH) || 0,
-            twardosc: parseFloat(station.data.twardosc) || 0,
-            azotany: parseFloat(station.data.azotany) || 0,
-            metnosc: parseFloat(station.data.metnosc) || 0,
-            chlor: parseFloat(station.data.chlor) || 0,
-            ...(station.data.mangan && parseFloat(station.data.mangan) >= 0.01
-                ? { mangan: parseFloat(station.data.mangan) }
-                : station.data.zelazo && parseFloat(station.data.zelazo) >= 0.01
-                ? { zelazo: parseFloat(station.data.zelazo) }
-                : { fluorki: parseFloat(station.data.fluorki) || 0 })
-        };
-        const sixthParam = params.mangan ? 'mangan' : params.zelazo ? 'zelazo' : 'fluorki';
+        let result = `<h3>Jakość wody ${bottle}</h3>`;
         const parameters = [
-            `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH.toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH))}</div>`,
-            `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc.toFixed(2)} mg/l (norma: 60–500) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc))}</div>`,
-            `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany.toFixed(2)} mg/l (norma: <50) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany))}</div>`,
-            `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc.toFixed(2)} NTU (norma: <1) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc))}</div>`,
-            `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor.toFixed(2)} mg/l (norma: <0.3) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor))}</div>`,
-            `<div class="parameter"><span class="dot ${getColor(sixthParam, params[sixthParam])}"></span> ${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: ${params[sixthParam].toFixed(2)} ${sixthParam === 'fluorki' ? 'mg/l (norma: <1.5)' : sixthParam === 'mangan' ? 'mg/l (norma: <0.05)' : 'mg/l (norma: <0.2)'} – ${getParameterDescription(sixthParam, params[sixthParam], getColor(sixthParam, params[sixthParam]))}</div>`
+          `<div class="parameter"><span class="dot ${getColor('pH', data.pH.value)}"></span> pH: ${data.pH.value.toFixed(2)} (${data.pH.norm}) – ${data.pH.desc}</div>`,
+          `<div class="parameter"><span class="dot ${getColor('wapn', data.wapn.value)}"></span> Wapń: ${data.wapn.value.toFixed(2)} mg/l (${data.wapn.norm}) – ${data.wapn.desc}</div>`,
+          `<div class="parameter"><span class="dot ${getColor('magnez', data.magnez.value)}"></span> Magnez: ${data.magnez.value.toFixed(2)} mg/l (${data.magnez.norm}) – ${data.magnez.desc}</div>`,
+          `<div class="parameter"><span class="dot ${getColor('sod', data.sod.value)}"></span> Sód: ${data.sod.value.toFixed(2)} mg/l (${data.sod.norm}) – ${data.sod.desc}</div>`,
+          `<div class="parameter"><span class="dot ${getColor('fluorki', data.fluorki.value)}"></span> Fluorki: ${data.fluorki.value.toFixed(2)} mg/l (${data.fluorki.norm}) – ${data.fluorki.desc}</div>`,
+          `<div class="parameter">${data.mikroplastik.desc}</div>`
         ];
-
-        let result = `<h4>Najbliższa stacja SUW: ${station.name} (${station.address})</h4>Jakość wody:<br>${parameters.join('')}`;
-        const filterRec = suggestWaterFilter(params);
-        result += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
-
-        let closestPoint = null;
-        let minPointDistance = Infinity;
-        measurementPoints.forEach(point => {
-            const distance = getDistance(station.coords[0], station.coords[1], point.coords[0], point.coords[1]);
-            if (distance < minPointDistance) {
-                minPointDistance = distance;
-                closestPoint = point;
-            }
-        });
-
-        if (closestPoint) {
-            const pointParams = {
-                pH: parseFloat(closestPoint.data.pH) || 0,
-                twardosc: parseFloat(closestPoint.data.twardosc) || 0,
-                azotany: parseFloat(closestPoint.data.azotany) || 0,
-                metnosc: parseFloat(closestPoint.data.metnosc) || 0,
-                chlor: parseFloat(closestPoint.data.chlor) || 0,
-                ...(closestPoint.data.mangan && parseFloat(closestPoint.data.mangan) >= 0.01
-                    ? { mangan: parseFloat(closestPoint.data.mangan) }
-                    : closestPoint.data.zelazo && parseFloat(closestPoint.data.zelazo) >= 0.01
-                    ? { zelazo: parseFloat(closestPoint.data.zelazo) }
-                    : { fluorki: parseFloat(closestPoint.data.fluorki) || 0 })
-            };
-            const pointSixthParam = pointParams.mangan ? 'mangan' : pointParams.zelazo ? 'zelazo' : 'fluorki';
-            const pointParameters = [
-                `<div class="parameter"><span class="dot ${getColor('pH', pointParams.pH)}"></span> pH: ${pointParams.pH.toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', pointParams.pH, getColor('pH', pointParams.pH))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('twardosc', pointParams.twardosc)}"></span> Twardość: ${pointParams.twardosc.toFixed(2)} mg/l (norma: 60–500) – ${getParameterDescription('twardosc', pointParams.twardosc, getColor('twardosc', pointParams.twardosc))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('azotany', pointParams.azotany)}"></span> Azotany: ${pointParams.azotany.toFixed(2)} mg/l (norma: <50) – ${getParameterDescription('azotany', pointParams.azotany, getColor('azotany', pointParams.azotany))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('metnosc', pointParams.metnosc)}"></span> Mętność: ${pointParams.metnosc.toFixed(2)} NTU (norma: <1) – ${getParameterDescription('metnosc', pointParams.metnosc, getColor('metnosc', pointParams.metnosc))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('chlor', pointParams.chlor)}"></span> Chlor wolny: ${pointParams.chlor.toFixed(2)} mg/l (norma: <0.3) – ${getParameterDescription('chlor', pointParams.chlor, getColor('chlor', pointParams.chlor))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor(pointSixthParam, pointParams[pointSixthParam])}"></span> ${pointSixthParam.charAt(0).toUpperCase() + pointSixthParam.slice(1)}: ${pointParams[pointSixthParam].toFixed(2)} ${pointSixthParam === 'fluorki' ? 'mg/l (norma: <1.5)' : pointSixthParam === 'mangan' ? 'mg/l (norma: <0.05)' : 'mg/l (norma: <0.2)'} – ${getParameterDescription(pointSixthParam, pointParams[pointSixthParam], getColor(pointSixthParam, pointParams[pointSixthParam]))}</div>`
-            ];
-            result += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${(minPointDistance * 111).toFixed(2)} km</p>Jakość wody:<br>${pointParameters.join('')}`;
-            const pointFilterRec = suggestWaterFilter(pointParams);
-            result += `<p><strong>Rekomendacja:</strong> ${pointFilterRec.summary}</p>`;
-        }
-
-        result += '<div class="note">Dane zależą od wodociągów. Skontaktuj się z nimi dla dokładniejszych informacji.</div>';
-        stationInfo.innerHTML = result;
+        result += `Jakość wody:<br>${parameters.join('')}`;
+        resultDiv.innerHTML = result;
+      }
     } catch (error) {
-        console.error('Błąd w showDistrictData:', error);
-        document.getElementById('station-info').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
+      console.error('Błąd w checkWater:', error);
+      if (resultDiv) { // Teraz resultDiv jest zdefiniowane
+        resultDiv.innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
+      }
     }
-}
-
-export async function findWaterStation() {
+  }
+  export async function findWaterStation() {
     const isPremium = localStorage.getItem('isPremium') === 'true';
     try {
         if (!isPremium) {
@@ -1802,7 +1991,7 @@ export async function findWaterStation() {
         }
 
         mapElement.style.display = 'block';
-        let userLat = 52.7325, userLon = 15.2369; // Domyślne dla Gorzowa
+        let userLat = 52.7325, userLon = 15.2369;
         const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(street + ', ' + city + ', Polska')}&format=json&limit=1`);
         const data = await response.json();
         if (data.length > 0) {
@@ -1820,213 +2009,118 @@ export async function findWaterStation() {
         });
         L.marker([userLat, userLon]).addTo(window.map).bindPopup(`Lokalizacja: ${street}, ${city}`).openPopup();
 
+        let closestStation = null;
+        let minStationDistance = Infinity;
+        stations.forEach(station => {
+            const distance = parseFloat(getDistance(userLat, userLon, station.coords[0], station.coords[1]));
+            if (distance < minStationDistance) {
+                minStationDistance = distance;
+                closestStation = station;
+            }
+        });
+
+        let closestPoint = null;
+        let minPointDistance = Infinity;
+        measurementPoints.forEach(point => {
+            const distance = parseFloat(getDistance(userLat, userLon, point.coords[0], point.coords[1]));
+            if (distance < minPointDistance) {
+                minPointDistance = distance;
+                closestPoint = point;
+            }
+        });
+
+        let waterInfoHTML = `<h3>Wyniki dla adresu: ${street}, ${city}</h3>`;
+        if (closestStation) {
+            window.map.setView(closestStation.coords, 14);
+            L.marker(closestStation.coords).addTo(window.map).bindPopup(`${closestStation.name} (${closestStation.address})`).openPopup();
+
+            const params = {
+                pH: parseFloat(closestStation.data.pH) || 0,
+                twardosc: parseFloat(closestStation.data.twardosc) || 0,
+                azotany: parseFloat(closestStation.data.azotany) || 0,
+                metnosc: parseFloat(closestStation.data.metnosc) || 0,
+                chlor: parseFloat(closestStation.data.chlor) || 0,
+                fluorki: parseFloat(closestStation.data.fluorki) || 0,
+                zelazo: parseFloat(closestStation.data.zelazo) || 0,
+                mangan: parseFloat(closestStation.data.mangan) || 0,
+                chlorki: parseFloat(closestStation.data.chlorki) || 0,
+                siarczany: parseFloat(closestStation.data.siarczany) || 0,
+                barwa: parseFloat(closestStation.data.barwa) || 0,
+                magnez: parseFloat(closestStation.data.magnez) || 0,
+                potas: parseFloat(closestStation.data.potas) || 0
+            };
+
+            const basicParams = getSelectedParameters(params);
+            const premiumParams = getPremiumParameters(params);
+            const allParams = [...basicParams, ...premiumParams];
+            const parameters = allParams.map(param => {
+                const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
+                const color = getColor(param.name, param.value);
+                const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : param.name === 'mangan' ? `${param.displayValue}` : `${param.displayValue} ${param.unit}`;
+                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+            });
+
+            waterInfoHTML += `<h4>Najbliższa stacja SUW: ${closestStation.name} (${closestStation.address})</h4><p>Odległość: ${minStationDistance} km</p><p class="note">To najbliższa stacja uzdatniania wody na podstawie Twojej lokalizacji.</p>Jakość wody:<br>${parameters.join('')}`;
+            const filterRec = suggestWaterFilter(params);
+            waterInfoHTML += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
+        } else {
+            waterInfoHTML += `<p>Brak stacji SUW dla tego miasta.</p>`;
+        }
+
+        if (closestPoint) {
+            const pointParams = {
+                pH: parseFloat(closestPoint.data.pH) || 0,
+                twardosc: parseFloat(closestPoint.data.twardosc) || 0,
+                azotany: parseFloat(closestPoint.data.azotany) || 0,
+                metnosc: parseFloat(closestPoint.data.metnosc) || 0,
+                chlor: parseFloat(closestPoint.data.chlor) || 0,
+                fluorki: parseFloat(closestPoint.data.fluorki) || 0,
+                zelazo: parseFloat(closestPoint.data.zelazo) || 0,
+                mangan: parseFloat(closestPoint.data.mangan) || 0,
+                chlorki: parseFloat(closestPoint.data.chlorki) || 0,
+                siarczany: parseFloat(closestPoint.data.siarczany) || 0,
+                barwa: parseFloat(closestPoint.data.barwa) || 0,
+                magnez: parseFloat(closestPoint.data.magnez) || 0,
+                potas: parseFloat(closestPoint.data.potas) || 0
+            };
+
+            const pointBasicParams = getSelectedParameters(pointParams);
+            const pointPremiumParams = getPremiumParameters(pointParams);
+            const pointAllParams = [...pointBasicParams, ...pointPremiumParams];
+            const pointParameters = pointAllParams.map(param => {
+                const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
+                const color = getColor(param.name, param.value);
+                const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : param.name === 'mangan' ? `${param.displayValue}` : `${param.displayValue} ${param.unit}`;
+                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+            });
+
+            waterInfoHTML += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${minPointDistance} km</p><p class="note">Dane z punktów pomiarowych mogą być bardziej precyzyjne dla Twojej lokalizacji.</p>Jakość wody:<br>${pointParameters.join('')}`;
+            const pointFilterRec = suggestWaterFilter(pointParams);
+            waterInfoHTML += `<p><strong>Rekomendacja:</strong> ${pointFilterRec.summary}</p>`;
+            L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
+        } else {
+            waterInfoHTML += `<p>Brak punktów pomiarowych dla tego miasta.</p>`;
+        }
+
         if (zones && Object.keys(zones).length > 0) {
-            waterInfo.innerHTML = `
-                <h3>Wyniki dla adresu: ${street}, ${city}</h3>
-                <p>Wybierz swoją strefę:</p>
+            waterInfoHTML += `
+                <p class="note">Jeśli chcesz zobaczyć dane dla innej dzielnicy, wybierz ją poniżej:</p>
                 <select id="district-select">
-                    <option value="">Wybierz strefę</option>
+                    <option value="">Wybierz dzielnicę (opcjonalne)</option>
                     ${Object.keys(zones).map(z => `<option value="${z}">${z}</option>`).join('')}
                 </select>
-                <button id="show-district-data">Pokaż dane</button>
+                <button id="show-district-data">Pokaż dane dla wybranej dzielnicy</button>
                 <div id="station-info"></div>
             `;
-            const showDistrictButton = document.getElementById('show-district-data');
-            const districtSelect = document.getElementById('district-select');
-            const stationInfo = document.getElementById('station-info');
+        }
 
+        waterInfo.innerHTML = waterInfoHTML;
+
+        const showDistrictButton = document.getElementById('show-district-data');
+        if (showDistrictButton) {
             const newButton = showDistrictButton.cloneNode(true);
             showDistrictButton.parentNode.replaceChild(newButton, showDistrictButton);
-
-            newButton.addEventListener('click', () => {
-                const selectedDistrict = districtSelect.value;
-                if (!selectedDistrict) {
-                    stationInfo.innerHTML = '<p>Proszę wybrać strefę!</p>';
-                    return;
-                }
-                const stationName = zones[selectedDistrict];
-                const station = stations.find(s => s.name === stationName);
-                if (station) {
-                    const distance = getDistance(userLat, userLon, station.coords[0], station.coords[1]);
-                    window.map.setView(station.coords, 14);
-                    window.map.invalidateSize();
-                    window.map.eachLayer(layer => {
-                        if (layer instanceof L.Marker) window.map.removeLayer(layer);
-                    });
-                    L.marker(station.coords).addTo(window.map).bindPopup(`${station.name} (${station.address})`).openPopup();
-
-                    let closestPoint = null;
-                    let minPointDistance = Infinity;
-                    const relevantPoints = measurementPoints.filter(point => {
-                        const pointDistricts = Object.keys(zones).filter(d => zones[d] === stationName);
-                        return pointDistricts.includes(selectedDistrict);
-                    });
-                    relevantPoints.forEach(point => {
-                        const distance = getDistance(userLat, userLon, point.coords[0], point.coords[1]);
-                        if (distance < minPointDistance) {
-                            minPointDistance = distance;
-                            closestPoint = point;
-                        }
-                    });
-
-                    const params = {
-                        pH: parseFloat(station.data.pH) || 0,
-                        twardosc: parseFloat(station.data.twardosc) || 0,
-                        azotany: parseFloat(station.data.azotany) || 0,
-                        metnosc: parseFloat(station.data.metnosc) || 0,
-                        chlor: parseFloat(station.data.chlor) || 0,
-                        ...(station.data.mangan && parseFloat(station.data.mangan) >= 0.01
-                            ? { mangan: parseFloat(station.data.mangan) }
-                            : station.data.zelazo && parseFloat(station.data.zelazo) >= 0.01
-                            ? { zelazo: parseFloat(station.data.zelazo) }
-                            : { fluorki: parseFloat(station.data.fluorki) || 0 })
-                    };
-                    const sixthParam = params.mangan ? 'mangan' : params.zelazo ? 'zelazo' : 'fluorki';
-                    const parameters = [
-                        `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH.toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH))}</div>`,
-                        `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc.toFixed(2)} mg/l (norma: 60–500) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc))}</div>`,
-                        `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany.toFixed(2)} mg/l (norma: <50) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany))}</div>`,
-                        `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc.toFixed(2)} NTU (norma: <1) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc))}</div>`,
-                        `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor.toFixed(2)} mg/l (norma: <0.3) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor))}</div>`,
-                        isPremium && !params[sixthParam]
-                            ? `<div class="parameter">${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: Brak danych</div>`
-                            : `<div class="parameter"><span class="dot ${getColor(sixthParam, params[sixthParam])}"></span> ${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: ${params[sixthParam].toFixed(2)} ${sixthParam === 'fluorki' ? 'mg/l (norma: <1.5)' : sixthParam === 'mangan' ? 'mg/l (norma: <0.05)' : 'mg/l (norma: <0.2)'} – ${getParameterDescription(sixthParam, params[sixthParam], getColor(sixthParam, params[sixthParam]))}</div>`
-                    ];
-
-                    let stationInfoHTML = `<h4>Najbliższa stacja SUW: ${station.name} (${station.address})</h4><p>Odległość: ${distance} km</p>Jakość wody:<br>${parameters.join('')}`;
-                    const filterRec = suggestWaterFilter(params);
-                    stationInfoHTML += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
-
-                    if (closestPoint) {
-                        const pointParams = {
-                            pH: parseFloat(closestPoint.data.pH) || 0,
-                            twardosc: parseFloat(closestPoint.data.twardosc) || 0,
-                            azotany: parseFloat(closestPoint.data.azotany) || 0,
-                            metnosc: parseFloat(closestPoint.data.metnosc) || 0,
-                            chlor: parseFloat(closestPoint.data.chlor) || 0,
-                            ...(closestPoint.data.mangan && parseFloat(closestPoint.data.mangan) >= 0.01
-                                ? { mangan: parseFloat(closestPoint.data.mangan) }
-                                : closestPoint.data.zelazo && parseFloat(closestPoint.data.zelazo) >= 0.01
-                                ? { zelazo: parseFloat(closestPoint.data.zelazo) }
-                                : { fluorki: parseFloat(closestPoint.data.fluorki) || 0 })
-                        };
-                        const pointSixthParam = pointParams.mangan ? 'mangan' : pointParams.zelazo ? 'zelazo' : 'fluorki';
-                        const pointParameters = [
-                            `<div class="parameter"><span class="dot ${getColor('pH', pointParams.pH)}"></span> pH: ${pointParams.pH.toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', pointParams.pH, getColor('pH', pointParams.pH))}</div>`,
-                            `<div class="parameter"><span class="dot ${getColor('twardosc', pointParams.twardosc)}"></span> Twardość: ${pointParams.twardosc.toFixed(2)} mg/l (norma: 60–500) – ${getParameterDescription('twardosc', pointParams.twardosc, getColor('twardosc', pointParams.twardosc))}</div>`,
-                            `<div class="parameter"><span class="dot ${getColor('azotany', pointParams.azotany)}"></span> Azotany: ${pointParams.azotany.toFixed(2)} mg/l (norma: <50) – ${getParameterDescription('azotany', pointParams.azotany, getColor('azotany', pointParams.azotany))}</div>`,
-                            `<div class="parameter"><span class="dot ${getColor('metnosc', pointParams.metnosc)}"></span> Mętność: ${pointParams.metnosc.toFixed(2)} NTU (norma: <1) – ${getParameterDescription('metnosc', pointParams.metnosc, getColor('metnosc', pointParams.metnosc))}</div>`,
-                            `<div class="parameter"><span class="dot ${getColor('chlor', pointParams.chlor)}"></span> Chlor wolny: ${pointParams.chlor.toFixed(2)} mg/l (norma: <0.3) – ${getParameterDescription('chlor', pointParams.chlor, getColor('chlor', pointParams.chlor))}</div>`,
-                            isPremium && !pointParams[pointSixthParam]
-                                ? `<div class="parameter">${pointSixthParam.charAt(0).toUpperCase() + pointSixthParam.slice(1)}: Brak danych</div>`
-                                : `<div class="parameter"><span class="dot ${getColor(pointSixthParam, pointParams[pointSixthParam])}"></span> ${pointSixthParam.charAt(0).toUpperCase() + pointSixthParam.slice(1)}: ${pointParams[pointSixthParam].toFixed(2)} ${pointSixthParam === 'fluorki' ? 'mg/l (norma: <1.5)' : pointSixthParam === 'mangan' ? 'mg/l (norma: <0.05)' : 'mg/l (norma: <0.2)'} – ${getParameterDescription(pointSixthParam, pointParams[pointSixthParam], getColor(pointSixthParam, pointParams[pointSixthParam]))}</div>`
-                        ];
-                        stationInfoHTML += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${(minPointDistance * 111).toFixed(2)} km</p>Jakość wody:<br>${pointParameters.join('')}`;
-                        const pointFilterRec = suggestWaterFilter(pointParams);
-                        stationInfoHTML += `<p><strong>Rekomendacja:</strong> ${pointFilterRec.summary}</p>`;
-                        L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
-                    }
-
-                    stationInfo.innerHTML = stationInfoHTML;
-                }
-            });
-        } else {
-            let closestStation = null;
-            let minStationDistance = Infinity;
-            stations.forEach(station => {
-                const distance = getDistance(userLat, userLon, station.coords[0], station.coords[1]);
-                if (distance < minStationDistance) {
-                    minStationDistance = distance;
-                    closestStation = station;
-                }
-            });
-
-            let closestPoint = null;
-            let minPointDistance = Infinity;
-            measurementPoints.forEach(point => {
-                const distance = getDistance(userLat, userLon, point.coords[0], point.coords[1]);
-                if (distance < minPointDistance) {
-                    minPointDistance = distance;
-                    closestPoint = point;
-                }
-            });
-
-            if (closestStation) {
-                window.map.setView(closestStation.coords, 14);
-                window.map.invalidateSize();
-                window.map.eachLayer(layer => {
-                    if (layer instanceof L.Marker) window.map.removeLayer(layer);
-                });
-                L.marker(closestStation.coords).addTo(window.map).bindPopup(`${closestStation.name} (${closestStation.address})`).openPopup();
-
-                const params = {
-                    pH: parseFloat(closestStation.data.pH) || 0,
-                    twardosc: parseFloat(closestStation.data.twardosc) || 0,
-                    azotany: parseFloat(closestStation.data.azotany) || 0,
-                    metnosc: parseFloat(closestStation.data.metnosc) || 0,
-                    chlor: parseFloat(closestStation.data.chlor) || 0,
-                    ...(closestStation.data.mangan && parseFloat(closestStation.data.mangan) >= 0.01
-                        ? { mangan: parseFloat(closestStation.data.mangan) }
-                        : closestStation.data.zelazo && parseFloat(closestStation.data.zelazo) >= 0.01
-                        ? { zelazo: parseFloat(closestStation.data.zelazo) }
-                        : { fluorki: parseFloat(closestStation.data.fluorki) || 0 })
-                };
-                const sixthParam = params.mangan ? 'mangan' : params.zelazo ? 'zelazo' : 'fluorki';
-                const parameters = [
-                    `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH.toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc.toFixed(2)} mg/l (norma: 60–500) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany.toFixed(2)} mg/l (norma: <50) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc.toFixed(2)} NTU (norma: <1) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc))}</div>`,
-                    `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor.toFixed(2)} mg/l (norma: <0.3) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor))}</div>`,
-                    isPremium && !params[sixthParam]
-                        ? `<div class="parameter">${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: Brak danych</div>`
-                        : `<div class="parameter"><span class="dot ${getColor(sixthParam, params[sixthParam])}"></span> ${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: ${params[sixthParam].toFixed(2)} ${sixthParam === 'fluorki' ? 'mg/l (norma: <1.5)' : sixthParam === 'mangan' ? 'mg/l (norma: <0.05)' : 'mg/l (norma: <0.2)'} – ${getParameterDescription(sixthParam, params[sixthParam], getColor(sixthParam, params[sixthParam]))}</div>`
-                ];
-
-                let waterInfoHTML = `<h3>Wyniki dla adresu: ${street}, ${city}</h3>`;
-                if (stations.length === 1) {
-                    waterInfoHTML += `<p>To miasto ma tylko jeden SUW – dane poniżej.</p>`;
-                }
-                waterInfoHTML += `<h4>Najbliższa stacja SUW: ${closestStation.name} (${closestStation.address})</h4><p>Odległość: ${minStationDistance} km</p>Jakość wody:<br>${parameters.join('')}`;
-                const filterRec = suggestWaterFilter(params);
-                waterInfoHTML += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
-
-                if (closestPoint) {
-                    const pointParams = {
-                        pH: parseFloat(closestPoint.data.pH) || 0,
-                        twardosc: parseFloat(closestPoint.data.twardosc) || 0,
-                        azotany: parseFloat(closestPoint.data.azotany) || 0,
-                        metnosc: parseFloat(closestPoint.data.metnosc) || 0,
-                        chlor: parseFloat(closestPoint.data.chlor) || 0,
-                        ...(closestPoint.data.mangan && parseFloat(closestPoint.data.mangan) >= 0.01
-                            ? { mangan: parseFloat(closestPoint.data.mangan) }
-                            : closestPoint.data.zelazo && parseFloat(closestPoint.data.zelazo) >= 0.01
-                            ? { zelazo: parseFloat(closestPoint.data.zelazo) }
-                            : { fluorki: parseFloat(closestPoint.data.fluorki) || 0 })
-                    };
-                    const pointSixthParam = pointParams.mangan ? 'mangan' : pointParams.zelazo ? 'zelazo' : 'fluorki';
-                    const pointParameters = [
-                        `<div class="parameter"><span class="dot ${getColor('pH', pointParams.pH)}"></span> pH: ${pointParams.pH.toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', pointParams.pH, getColor('pH', pointParams.pH))}</div>`,
-                        `<div class="parameter"><span class="dot ${getColor('twardosc', pointParams.twardosc)}"></span> Twardość: ${pointParams.twardosc.toFixed(2)} mg/l (norma: 60–500) – ${getParameterDescription('twardosc', pointParams.twardosc, getColor('twardosc', pointParams.twardosc))}</div>`,
-                        `<div class="parameter"><span class="dot ${getColor('azotany', pointParams.azotany)}"></span> Azotany: ${pointParams.azotany.toFixed(2)} mg/l (norma: <50) – ${getParameterDescription('azotany', pointParams.azotany, getColor('azotany', pointParams.azotany))}</div>`,
-                        `<div class="parameter"><span class="dot ${getColor('metnosc', pointParams.metnosc)}"></span> Mętność: ${pointParams.metnosc.toFixed(2)} NTU (norma: <1) – ${getParameterDescription('metnosc', pointParams.metnosc, getColor('metnosc', pointParams.metnosc))}</div>`,
-                        `<div class="parameter"><span class="dot ${getColor('chlor', pointParams.chlor)}"></span> Chlor wolny: ${pointParams.chlor.toFixed(2)} mg/l (norma: <0.3) – ${getParameterDescription('chlor', pointParams.chlor, getColor('chlor', pointParams.chlor))}</div>`,
-                        isPremium && !pointParams[pointSixthParam]
-                            ? `<div class="parameter">${pointSixthParam.charAt(0).toUpperCase() + pointSixthParam.slice(1)}: Brak danych</div>`
-                            : `<div class="parameter"><span class="dot ${getColor(pointSixthParam, pointParams[pointSixthParam])}"></span> ${pointSixthParam.charAt(0).toUpperCase() + pointSixthParam.slice(1)}: ${pointParams[pointSixthParam].toFixed(2)} ${pointSixthParam === 'fluorki' ? 'mg/l (norma: <1.5)' : pointSixthParam === 'mangan' ? 'mg/l (norma: <0.05)' : 'mg/l (norma: <0.2)'} – ${getParameterDescription(pointSixthParam, pointParams[pointSixthParam], getColor(pointSixthParam, pointParams[pointSixthParam]))}</div>`
-                    ];
-                    waterInfoHTML += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${(minPointDistance * 111).toFixed(2)} km</p>Jakość wody:<br>${pointParameters.join('')}`;
-                    const pointFilterRec = suggestWaterFilter(pointParams);
-                    waterInfoHTML += `<p><strong>Rekomendacja:</strong> ${pointFilterRec.summary}</p>`;
-                    L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
-                } else {
-                    waterInfoHTML += `<p>Brak punktów pomiarowych dla tego miasta.</p>`;
-                }
-
-                waterInfo.innerHTML = waterInfoHTML;
-            } else {
-                waterInfo.innerHTML = `<h3>Wyniki dla adresu: ${street}, ${city}</h3><p>Brak stacji SUW dla tego miasta.</p>`;
-            }
+            newButton.addEventListener('click', () => showDistrictData(userLat, userLon));
         }
     } catch (error) {
         console.error('Błąd w findWaterStation:', error);
@@ -2034,53 +2128,125 @@ export async function findWaterStation() {
     }
 }
 
-export function getDistance(lat1, lon1, lat2, lon2) {
-    try {
-        const R = 6371; // Promień Ziemi w kilometrach
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c; // Odległość w kilometrach
-        return distance.toFixed(2); // Zaokrąglamy do 2 miejsc po przecinku
-    } catch (error) {
-        console.error('Błąd w getDistance:', error);
-        return Infinity;
-    }
-}
-
-export function showAllStations() {
+export function showDistrictData(userLat, userLon) {
     try {
         const city = document.getElementById('city-premium')?.value?.trim();
-        const waterInfo = document.getElementById('waterInfo');
-        if (!city || !waterInfo) {
-            console.error('Brak wymaganych elementów HTML: city-premium, waterInfo');
+        const districtSelect = document.getElementById('district-select');
+        const stationInfo = document.getElementById('station-info');
+        if (!city || !districtSelect || !stationInfo) {
+            console.error('Brak wymaganych elementów HTML: city-premium, district-select, station-info');
+            return;
+        }
+
+        const selectedDistrict = districtSelect.value;
+        if (!selectedDistrict) {
+            stationInfo.innerHTML = '<p>Proszę wybrać dzielnicę!</p>';
             return;
         }
 
         const stations = waterStations[city]?.stations || [];
-        if (stations.length === 0) {
-            if (waterStations[city]?.info) {
-                waterInfo.innerHTML = waterStations[city].info;
-            } else {
-                waterInfo.innerHTML = "Brak danych dla tego miasta.";
-            }
+        const measurementPoints = waterStations[city]?.measurementPoints || [];
+        const zones = waterStations[city]?.zones || {};
+        const stationName = zones[selectedDistrict];
+        const station = stations.find(s => s.name === stationName);
+
+        if (!station) {
+            stationInfo.innerHTML = '<p>Brak danych dla wybranej dzielnicy!</p>';
             return;
         }
 
-        let result = `<h3>Stacje uzdatniania wody w ${city}</h3>`;
-        stations.forEach(station => {
-            result += `<p>${station.name} (${station.address})</p>`;
+        const distance = parseFloat(getDistance(userLat, userLon, station.coords[0], station.coords[1]));
+        window.map.setView(station.coords, 14);
+        window.map.eachLayer(layer => {
+            if (layer instanceof L.Marker) window.map.removeLayer(layer);
         });
-        waterInfo.innerHTML = result;
+        L.marker(station.coords).addTo(window.map).bindPopup(`${station.name} (${station.address})`).openPopup();
+        L.marker([userLat, userLon]).addTo(window.map).bindPopup(`Twoja lokalizacja: ${document.getElementById('street').value.trim()}, ${city}`);
+
+        const params = {
+            pH: parseFloat(station.data.pH) || 0,
+            twardosc: parseFloat(station.data.twardosc) || 0,
+            azotany: parseFloat(station.data.azotany) || 0,
+            metnosc: parseFloat(station.data.metnosc) || 0,
+            chlor: parseFloat(station.data.chlor) || 0,
+            fluorki: parseFloat(station.data.fluorki) || 0,
+            zelazo: parseFloat(station.data.zelazo) || 0,
+            mangan: parseFloat(station.data.mangan) || 0,
+            chlorki: parseFloat(station.data.chlorki) || 0,
+            siarczany: parseFloat(station.data.siarczany) || 0,
+            barwa: parseFloat(station.data.barwa) || 0,
+            magnez: parseFloat(station.data.magnez) || 0,
+            potas: parseFloat(station.data.potas) || 0
+        };
+
+        const basicParams = getSelectedParameters(params);
+        const premiumParams = getPremiumParameters(params);
+        const allParams = [...basicParams, ...premiumParams];
+        const parameters = allParams.map(param => {
+            const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
+            const color = getColor(param.name, param.value);
+            const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : param.name === 'mangan' ? param.displayValue : `${param.displayValue} ${param.unit}`;
+            return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+        });
+
+        let result = `<h4>Stacja SUW dla dzielnicy ${selectedDistrict}: ${station.name} (${station.address})</h4><p>Odległość: ${distance} km</p><p class="note">Dane dla wybranej dzielnicy mogą różnić się od domyślnych wyników powyżej.</p>Jakość wody:<br>${parameters.join('')}`;
+        const filterRec = suggestWaterFilter(params);
+        result += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
+
+        let closestPoint = null;
+        let minPointDistance = Infinity;
+        const relevantPoints = measurementPoints.filter(point => {
+            const pointDistricts = Object.keys(zones).filter(d => zones[d] === stationName);
+            return pointDistricts.includes(selectedDistrict);
+        });
+        relevantPoints.forEach(point => {
+            const distance = parseFloat(getDistance(userLat, userLon, point.coords[0], point.coords[1]));
+            if (distance < minPointDistance) {
+                minPointDistance = distance;
+                closestPoint = point;
+            }
+        });
+
+        if (closestPoint) {
+            const pointParams = {
+                pH: parseFloat(closestPoint.data.pH) || 0,
+                twardosc: parseFloat(closestPoint.data.twardosc) || 0,
+                azotany: parseFloat(closestPoint.data.azotany) || 0,
+                metnosc: parseFloat(closestPoint.data.metnosc) || 0,
+                chlor: parseFloat(closestPoint.data.chlor) || 0,
+                fluorki: parseFloat(closestPoint.data.fluorki) || 0,
+                zelazo: parseFloat(closestPoint.data.zelazo) || 0,
+                mangan: parseFloat(closestPoint.data.mangan) || 0,
+                chlorki: parseFloat(closestPoint.data.chlorki) || 0,
+                siarczany: parseFloat(closestPoint.data.siarczany) || 0,
+                barwa: parseFloat(closestPoint.data.barwa) || 0,
+                magnez: parseFloat(closestPoint.data.magnez) || 0,
+                potas: parseFloat(closestPoint.data.potas) || 0
+            };
+
+            const pointBasicParams = getSelectedParameters(pointParams);
+            const pointPremiumParams = getPremiumParameters(pointParams);
+            const pointAllParams = [...pointBasicParams, ...pointPremiumParams];
+            const pointParameters = pointAllParams.map(param => {
+                const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
+                const color = getColor(param.name, param.value);
+                const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : param.name === 'mangan' ? param.displayValue : `${param.displayValue} ${param.unit}`;
+                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+            });
+
+            result += `<h4>Najbliższy punkt pomiarowy w dzielnicy ${selectedDistrict}: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${minPointDistance} km</p><p class="note">Dane z punktów pomiarowych mogą być bardziej precyzyjne dla Twojej lokalizacji.</p>Jakość wody:<br>${pointParameters.join('')}`;
+            const pointFilterRec = suggestWaterFilter(pointParams);
+            result += `<p><strong>Rekomendacja:</strong> ${pointFilterRec.summary}</p>`;
+            L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
+        }
+
+        result += '<div class="note">Dane zależą od wodociągów. Skontaktuj się z nimi dla dokładniejszych informacji.</div>';
+        stationInfo.innerHTML = result;
     } catch (error) {
-        console.error('Błąd w showAllStations:', error);
-        document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
+        console.error('Błąd w showDistrictData:', error);
+        document.getElementById('station-info').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
     }
 }
-
 export function showAllSUW() {
     const isPremium = localStorage.getItem('isPremium') === 'true';
     try {
@@ -2119,22 +2285,22 @@ export function showAllSUW() {
                 azotany: parseFloat(station.data.azotany) || 0,
                 metnosc: parseFloat(station.data.metnosc) || 0,
                 chlor: parseFloat(station.data.chlor) || 0,
-                ...(station.data.mangan && parseFloat(station.data.mangan) >= 0.01
-                    ? { mangan: parseFloat(station.data.mangan) }
-                    : station.data.zelazo && parseFloat(station.data.zelazo) >= 0.01
-                    ? { zelazo: parseFloat(station.data.zelazo) }
-                    : { fluorki: parseFloat(station.data.fluorki) || 0 })
+                mangan: parseFloat(station.data.mangan) || 0,
+                zelazo: parseFloat(station.data.zelazo) || 0,
+                fluorki: parseFloat(station.data.fluorki) || 0
             };
-            const sixthParam = params.mangan ? 'mangan' : params.zelazo ? 'zelazo' : 'fluorki';
+            const selectedParams = getSelectedParameters(params);
+            const sixthParam = selectedParams.find(param => param.name === 'mangan') ? 'mangan' : selectedParams.find(param => param.name === 'zelazo') ? 'zelazo' : 'fluorki';
+            const sixthParamData = selectedParams.find(param => param.name === sixthParam);
             const parameters = [
                 `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH.toFixed(2)} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH))}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc.toFixed(2)} mg/l (norma: 60–500) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc))}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany.toFixed(2)} mg/l (norma: <50) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany))}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc.toFixed(2)} NTU (norma: <1) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc))}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor.toFixed(2)} mg/l (norma: <0.3) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor))}</div>`,
-                isPremium && !params[sixthParam]
+                isPremium && !sixthParamData
                     ? `<div class="parameter">${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: Brak danych</div>`
-                    : `<div class="parameter"><span class="dot ${getColor(sixthParam, params[sixthParam])}"></span> ${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: ${params[sixthParam].toFixed(2)} ${sixthParam === 'fluorki' ? 'mg/l (norma: <1.5)' : sixthParam === 'mangan' ? 'mg/l (norma: <0.05)' : 'mg/l (norma: <0.2)'} – ${getParameterDescription(sixthParam, params[sixthParam], getColor(sixthParam, params[sixthParam]))}</div>`
+                    : `<div class="parameter"><span class="dot ${getColor(sixthParam, sixthParamData.value)}"></span> ${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: ${sixthParamData.displayValue} (norma: ${sixthParamData.norm}${sixthParam === 'mangan' ? ' µg/l' : sixthParamData.unit ? ` ${sixthParamData.unit}` : ''}) – ${getParameterDescription(sixthParam, sixthParamData.value, getColor(sixthParam, sixthParamData.value))}</div>`
             ];
             result += `<h4>Stacja SUW: ${station.name} (${station.address})</h4>Jakość wody:<br>${parameters.join('')}`;
             const filterRec = suggestWaterFilter(params);
@@ -2147,6 +2313,7 @@ export function showAllSUW() {
         document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
     }
 }
+
 
 export function showAllMeasurementPoints() {
     try {
@@ -2177,7 +2344,7 @@ export function showAllMeasurementPoints() {
                 `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor), params.azotany)}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('fluorki', params.fluorki)}"></span> Fluorki: ${params.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', params.fluorki, getColor('fluorki', params.fluorki), params.azotany)}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('zelazo', params.zelazo)}"></span> Żelazo: ${params.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', params.zelazo, getColor('zelazo', params.zelazo), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('mangan', params.mangan)}"></span> Mangan: ${params.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', params.mangan, getColor('mangan', params.mangan), params.azotany)}</div>`,
+                `<div class="parameter"><span class="dot ${getColor('mangan', params.mangan)}"></span> Mangan: ${params.mangan} (norma: <50 µg/l) – ${getParameterDescription('mangan', params.mangan, getColor('mangan', params.mangan), params.azotany)}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('chlorki', params.chlorki)}"></span> Chlorki: ${params.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', params.chlorki, getColor('chlorki', params.chlorki), params.azotany)}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc), params.azotany)}</div>`,
                 `<div class="parameter"><span class="dot ${getColor('barwa', params.barwa)}"></span> Barwa: ${params.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', params.barwa, getColor('barwa', params.barwa), params.azotany)}</div>`
@@ -2223,7 +2390,7 @@ export function displayHistory() {
                         `<div class="parameter"><span class="dot"></span> Chlor wolny: ${entry.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', entry.chlor, null, entry.azotany)}</div>`,
                         `<div class="parameter"><span class="dot"></span> Fluorki: ${entry.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', entry.fluorki, null, entry.azotany)}</div>`,
                         `<div class="parameter"><span class="dot"></span> Żelazo: ${entry.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', entry.zelazo, null, entry.azotany)}</div>`,
-                        `<div class="parameter"><span class="dot"></span> Mangan: ${entry.mangan} mg/l (norma: <0.05 mg/l) – ${getParameterDescription('mangan', entry.mangan, null, entry.azotany)}</div>`,
+                        `<div class="parameter"><span class="dot"></span> Mangan: ${entry.mangan} µg/l (norma: <50 µg/l) – ${getParameterDescription('mangan', entry.mangan, null, entry.azotany)}</div>`,
                         `<div class="parameter"><span class="dot"></span> Chlorki: ${entry.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', entry.chlorki, null, entry.azotany)}</div>`,
                         `<div class="parameter"><span class="dot"></span> Mętność: ${entry.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', entry.metnosc, null, entry.azotany)}</div>`,
                         `<div class="parameter"><span class="dot"></span> Barwa: ${entry.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', entry.barwa, null, entry.azotany)}</div>`
@@ -2250,3 +2417,4 @@ export function displayHistory() {
         document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
     }
 }
+delete waterStations['Płock'];
