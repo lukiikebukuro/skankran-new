@@ -871,3 +871,55 @@ input:focus {
     margin-top: 10px;
     color: #555;
 }
+/* Styl dla headera i logo */
+header {
+    text-align: center;
+    padding: 20px;
+}
+.logo {
+    width: 120px;
+    height: auto;
+}
+
+
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.bottom-nav img {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .bottom-nav img {
+        width: 28px;
+        height: 28px;
+    }
+    .logo {
+        width: 100px;
+    }
+}
+.slogan {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    color: #3a59d1; /* Kolor z PDF-a Emi */
+    margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+    .slogan {
+        font-size: 16px;
+    }
+}

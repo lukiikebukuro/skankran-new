@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 45 45">
+  <!-- Generator: Adobe Illustrator 29.4.0, SVG Export Plug-In . SVG Version: 2.1.0 Build 152)  -->
+  <defs>
+    <style>
+      .st0 {
+        stroke: #eb5b28;
+        stroke-width: .1px;
+      }
+
+      .st0, .st1, .st2 {
+        fill: none;
+        stroke-miterlimit: 10;
+      }
+
+      .st1 {
+        stroke: #428ecd;
+        stroke-linecap: round;
+      }
+
+      .st3 {
+        fill: #428ecd;
+      }
+
+      .st4 {
+        display: none;
+      }
+
+      .st2 {
+        stroke: #1b1b1b;
+        stroke-width: .3px;
+      }
+    </style>
+  </defs>
+  <g id="Capa_2">
+    <path class="st1" d="M35.15,6.12c-3.5-2.71-7.88-4.32-12.65-4.32-3.15,0-6.14.7-8.81,1.96"/>
+    <path class="st1" d="M30.65,41.52c3.96-1.68,7.28-4.58,9.5-8.21"/>
+    <path class="st1" d="M1.8,23.99c0,7.09,3.56,13.34,8.99,17.06"/>
+    <path class="st1" d="M43.13,20.9c-.16-2.22-.68-4.34-1.5-6.31"/>
+  </g>
+  <g id="Capa_1">
+    <g id="Capa_3" class="st4">
+      <circle class="st0" cx="22.5" cy="22.5" r="18.75"/>
+      <rect class="st0" x="5.62" y="5.62" width="33.75" height="33.75" rx="1.01" ry="1.01"/>
+      <rect class="st0" x="3.75" y="7.5" width="37.5" height="30" rx="1.01" ry="1.01"/>
+      <rect class="st0" x="7.5" y="3.75" width="30" height="37.5" rx="1.01" ry="1.01"/>
+      <rect class="st0" x="3.75" y="3.75" width="37.5" height="37.5" rx="1.01" ry="1.01"/>
+      <rect class="st2" width="45" height="45"/>
+    </g>
+    <path class="st3" d="M24.31,42.95h-5.7c-6.23,0-10.12-6.74-7.01-12.14h0s1.42-2.46,1.42-2.46l1.47-1.86c1.88-1.68,4.28-2.62,6.83-2.66,2.79-.04,5.44,1.02,7.43,2.96.23.22.45.45.65.69l1.92,3.33h0c3.12,5.4-.78,12.14-7.01,12.14Z"/>
+    <circle class="st3" cx="21.46" cy="17.98" r="6.28"/>
+    <path class="st3" d="M37.82,32.52h-4.56c-4.99,0-8.1-5.4-5.61-9.72h0s1.14-1.97,1.14-1.97l1.18-1.49c1.51-1.35,3.42-2.1,5.46-2.13,2.23-.03,4.35.82,5.95,2.37.18.18.36.36.52.55l1.54,2.67h0c2.49,4.32-.62,9.72-5.61,9.72Z"/>
+    <circle class="st3" cx="35.53" cy="12.53" r="5.03"/>
+    <path class="st3" d="M10.83,25.47h-4.25c-4.64,0-7.54-5.02-5.22-9.04h0s1.06-1.83,1.06-1.83l1.1-1.39c1.4-1.25,3.19-1.95,5.08-1.98,2.08-.03,4.05.76,5.53,2.2.17.16.33.33.48.51l1.43,2.48h0c2.32,4.02-.58,9.04-5.22,9.04Z"/>
+    <circle class="st3" cx="8.71" cy="6.88" r="4.67"/>
+  </g>
+</svg>

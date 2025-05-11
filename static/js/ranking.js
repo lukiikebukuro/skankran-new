@@ -10,26 +10,22 @@ export let userRatings = [
 
 export function generateRanking(parameter = "twardosc") {
     try {
-        const rankingsDiv = document.getElementById('rankings');
+        const rankingsDiv = document.getElementById('rankings2'); // Changed to rankings2
         if (!rankingsDiv) return;
 
         let ranking = Object.keys(waterStations)
-    .filter(city => waterStations[city].average[parameter] > 0) // Pomijamy miasta bez danych, np. Wałbrzych
-    .map(city => ({
-        city,
-        value: parseFloat(waterStations[city].average[parameter])
-    }));
+            .filter(city => waterStations[city].average[parameter] > 0)
+            .map(city => ({
+                city,
+                value: parseFloat(waterStations[city].average[parameter])
+            }));
 
-if (!waterStations["Wałbrzych"].average[parameter] && document.getElementById('ranking-info')) {
-    document.getElementById('ranking-info').innerHTML = '<p>Wałbrzych odmówił podania danych, więc nie jest uwzględniony w rankingu.</p>';
-}
-
-ranking.sort((a, b) => {
-    if (parameter === "pH") {
-        return Math.abs(a.value - 7) - Math.abs(b.value - 7);
-    }
-    return a.value - b.value;
-});
+        ranking.sort((a, b) => {
+            if (parameter === "pH") {
+                return Math.abs(a.value - 7) - Math.abs(b.value - 7);
+            }
+            return a.value - b.value;
+        });
 
         let result = `<h3>Ranking miast (${parameter})</h3>`;
         result += `<h4>5 najlepszych:</h4><ol>`;
@@ -65,7 +61,7 @@ ranking.sort((a, b) => {
         rankingsDiv.innerHTML = result;
     } catch (error) {
         console.error('Błąd w generateRanking:', error);
-        document.getElementById('rankings').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
+        document.getElementById('rankings2').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12)."; // Changed to rankings2
     }
 }
 

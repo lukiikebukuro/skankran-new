@@ -1,6 +1,6 @@
 import { fetchPosts } from './community.js';
 
-export const cities = ["Chorzów", "Lublin", "Częstochowa", "Płock", "Olsztyn", "Tychy", "Poznań", "Gorzów Wielkopolski", "Warszawa", "Wrocław", "Kraków", "Gdańsk", "Kalisz", "Koszalin", "Grudziądz", "Wałbrzych", "Bydgoszcz", "Toruń", "Zielona Góra", "Legnica", "Radom", "Olsztyn"];
+export const cities = ["Chorzów","Rzeszów", "Lublin", "Częstochowa", "Płock", "Olsztyn", "Tychy", "Poznań", "Gorzów Wielkopolski", "Warszawa", "Wrocław", "Kraków", "Gdańsk", "Kalisz", "Koszalin", "Grudziądz", "Wałbrzych", "Bydgoszcz", "Toruń", "Zielona Góra", "Legnica", "Radom", "Olsztyn"];
 export const bottles = ["Nałęczowianka", "Muszynianka", "Cisowianka", "Staropolanka", "Żywiec Zdrój", "Polaris"];
 
 export function suggestCities(val, inputId = 'city') {
@@ -82,122 +82,102 @@ export function selectBottle(bottle) {
 }
 
 export function getColor(parameter, value) {
-  switch (parameter) {
-      case 'pH':
-          if (value < 6.5 || value > 9.5) return 'red-dot';
-          if (value < 7.0 || value > 8.5) return 'orange-dot';
-          return 'green-dot';
-      case 'twardosc':
-          if (value < 60 || value > 250) return 'red-dot';
-          if (value > 150) return 'orange-dot';
-          return 'green-dot';
-      case 'azotany':
-          if (value > 50) return 'red-dot';
-          if (value > 25) return 'orange-dot';
-          return 'green-dot';
-      case 'zelazo':
-          if (value > 0.2) return 'red-dot';
-          if (value > 0.1) return 'orange-dot';
-          return 'green-dot';
-      case 'fluorki':
-          if (value > 1.5) return 'red-dot';
-          if (value > 0.7) return 'orange-dot';
-          return 'green-dot';
-      case 'chlor':
-          if (value > 0.3) return 'red-dot';
-          if (value > 0.15) return 'orange-dot';
-          return 'green-dot';
-      case 'mangan':
-          if (value > 50) return 'red-dot'; // Zmiana z 0.05 mg/l na 50 µg/l
-          if (value > 20) return 'orange-dot'; // Zmiana z 0.02 mg/l na 20 µg/l
-          return 'green-dot';
-      case 'wapn':
-          if (value > 200) return 'red-dot';
-          if (value > 150) return 'orange-dot';
-          return 'green-dot';
-      case 'magnez':
-          if (value > 100) return 'red-dot';
-          if (value > 50) return 'orange-dot';
-          return 'green-dot';
-      case 'sod':
-          if (value > 50) return 'red-dot';
-          if (value > 20) return 'orange-dot';
-          return 'green-dot';
-      default:
-          return 'green-dot';
-  }
+    if (value === null) return 'green-dot'; // Wartości z "<" są poniżej normy, więc zielone
+    switch (parameter) {
+        case 'pH':
+            if (value < 6.5 || value > 9.5) return 'red-dot';
+            if (value < 7.0 || value > 8.5) return 'orange-dot';
+            return 'green-dot';
+        case 'twardosc':
+            if (value < 60 || value > 250) return 'red-dot';
+            if (value > 150) return 'orange-dot';
+            return 'green-dot';
+        case 'azotany':
+            if (value > 50) return 'red-dot';
+            if (value > 25) return 'orange-dot';
+            return 'green-dot';
+        case 'zelazo':
+            if (value > 0.2) return 'red-dot';
+            if (value > 0.1) return 'orange-dot';
+            return 'green-dot';
+        case 'fluorki':
+            if (value >= 1.5) return 'red-dot'; // Zmiana dla punktu 3
+            if (value > 1.2) return 'orange-dot';
+            return 'green-dot';
+        case 'chlor':
+            if (value > 0.3) return 'red-dot';
+            if (value > 0.15) return 'orange-dot';
+            return 'green-dot';
+        case 'mangan':
+            if (value > 50) return 'red-dot';
+            if (value > 20) return 'orange-dot';
+            return 'green-dot';
+        case 'olow':
+            if (value > 15) return 'red-dot'; // >15 µg/l – czerwony
+            if (value > 10) return 'orange-dot'; // 10–15 µg/l – pomarańczowy
+            return 'green-dot'; // <10 µg/l – zielony
+        case 'rtec':
+            if (value > 1.5) return 'red-dot'; // >1.5 µg/l – czerwony
+            if (value > 1) return 'orange-dot'; // 1–1.5 µg/l – pomarańczowy
+            return 'green-dot'; // <1 µg/l – zielony
+        default:
+            return 'green-dot';
+    }
 }
 
 // Funkcja główna: Zwraca opis wpływu parametru
 export function getParameterDescription(parameter, value, color) {
-  const descriptions = {
-    pH: "pH wpływa na smak i bezpieczeństwo wody.",
-    twardosc: {
-      'green-dot': "Twardość wpływa na cerę i osad w czajniku.",
-      'orange-dot': "Podwyższona twardość może wysuszać cerę i powodować kamień. Rozważ filtr zmiękczający.",
-      'red-dot': "Wysoka twardość wysusza cerę i powoduje kamień. Zalecamy filtr zmiękczający."
-    },
-    azotany: "Azotany mogą szkodzić dzieciom, zwłaszcza niemowlętom, opcjonalnie rozważ filtr eko.",
-    zelazo: "Żelazo zmienia smak i kolor wody.",
-    fluorki: "Fluorki w małych dawkach wspierają zęby, ale ich nadmiar może być szkodliwy. Istnieją debaty na temat wpływu fluoryzacji wody na zdrowie, jednak w normach jest bezpieczna.",
-    chlor: "Chlor zmienia smak i zapach wody.",
-    mangan: "Mangan w nadmiarze wpływa na smak wody.",
-    chlorki: "Chlorki w nadmiarze mogą wpływać na smak wody i zdrowie.",
-    siarczany: "Siarczany w wysokich stężeniach mogą być szkodliwe dla zdrowia.",
-    barwa: "Barwa wpływa na wygląd i estetykę wody.",
-    magnez: "Magnez jest korzystny dla zdrowia, ale w nadmiarze może zmieniać smak.",
-    potas: "Potas jest ważny dla zdrowia, ale w nadmiarze może wpływać na smak."
-  };
+    const descriptions = {
+        pH: "pH wpływa na smak i bezpieczeństwo wody.",
+        twardosc: {
+            'green-dot': "Twardość wpływa na cerę i osad w czajniku.",
+            'orange-dot': "Podwyższona twardość może wysuszać cerę i powodować kamień. Rozważ filtr zmiękczający.",
+            'red-dot': "Wysoka twardość wysusza cerę i powoduje kamień. Zalecamy filtr zmiękczający."
+        },
+        azotany: "Azotany mogą szkodzić dzieciom, zwłaszcza niemowlętom, opcjonalnie rozważ filtr eko.",
+        zelazo: "Żelazo zmienia smak i kolor wody.",
+        fluorki: "Fluorki w małych dawkach wspierają zęby, ale ich nadmiar może być szkodliwy.",
+        chlor: "Chlor zmienia smak i zapach wody.",
+        mangan: "Mangan w nadmiarze wpływa na smak wody.",
+        chlorki: "Chlorki w nadmiarze mogą wpływać na smak wody i zdrowie.",
+        siarczany: "Siarczany w wysokich stężeniach mogą być szkodliwe dla zdrowia.",
+        barwa: "Barwa wpływa na wygląd i estetykę wody.",
+        magnez: "Magnez jest korzystny dla zdrowia, ale w nadmiarze może zmieniać smak.",
+        potas: "Potas jest ważny dla zdrowia, ale w nadmiarze może wpływać na smak.",
+        olow: "Ołów w nadmiarze szkodzi dzieciom i dorosłym, wpływając na rozwój i zdrowie.",
+        rtec: "Rtęć jest toksyczna, może uszkadzać układ nerwowy."
+    };
 
-  if (parameter === 'twardosc') {
-    return descriptions.twardosc[color] || descriptions.twardosc['green-dot'];
-  }
-  return descriptions[parameter] || "Brak opisu dla tego parametru.";
+    if (typeof value === 'string' && value.startsWith('<')) {
+        return `${parameter}: ${value} – poniżej granicy wykrywalności, bezpieczny poziom.`;
+    }
+    if (parameter === 'twardosc') {
+        return descriptions.twardosc[color] || descriptions.twardosc['green-dot'];
+    }
+    return descriptions[parameter] || "Brak opisu dla tego parametru.";
 }
   
   // Funkcja pomocnicza: Wybiera 6 parametrów z danych
-  export function getSelectedParameters(data) {
+export function getSelectedParameters(data) {
     const basicParams = [
         { name: 'pH', norm: '6.5–9.5', unit: '' },
         { name: 'twardosc', norm: '60–500', unit: 'mg/l' },
         { name: 'azotany', norm: '<50', unit: 'mg/l' },
         { name: 'zelazo', norm: '<0.2', unit: 'mg/l' },
         { name: 'fluorki', norm: '<1.5', unit: 'mg/l' },
-        { name: 'chlor', norm: '<0.3', unit: 'mg/l', fallback: 'mangan', fallbackNorm: '<50 µg/l', fallbackUnit: 'µg/l' }
+        { name: 'chlor', norm: '<0.3', unit: 'mg/l', fallback: 'mangan', fallbackNorm: '<50', fallbackUnit: 'µg/l' }
     ];
 
     return basicParams.map(param => {
         let rawValue = data[param.name];
-        let displayValue = rawValue;
-        let value;
-        let selectedUnit = param.unit;
+        let displayValue, value, selectedUnit = param.unit;
 
-        if (typeof rawValue === 'string' && rawValue.includes('<')) {
-            const match = rawValue.match(/<([\d.]+)/);
-            if (match) {
-                const boundary = parseFloat(match[1]);
-                if (param.name === 'mangan') {
-                    value = boundary / 2;
-                    displayValue = `${value.toFixed(2)}`;
-                    selectedUnit = 'µg/l';
-                    console.log(`Mangan (granica): Wartość: ${value}, Jednostka: ${selectedUnit}`); // Debugowanie
-                } else {
-                    value = boundary / 2;
-                    displayValue = `${value.toFixed(2)}`;
-                }
-            } else {
-                value = 0;
-                displayValue = 'Brak danych';
-            }
+        if (typeof rawValue === 'string' && rawValue.startsWith('<')) {
+            displayValue = rawValue;
+            value = null;
         } else {
             value = parseFloat(rawValue) || 0;
-            if (param.name === 'mangan') {
-                displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
-                selectedUnit = 'µg/l';
-                console.log(`Mangan (bez granicy): Wartość: ${value}, Jednostka: ${selectedUnit}`); // Debugowanie
-            } else {
-                displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
-            }
+            displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
         }
 
         let selectedName = param.name;
@@ -205,16 +185,9 @@ export function getParameterDescription(parameter, value, color) {
 
         if (param.name === 'chlor' && value === 0) {
             rawValue = data['mangan'];
-            if (typeof rawValue === 'string' && rawValue.includes('<')) {
-                const match = rawValue.match(/<([\d.]+)/);
-                if (match) {
-                    const boundary = parseFloat(match[1]);
-                    value = boundary / 2;
-                    displayValue = `${value.toFixed(2)}`;
-                } else {
-                    value = 0;
-                    displayValue = 'Brak danych';
-                }
+            if (typeof rawValue === 'string' && rawValue.startsWith('<')) {
+                displayValue = rawValue;
+                value = null;
             } else {
                 value = parseFloat(rawValue) || 0;
                 displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
@@ -222,7 +195,11 @@ export function getParameterDescription(parameter, value, color) {
             selectedName = 'mangan';
             selectedNorm = param.fallbackNorm;
             selectedUnit = param.fallbackUnit || 'µg/l';
-            console.log(`Mangan (po zamianie z chlor): Wartość: ${value}, Jednostka: ${selectedUnit}`); // Debugowanie
+        }
+
+        // Ustawienie jednostki µg/l dla manganu
+        if (selectedName === 'mangan') {
+            selectedUnit = 'µg/l';
         }
 
         return {
@@ -494,55 +471,56 @@ export function editComment(commentId, postId) {
         alert('Wystąpił błąd podczas edycji komentarza. Sprawdź konsolę (F12).');
     }
 }
-export function getPremiumParameters(data) {
-  const premiumParams = [
-    "chlorki",
-    "siarczany",
-    "barwa",
-    "magnez",
-    "potas"
-  ];
-
-  return premiumParams.map(param => {
-    let rawValue = data[param];
-    let displayValue = rawValue;
-    let value;
-
-    // Obsługa wartości z "<"
-    if (typeof rawValue === 'string' && rawValue.includes('<')) {
-      const match = rawValue.match(/<([\d.]+)/);
-      if (match) {
-        const boundary = parseFloat(match[1]);
-        value = boundary / 2; // Przyjmujemy połowę granicy wykrywalności
-        displayValue = rawValue;
-      } else {
-        value = 0;
-        displayValue = 'Brak danych';
-      }
-    } else {
-      value = parseFloat(rawValue) || 0;
-      displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
-    }
-
-    return {
-      name: param,
-      value: value,
-      displayValue: displayValue,
-      description: getParameterDescription(param),
-      color: getColor(param, value),
-      norm: getNorm(param)
+function getNorm(param) {
+    const norms = {
+        chlorki: '<250',
+        siarczany: '<250',
+        barwa: '<15',
+        magnez: '<50',
+        potas: '<12',
+        olow: '<10', // Norma dla ołowiu w µg/l
+        rtec: '<1'   // Norma dla rtęci w µg/l
     };
-  });
+    return norms[param] || '';
 }
 
-// Pomocnicza funkcja getNorm (dla spójności)
-function getNorm(param) {
-  const norms = {
-    chlorki: '<250',
-    siarczany: '<250',
-    barwa: '<15',
-    magnez: '<50',
-    potas: '<12'
-  };
-  return norms[param] || '';
+export function getPremiumParameters(data) {
+    const premiumParams = [
+        "chlorki",
+        "siarczany",
+        "barwa",
+        "magnez",
+        "potas",
+        "olow",
+        "rtec"
+    ];
+
+    return premiumParams.map(param => {
+        let rawValue = data[param];
+        let displayValue, value, unit = (param === 'olow' || param === 'rtec') ? 'μg/l' : 'mg/l';
+
+        if (rawValue === undefined || rawValue === null) {
+            displayValue = 'Brak danych';
+            value = 0;
+        } else if (typeof rawValue === 'string' && rawValue.startsWith('<')) {
+            displayValue = rawValue; // Zachowaj "<X"
+            value = null; // Wartości z "<" traktujemy jako null dla kolorów
+        } else if (rawValue === "Brak danych") {
+            displayValue = 'Brak danych';
+            value = 0;
+        } else {
+            value = parseFloat(rawValue) || 0;
+            displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
+        }
+
+        return {
+            name: param,
+            value: value,
+            displayValue: displayValue,
+            description: getParameterDescription(param),
+            color: getColor(param, value),
+            norm: getNorm(param),
+            unit: unit
+        };
+    });
 }

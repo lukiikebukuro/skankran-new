@@ -10,6 +10,10 @@
     <link rel="manifest" href="/manifest.json">
 </head>
 <body>
+    <header>
+        <img src="/static/assets/icons/placeholder.svg" alt="Logo SkanKran" class="logo">
+        <p class="slogan">sprawdź jakość wody w twoim mieście</p>
+    </header>
     <div class="container">
         <nav class="sticky-nav">
             <button onclick="scrollToSection('water-check')">Sprawdź kranówkę</button>
@@ -23,8 +27,6 @@
         </nav>
 
         <section id="water-check" class="section">
-            <h1>AquaTest – Pij jak w Japonii!</h1>
-            <p>Sprawdź jakość wody kranowej lub butelkowanej!</p>
             <div class="input-result-group">
                 <div class="input-box">
                     <input id="city" type="text" placeholder="Wpisz miasto">
@@ -46,54 +48,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>pH</td>
-                                    <td>6.5–9.5</td>
-                                    <td>6.5–8.5</td>
-                                    <td>6.5–9.5</td>
-                                </tr>
-                                <tr>
-                                    <td>Twardość (mg/l CaCO₃)</td>
-                                    <td>60–500</td>
-                                    <td>Brak limitu (<200 zalecane)</td>
-                                    <td>Brak limitu (<150 zalecane)</td>
-                                </tr>
-                                <tr>
-                                    <td>Azotany (mg/l)</td>
-                                    <td><50</td>
-                                    <td>≤50</td>
-                                    <td>≤50</td>
-                                </tr>
-                                <tr>
-                                    <td>Żelazo (mg/l)</td>
-                                    <td><0.2</td>
-                                    <td>≤0.3</td>
-                                    <td>≤0.2</td>
-                                </tr>
-                                <tr>
-                                    <td>Mangan (mg/l)</td>
-                                    <td><0.05</td>
-                                    <td>≤0.4 (zdrowie), ≤0.1 (smak)</td>
-                                    <td>≤0.05</td>
-                                </tr>
-                                <tr>
-                                    <td>Chlorki (mg/l)</td>
-                                    <td><250</td>
-                                    <td>≤250</td>
-                                    <td>≤250</td>
-                                </tr>
-                                <tr>
-                                    <td>Fluorki (mg/l)</td>
-                                    <td><1.5</td>
-                                    <td>≤1.5</td>
-                                    <td>≤1.5</td>
-                                </tr>
-                                <tr>
-                                    <td>Mętność (NTU)</td>
-                                    <td><1</td>
-                                    <td>≤1</td>
-                                    <td>≤1</td>
-                                </tr>
+                                <tr><td>pH</td><td>6.5–9.5</td><td>6.5–8.5</td><td>6.5–9.5</td></tr>
+                                <tr><td>Twardość (mg/l CaCO₃)</td><td>60–500</td><td>Brak limitu (<200 zalecane)</td><td>Brak limitu (<150 zalecane)</td></tr>
+                                <tr><td>Azotany (mg/l)</td><td><50</td><td>≤50</td><td>≤50</td></tr>
+                                <tr><td>Żelazo (mg/l)</td><td><0.2</td><td>≤0.3</td><td>≤0.2</td></tr>
+                                <tr><td>Mangan (mg/l)</td><td><0.05</td><td>≤0.4 (zdrowie), ≤0.1 (smak)</td><td>≤0.05</td></tr>
+                                <tr><td>Chlorki (mg/l)</td><td><250</td><td>≤250</td><td>≤250</td></tr>
+                                <tr><td>Fluorki (mg/l)</td><td><1.5</td><td>≤1.5</td><td>≤1.5</td></tr>
+                                <tr><td>Mętność (NTU)</td><td><1</td><td>≤1</td><td>≤1</td></tr>
                             </tbody>
                         </table>
                         <h3>Głosowanie: Które normy są dla Ciebie najbardziej wiarygodne?</h3>
@@ -123,15 +85,6 @@
                         <button id="show-points-btn">Pokaż wszystkie punkty pomiarowe</button>
                         <button id="show-history-btn">Pokaż historię</button>
                     </div>
-                    <select id="rankingParameter">
-                        <option value="twardosc">Twardość</option>
-                        <option value="pH">pH</option>
-                        <option value="azotany">Azotany</option>
-                        <option value="zelazo">Żelazo</option>
-                        <option value="mangan">Mangan</option>
-                    </select>
-                    <button id="ranking-miast-btn">Pokaż ranking miast</button>
-                    <button id="ranking-suw-btn">Ranking SUW</button>
                 </div>
             </div>
             <div class="result-section">
@@ -154,10 +107,26 @@
                 <h3>Historia</h3>
                 <div id="history" class="result-box"></div>
             </div>
+        </section>
+
+        <section id="ranking-section" class="section">
+            <h2>Rankingi</h2>
+            <div class="input-box">
+                <select id="rankingParameter2">
+                    <option value="twardosc">Twardość</option>
+                    <option value="pH">pH</option>
+                    <option value="azotany">Azotany</option>
+                    <option value="zelazo">Żelazo</option>
+                    <option value="mangan">Mangan</option>
+                </select>
+                <button id="ranking-miast-btn2">Pokaż ranking miast</button>
+                <input id="city-for-suw-ranking" type="text" placeholder="Wpisz miasto dla SUW">
+                <div id="city-for-suw-suggestions"></div>
+                <button id="ranking-suw-btn2">Pokaż ranking SUW w mieście</button>
+            </div>
             <div class="result-section">
-                <h3>Rankingi</h3>
-                <div id="rankings" class="result-box"></div>
-                <div id="ranking-info"></div>
+                <h3>Wyniki rankingu</h3>
+                <div id="rankings2" class="result-box"></div>
             </div>
         </section>
 
@@ -280,6 +249,11 @@
             <div id="posts-list"></div>
         </section>
 
+        <section id="aquabot-section" class="section">
+            <h2>Aquabot</h2>
+            <p>Aquabot jest w budowie. Wkrótce będziesz mógł wysyłać wiadomości do Łukiego!</p>
+        </section>
+
         <section id="user-rankings" class="section">
             <h2>Rankingi użytkowników</h2>
             <div class="input-result-group">
@@ -331,6 +305,13 @@
             </div>
         </section>
     </div>
+
+    <nav class="bottom-nav">
+        <img src="/static/assets/icons/ranking_icon.svg" alt="Ranking" onclick="scrollToSection('ranking-section')">
+        <img src="/static/assets/icons/search_icon.svg" alt="Wyszukiwanie" onclick="scrollToSection('station-finder')">
+        <img src="/static/assets/icons/comunity_icon.svg" alt="Community" onclick="scrollToSection('community-section')">
+        <img src="/static/assets/icons/aqua_bot.svg" alt="Aquabot" onclick="scrollToSection('aquabot-section')">
+    </nav>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>

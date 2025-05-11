@@ -34,19 +34,19 @@ window.onload = function() {
 
         // Inicjalizacja mapy
         const mapElement = document.getElementById('map');
-if (mapElement && typeof L !== 'undefined') {
-    try {
-        window.map = L.map('map', { center: [52.7325, 15.2369], zoom: 12 });
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-        }).addTo(window.map);
-        console.log('Mapa zainicjalizowana poprawnie');
-    } catch (error) {
-        console.error('Błąd podczas inicjalizacji mapy Leaflet:', error);
-    }
-} else {
-    console.warn('Mapa nie została zainicjalizowana: brak elementu #map lub biblioteki Leaflet');
-}
+        if (mapElement && typeof L !== 'undefined') {
+            try {
+                window.map = L.map('map', { center: [52.7325, 15.2369], zoom: 12 });
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                }).addTo(window.map);
+                console.log('Mapa zainicjalizowana poprawnie');
+            } catch (error) {
+                console.error('Błąd podczas inicjalizacji mapy Leaflet:', error);
+            }
+        } else {
+            console.warn('Mapa nie została zainicjalizowana: brak elementu #map lub biblioteki Leaflet');
+        }
 
         // Event listener dla dropdownu rankingParameter
         const rankingParameter = document.getElementById('rankingParameter');
@@ -66,8 +66,9 @@ if (mapElement && typeof L !== 'undefined') {
             'show-suw-btn': document.getElementById('show-suw-btn'),
             'show-points-btn': document.getElementById('show-points-btn'),
             'show-history-btn': document.getElementById('show-history-btn'),
-            'ranking-miast-btn': document.getElementById('ranking-miast-btn'),
-            'ranking-suw-btn': document.getElementById('ranking-suw-btn'),
+            'ranking-miast-btn2': document.getElementById('ranking-miast-btn2'),
+            'ranking-suw-btn2': document.getElementById('ranking-suw-btn2'),
+            'city-for-suw-ranking': document.getElementById('city-for-suw-ranking'),
             'bottle': document.getElementById('bottle'),
             'check-butelkowana-btn': document.getElementById('check-butelkowana-btn'),
             'quiz-skin-btn': document.getElementById('quiz-skin-btn'),
@@ -99,7 +100,7 @@ if (mapElement && typeof L !== 'undefined') {
         if (elements['check-kranowka-btn']) {
             elements['check-kranowka-btn'].addEventListener('click', () => {
                 checkWater('city');
-                showNormsSection(); // Dodaj to
+                showNormsSection();
             });
         }
         if (elements['city-premium']) elements['city-premium'].addEventListener('keyup', (e) => suggestCities(e.target.value, 'city-premium'));
@@ -107,8 +108,16 @@ if (mapElement && typeof L !== 'undefined') {
         if (elements['show-suw-btn']) elements['show-suw-btn'].addEventListener('click', showAllSUW);
         if (elements['show-points-btn']) elements['show-points-btn'].addEventListener('click', showAllMeasurementPoints);
         if (elements['show-history-btn']) elements['show-history-btn'].addEventListener('click', () => displayHistory(document.getElementById('city-premium').value));
-        if (elements['ranking-miast-btn']) elements['ranking-miast-btn'].addEventListener('click', () => generateRanking(document.getElementById('rankingParameter').value));
-        if (elements['ranking-suw-btn']) elements['ranking-suw-btn'].addEventListener('click', () => generateSUWRanking(document.getElementById('city-premium').value, document.getElementById('rankingParameter').value));
+        if (elements['ranking-miast-btn2']) elements['ranking-miast-btn2'].addEventListener('click', () => {
+            const parameter = document.getElementById('rankingParameter2').value;
+            generateRanking(parameter); // Only call generateRanking, no need to copy content
+        });
+        if (elements['ranking-suw-btn2']) elements['ranking-suw-btn2'].addEventListener('click', () => {
+            const city = document.getElementById('city-for-suw-ranking').value;
+            generateSUWRanking(city, document.getElementById('rankingParameter2').value);
+            document.getElementById('rankings2').innerHTML = document.getElementById('rankings')?.innerHTML || 'Ranking w trakcie generowania...';
+        });
+        if (elements['city-for-suw-ranking']) elements['city-for-suw-ranking'].addEventListener('keyup', (e) => suggestCities(e.target.value, 'city-for-suw-ranking'));
         if (elements['bottle']) elements['bottle'].addEventListener('keyup', (e) => suggestBottles(e.target.value));
         if (elements['check-butelkowana-btn']) elements['check-butelkowana-btn'].addEventListener('click', () => checkWater('bottle'));
         if (elements['quiz-skin-btn']) elements['quiz-skin-btn'].addEventListener('click', () => toggleQuiz('skin'));
