@@ -762,126 +762,60 @@ input:focus {
     margin-top: 15px;
 }
 
-#world-water {
-    padding: 10px;
-    width: 200px;
-    margin: 10px;
-    z-index: 100;
-}
-
-#world-water-suggestions {
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    width: 200px;
-    z-index: 1000;
-}
-
-#world-water-suggestions .suggestion-item {
-    padding: 5px;
-    cursor: pointer;
-}
-
-#world-water-suggestions .suggestion-item:hover {
-    background-color: #f0f0f0;
-}
-
-#compare-world-water-btn {
-    background-color: #0288d1;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 1000;
-}
-
-#compare-world-water-btn:hover {
-    background-color: #7ac6d2;
-}
-
-#world-water-result table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-#world-water-result th, #world-water-result td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-}
-
-#world-water-result th {
-    background-color: #f0f0f0;
-}
-
-#local-city {
-    padding: 10px;
-    width: 200px;
-    margin: 10px;
-    z-index: 100;
-}
-
-#local-city-suggestions {
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    width: 200px;
-    z-index: 1000;
-}
-
-#local-city-suggestions .suggestion-item {
-    padding: 5px;
-    cursor: pointer;
-}
-
-#local-city-suggestions .suggestion-item:hover {
-    background-color: #f0f0f0;
-}
-
-/* Dodatkowe style dla nowych sekcji */
 #all-suw, #all-points, #bottle-rankings {
     padding: 20px;
     background: rgba(224, 247, 250, 0.5);
     border-radius: 10px;
 }
+
 .norms-table {
     border-collapse: collapse;
     width: 100%;
     max-width: 600px;
     margin-bottom: 20px;
 }
+
 .norms-table th, .norms-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
 }
+
 .norms-table th {
     background-color: #f2f2f2;
 }
+
 #voting-section {
     margin-top: 20px;
 }
+
 #voting-section label {
     margin-right: 10px;
 }
+
 .norms-note {
     font-style: italic;
     margin-top: 10px;
     color: #555;
 }
+
 /* Styl dla headera i logo */
 header {
     text-align: center;
     padding: 20px;
 }
+
 .logo {
-    width: 120px;
+    width: 300px;
     height: auto;
 }
 
-
+.droplet-icon {
+    width: 20px !important;
+    height: 20px !important;
+    vertical-align: middle;
+    margin-right: 5px;
+}
 
 .bottom-nav {
     position: fixed;
@@ -911,10 +845,11 @@ header {
         width: 100px;
     }
 }
+
 .slogan {
     font-family: 'Poppins', sans-serif;
     font-size: 18px;
-    color: #3a59d1; /* Kolor z PDF-a Emi */
+    color: #3a59d1;
     margin-top: 10px;
 }
 
@@ -922,4 +857,94 @@ header {
     .slogan {
         font-size: 16px;
     }
+}
+#rankings .droplet-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.ranking-drop {
+    width: 40px !important;
+    height: 40px !important;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.aquabot-container {
+    border: 3px solid #004d40;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 900px;
+    width: 95%;
+    margin: 40px auto;
+    background: #e0f2f1;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+.aquabot-container:hover {
+    transform: translateY(-8px);
+}
+.aquabot-messages {
+    max-height: 650px;
+    overflow-y: auto;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 15px;
+    border: 2px solid #004d40;
+}
+.bot-message {
+    background: #b2dfdb;
+    color: #000000;
+    padding: 15px 20px;
+    margin: 10px 15px;
+    border-radius: 20px 20px 20px 8px;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.6;
+    animation: fadeIn 0.4s ease;
+}
+.user-message {
+    background: #81d4fa;
+    color: #000000;
+    padding: 15px 20px;
+    margin: 10px 15px;
+    border-radius: 20px 20px 8px 20px;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.6;
+    text-align: right;
+    animation: fadeIn 0.4s ease;
+}
+.aquabot-input {
+    width: 70%;
+    padding: 15px;
+    font-size: 22px;
+    border: 3px solid #004d40;
+    border-radius: 30px;
+    margin-right: 20px;
+    outline: none;
+    background: #ffffff;
+    color: #000000;
+    transition: border-color 0.3s ease;
+}
+.aquabot-input:focus {
+    border-color: #0288d1;
+}
+.aquabot-send {
+    padding: 15px 35px;
+    font-size: 22px;
+    background: #004d40;
+    color: #ffffff;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.aquabot-send:hover {
+    background: #00332b;
+    transform: scale(1.1);
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }

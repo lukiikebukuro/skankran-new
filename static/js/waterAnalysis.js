@@ -1,4 +1,4 @@
-import { getParameterDescription, getColor, suggestWaterFilter, getSelectedParameters, getPremiumParameters } from '/static/js/utils.js';
+import { getParameterDescription, getColor, suggestWaterFilter, getSelectedParameters, getPremiumParameters } from './utils.js';
 export let map = null;
 export function getDistance(lat1, lon1, lat2, lon2) {
     try {
@@ -19,7 +19,23 @@ export function getDistance(lat1, lon1, lat2, lon2) {
 
 export const waterStations = {
     "Grudziądz": {
-        average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
+        average: {
+            pH: 7.4,
+            twardosc: 139.6,
+            azotany: 5.5,
+            zelazo: 0.02,
+            fluorki: 0.28,
+            chlor: 0.02,
+            chlorki: 50,
+            siarczany: 0,
+            potas: 0,
+            metnosc: 0.2,
+            barwa: 10,
+            mangan: 0.005,
+            magnez: 0,
+            olow: 0,
+            rtec: 0
+        },
         stations: [
             {
                 name: "SUW Hallera",
@@ -38,6 +54,7 @@ export const waterStations = {
                     potas: "0",
                     metnosc: "0.20",
                     barwa: "10",
+                    magnez: "0",
                     olow: "0",
                     rtec: "0"
                 },
@@ -78,6 +95,7 @@ export const waterStations = {
                     potas: "0",
                     metnosc: "0.20",
                     barwa: "10",
+                    magnez: "0",
                     olow: "0",
                     rtec: "0"
                 }
@@ -99,10 +117,27 @@ export const waterStations = {
             "Osiedle Zielone": "SUW Hallera",
             "Osiedle Południe": "SUW Hallera",
             "Osiedle Marusza": "SUW Hallera"
-        }
+        },
+        info: "Dane dla Grudziądza pochodzą z jednej stacji wodociągowej."
     },
     "Wałbrzych": {
-        average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
+        average: {
+            pH: 0,
+            twardosc: 0,
+            azotany: 0,
+            zelazo: 0,
+            fluorki: 0,
+            chlor: 0,
+            chlorki: 0,
+            siarczany: 0,
+            potas: 0,
+            metnosc: 0,
+            barwa: 0,
+            mangan: 0,
+            magnez: 0,
+            olow: 0,
+            rtec: 0
+        },
         stations: [
             {
                 name: "SUW Mała Woda",
@@ -200,20 +235,89 @@ export const waterStations = {
             "Szczawienko": "SUW Szyb Pokój"
         }
     },
+    "Mordy": {
+        average: {
+            pH: 7.7,
+            twardosc: 220,
+            azotany: 0.89,
+            zelazo: 0.01,
+            fluorki: 0.15,
+            chlor: 0.20,
+            chlorki: 2.0,
+            siarczany: 2.0,
+            potas: 0,
+            metnosc: 0.53,
+            barwa: 5,
+            mangan: 5.0,
+            magnez: 12,
+            olow: 1.0,
+            rtec: 0.1
+        },
+        stations: [
+            {
+                name: "Ujęcie Czepielin",
+                coords: [52.2110, 22.5170],
+                address: "Czepielin, działka nr 35, 08-140 Mordy",
+                data: {
+                    pH: "7.7",
+                    twardosc: "220",
+                    azotany: "0.89",
+                    zelazo: "0.01",
+                    fluorki: "0.15",
+                    chlor: "0.20",
+                    chlorki: "2.0",
+                    siarczany: "2.0",
+                    potas: "0",
+                    metnosc: "0.53",
+                    barwa: "5",
+                    mangan: "5.0",
+                    magnez: "12",
+                    olow: "1.0",
+                    rtec: "0.1"
+                },
+                health: {
+                    pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
+                    twardosc: "Twardość wysoka (>150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
+                    azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci, ale opcjonalnie rozważ filtr eko.",
+                    zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
+                    fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
+                    chlor: "Chlor w normie (<0.3 mg/l) – może lekko wpływać na smak, rozważ filtr smakowy.",
+                    mangan: "Mangan w normie (<50 µg/l) – bezpieczny dla zdrowia.",
+                    barwa: "Barwa w normie (<15 mg/l) – nie wpływa na wygląd wody.",
+                    magnez: "Magnez w normie (<50 mg/l) – korzystny dla zdrowia.",
+                    olow: "Ołów w normie (<10 µg/l) – bezpieczny dla zdrowia.",
+                    rtec: "Rtęć w normie (<1 µg/l) – bezpieczna dla zdrowia."
+                },
+                filterRecommendation: "Wysoka twardość (220 mg/l) i obecność chloru (0.20 mg/l) – zalecamy filtr zmiękczający dla cery oraz filtr smakowy dla lepszego smaku. Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa dzieci ze względu na azotany.",
+                history: []
+            }
+        ],
+        measurementPoints: [],
+        zones: {
+            "Centrum": "Ujęcie Czepielin"
+        },
+        info: "Dane z raportu Eurofins OBiKŚ Polska Sp. z o.o. z 2021 roku. Mordy to mała gmina, brak podziału na dzielnice – woda pochodzi z jednego ujęcia w Czepielinie.",
+        fun_facts: {
+            water_sources: "Woda w Mordach pochodzi z ujęcia podziemnego w Czepielinie."
+        }
+    },
     "Bydgoszcz": {
         average: {
-            pH: 0,
-            twardosc: 0,
-            azotany: 0,
-            zelazo: 0,
-            fluorki: 0,
-            chlor: 0,
-            chlorki: 0,
-            siarczany: 0,
+            pH: 7.85,
+            twardosc: 303,
+            azotany: 1.6,
+            zelazo: 0.015,
+            fluorki: 0.18,
+            chlor: 0.01,
+            chlorki: 22,
+            siarczany: 63,
             potas: 0,
-            metnosc: 0,
-            barwa: 0,
-            magnez: 0
+            metnosc: 0.095,
+            barwa: 3.5,
+            mangan: 0.022,
+            magnez: 18.275,
+            olow: 1,
+            rtec: 0.3
         },
         stations: [
             {
@@ -224,18 +328,18 @@ export const waterStations = {
                     pH: "7.8",
                     twardosc: "196",
                     azotany: "1.1",
-                    chlor: "<0.01",
+                    chlor: "0.01",
                     fluorki: "0.13",
-                    zelazo: "<0.01",
-                    mangan: "<0.004",
+                    zelazo: "0.01",
+                    mangan: "0.004",
                     chlorki: "15",
                     siarczany: "32",
-                    potas: "Brak danych",
+                    potas: "0",
                     metnosc: "0.10",
-                    barwa: "<2",
+                    barwa: "2",
                     magnez: "7.65",
-                    olow: "<1",
-                    rtec: "<0.3"
+                    olow: "1",
+                    rtec: "0.3"
                 },
                 history: []
             },
@@ -247,18 +351,18 @@ export const waterStations = {
                     pH: "7.9",
                     twardosc: "410",
                     azotany: "2.1",
-                    chlor: "Brak danych",
+                    chlor: "0.01",
                     fluorki: "0.23",
-                    zelazo: "<0.02",
+                    zelazo: "0.02",
                     mangan: "0.04",
                     chlorki: "29",
                     siarczany: "94",
-                    potas: "Brak danych",
+                    potas: "0",
                     metnosc: "0.09",
-                    barwa: "<5",
+                    barwa: "5",
                     magnez: "28.9",
-                    olow: "<1",
-                    rtec: "<0.3"
+                    olow: "1",
+                    rtec: "0.3"
                 },
                 history: []
             }
@@ -286,11 +390,29 @@ export const waterStations = {
             "Brdyujście": "SUW Las Gdański",
             "Fordon": "SUW Las Gdański",
             "Osiedle Leśne": "SUW Las Gdański",
-            "Zimne Wody": "SUW Las Gdański"
-        }
+            "Zimne Wody": "SUW Las Gdański",
+            "Śródmieście": ["SUW Czyżkówko", "SUW Las Gdański"]
+        },
+        info: "Woda w Bydgoszczy pochodzi z dwóch SUW. Śródmieście obsługiwane przez obie stacje, dane uśrednione przez aplikację."
     },
     "Toruń": {
-        average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, magnez: 0 },
+        average: {
+            pH: 7.4,
+            twardosc: 110.4,
+            azotany: 6.3,
+            zelazo: 0.02,
+            fluorki: 0.19,
+            chlor: 0.036,
+            chlorki: 0,
+            siarczany: 0,
+            potas: 0,
+            metnosc: 0.236,
+            barwa: 5,
+            mangan: 0.005,
+            magnez: 0,
+            olow: 0,
+            rtec: 0
+        },
         stations: [
             {
                 name: "SUW Przy Kaszowniku",
@@ -409,7 +531,8 @@ export const waterStations = {
             "Stawki": "SUW Przy Kaszowniku",
             "Winnica": "SUW Przy Kaszowniku",
             "Wrzosy": "SUW Przy Kaszowniku"
-        }
+        },
+        info: "Woda w Toruniu pochodzi z jednej stacji wodociągowej."
     },
     "Zielona Góra": {
         average: {
@@ -417,14 +540,17 @@ export const waterStations = {
             twardosc: 193.2,
             azotany: 2.3,
             zelazo: 0.05,
-            mangan: 0.0044,
             fluorki: 0,
+            chlor: 0,
             chlorki: 25.38,
             siarczany: 57.4,
             potas: 0,
             metnosc: 0.308,
             barwa: 6.06,
-            magnez: 4.073
+            mangan: 0.0044,
+            magnez: 4.073,
+            olow: 0,
+            rtec: 0
         },
         stations: [
             {
@@ -447,18 +573,6 @@ export const waterStations = {
                     olow: "0",
                     rtec: "0"
                 },
-                health: {
-                    pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
-                    twardosc: "Twardość poniżej optimum (<150 mg/l) – dobra dla cery.",
-                    azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci.",
-                    fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
-                    zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
-                    mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
-                    chlorki: "Chlorki w normie (<250 mg/l) – nie wpływają na zdrowie.",
-                    metnosc: "Mętność poniżej normy (<1 NTU) – woda przejrzysta.",
-                    barwa: "Barwa w normie (<15 mgPt/dm³) – nie wpływa na wygląd wody."
-                },
-                filterRecommendation: "Wysoki chlor (2.3 mg/l) – zalecamy filtr smakowy (109 zł) dla lepszego smaku wody.",
                 history: []
             },
             {
@@ -481,18 +595,6 @@ export const waterStations = {
                     olow: "0",
                     rtec: "0"
                 },
-                health: {
-                    pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
-                    twardosc: "Twardość powyżej optimum (<150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
-                    azotany: "Brak azotanów – woda bardzo bezpieczna dla dzieci.",
-                    fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
-                    zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
-                    mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
-                    chlorki: "Chlorki w normie (<250 mg/l) – nie wpływają na zdrowie.",
-                    metnosc: "Mętność poniżej normy (<1 NTU) – woda przejrzysta.",
-                    barwa: "Barwa w normie (<15 mgPt/dm³) – nie wpływa na wygląd wody."
-                },
-                filterRecommendation: "Wysoki chlor (0.86 mg/l) i umiarkowana twardość (171 mg/l) – zalecamy filtr premium (129 zł) dla pełnej ochrony.",
                 history: []
             },
             {
@@ -515,18 +617,6 @@ export const waterStations = {
                     olow: "0",
                     rtec: "0"
                 },
-                health: {
-                    pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
-                    twardosc: "Twardość wysoka (>150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
-                    azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci.",
-                    fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
-                    zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
-                    mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
-                    chlorki: "Chlorki w normie (<250 mg/l) – nie wpływają na zdrowie.",
-                    metnosc: "Mętność poniżej normy (<1 NTU) – woda przejrzysta.",
-                    barwa: "Barwa w normie (<15 mgPt/dm³) – nie wpływa na wygląd wody."
-                },
-                filterRecommendation: "Wysoki chlor (4.12 mg/l) i wysoka twardość (268 mg/l) – zalecamy filtr premium (129 zł) dla pełnej ochrony.",
                 history: []
             },
             {
@@ -549,18 +639,6 @@ export const waterStations = {
                     olow: "0",
                     rtec: "0"
                 },
-                health: {
-                    pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
-                    twardosc: "Twardość wysoka (>150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
-                    azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci.",
-                    fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
-                    zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
-                    mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
-                    chlorki: "Chlorki w normie (<250 mg/l) – nie wpływają na zdrowie.",
-                    metnosc: "Mętność poniżej normy (<1 NTU) – woda przejrzysta.",
-                    barwa: "Barwa w normie (<15 mgPt/dm³) – nie wpływa na wygląd wody."
-                },
-                filterRecommendation: "Wysoki chlor (0.76 mg/l) i wysoka twardość (220 mg/l) – zalecamy filtr premium (129 zł) dla pełnej ochrony.",
                 history: []
             },
             {
@@ -583,18 +661,6 @@ export const waterStations = {
                     olow: "0",
                     rtec: "0"
                 },
-                health: {
-                    pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
-                    twardosc: "Twardość wysoka (>150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
-                    azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci.",
-                    fluorki: "Fluorki w normie (<1.5 mg/l) – bezpieczne dla zębów.",
-                    zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
-                    mangan: "Mangan w normie (<0.05 mg/l) – bezpieczny poziom.",
-                    chlorki: "Chlorki w normie (<250 mg/l) – nie wpływają na zdrowie.",
-                    metnosc: "Mętność poniżej normy (<1 NTU) – woda przejrzysta.",
-                    barwa: "Barwa w normie (<15 mgPt/dm³) – nie wpływa na wygląd wody."
-                },
-                filterRecommendation: "Wysoki chlor (0.81 mg/l) i wysoka twardość (181 mg/l) – zalecamy filtr premium (129 zł) dla pełnej ochrony.",
                 history: []
             }
         ],
@@ -609,7 +675,7 @@ export const waterStations = {
             "Ochla": "SUW Ochla",
             "Kiełpin": "SUW Ochla",
             "Barcikowiczki": "SUW Ochla",
-            "Centrum": "SUW Zawada",
+            "Centrum": ["SUW Zawada", "SUW Zacisze"],
             "Osiedle Piastowskie": "SUW Zawada",
             "Osiedle Pomorskie": "SUW Zawada",
             "Osiedle Braniborskie": "SUW Zawada",
@@ -626,28 +692,28 @@ export const waterStations = {
             "Osiedle Słoneczne": "SUW Zatonie",
             "Osiedle Morelowe": "SUW Zatonie",
             "Osiedle Przylesie": "SUW Zatonie",
-            "Osiedle Raculka": "SUW Zatonie"
+            "Osiedle Raculka": "SUW Zatonie",
+            "Jarogniewice": "SUW Jarogniewice"
         },
-        info: "Brak szczegółowych danych o strefach zaopatrywania dla większości miasta. Dane dla SUW Zawada (zaopatruje ~60% Zielonej Góry) są domyślne.",
-        fun_facts: {
-            water_sources: "SUW Zawada korzysta z ujęcia wody z rzeki Obrzycy."
-        }
+        info: "Brak szczegółowych danych o strefach zaopatrywania dla większości miasta. Dane dla SUW Zawada (zaopatruje ~60% Zielonej Góry) są domyślne."
     },
     "Gorzów Wielkopolski": {
         average: {
-            pH: 0,
-            twardosc: 0,
-            azotany: 0,
-            zelazo: 0,
+            pH: 7.43,
+            twardosc: 289,
+            azotany: 1.06,
+            zelazo: 0.041,
             fluorki: 0,
-            chlor: 0,
-            chlorki: 0,
+            chlor: 0.15,
+            chlorki: 28.8,
             siarczany: 0,
             potas: 0,
-            metnosc: 0,
-            barwa: 0,
-            mangan: 0,
-            magnez: 0
+            metnosc: 0.24,
+            barwa: 5.7,
+            mangan: 0.022,
+            magnez: 0,
+            olow: 0,
+            rtec: 0
         },
         stations: [
             {
@@ -655,21 +721,21 @@ export const waterStations = {
                 coords: [52.7325, 15.2369],
                 address: "ul. Sikorskiego 1",
                 data: {
-                    pH: "7.4",
-                    twardosc: "294",
-                    azotany: "1.10",
-                    fluorki: "Brak danych",
-                    zelazo: "<0.040",
-                    chlor: "0.20",
-                    mangan: "<0.025",
-                    chlorki: "32.2",
-                    siarczany: "Brak danych",
-                    potas: "Brak danych",
-                    metnosc: "0.15",
-                    barwa: "5",
-                    magnez: "Brak danych",
-                    olow: "0",
-                    rtec: "0"
+                    pH: 7.4,
+                    twardosc: 294,
+                    azotany: 1.10,
+                    fluorki: 0,
+                    zelazo: 0.040,
+                    chlor: 0.20,
+                    mangan: 0.025,
+                    chlorki: 32.2,
+                    siarczany: 0,
+                    potas: 0,
+                    metnosc: 0.15,
+                    barwa: 5,
+                    magnez: 0,
+                    olow: 0,
+                    rtec: 0
                 },
                 history: []
             },
@@ -678,21 +744,21 @@ export const waterStations = {
                 coords: [52.8000, 15.2167],
                 address: "Kłodawa",
                 data: {
-                    pH: "7.3",
-                    twardosc: "267",
-                    azotany: "0.82",
-                    fluorki: "Brak danych",
-                    zelazo: "<0.040",
-                    chlor: "0.15",
-                    mangan: "0.03",
-                    chlorki: "24.9",
-                    siarczany: "Brak danych",
-                    potas: "Brak danych",
-                    metnosc: "0.16",
-                    barwa: "<5",
-                    magnez: "Brak danych",
-                    olow: "0",
-                    rtec: "0"
+                    pH: 7.3,
+                    twardosc: 267,
+                    azotany: 0.82,
+                    fluorki: 0,
+                    zelazo: 0.040,
+                    chlor: 0.15,
+                    mangan: 0.03,
+                    chlorki: 24.9,
+                    siarczany: 0,
+                    potas: 0,
+                    metnosc: 0.16,
+                    barwa: 5,
+                    magnez: 0,
+                    olow: 0,
+                    rtec: 0
                 },
                 history: []
             },
@@ -701,21 +767,21 @@ export const waterStations = {
                 coords: [52.7000, 15.3000],
                 address: "Siedlice",
                 data: {
-                    pH: "7.4",
-                    twardosc: "301",
-                    azotany: "1.08",
-                    fluorki: "Brak danych",
-                    zelazo: "<0.040",
-                    chlor: "0.05",
-                    mangan: "<0.025",
-                    chlorki: "33.6",
-                    siarczany: "Brak danych",
-                    potas: "Brak danych",
-                    metnosc: "0.43",
-                    barwa: "5",
-                    magnez: "Brak danych",
-                    olow: "0",
-                    rtec: "0"
+                    pH: 7.4,
+                    twardosc: 301,
+                    azotany: 1.08,
+                    fluorki: 0,
+                    zelazo: 0.040,
+                    chlor: 0.10,
+                    mangan: 0.025,
+                    chlorki: 33.6,
+                    siarczany: 0,
+                    potas: 0,
+                    metnosc: 0.43,
+                    barwa: 5,
+                    magnez: 0,
+                    olow: 0,
+                    rtec: 0
                 },
                 history: []
             },
@@ -724,90 +790,90 @@ export const waterStations = {
                 coords: [52.6833, 15.3833],
                 address: "Maszewo",
                 data: {
-                    pH: "7.6",
-                    twardosc: "183",
-                    azotany: "0.99",
-                    fluorki: "Brak danych",
-                    zelazo: "<0.040",
-                    chlor: "<0.05",
-                    mangan: "<0.025",
-                    chlorki: "12.4",
-                    siarczany: "Brak danych",
-                    potas: "Brak danych",
-                    metnosc: "0.11",
-                    barwa: "10",
-                    magnez: "Brak danych",
-                    olow: "0",
-                    rtec: "0"
+                    pH: 7.6,
+                    twardosc: 183,
+                    azotany: 0.99,
+                    fluorki: 0,
+                    zelazo: 0.040,
+                    chlor: 0.10,
+                    mangan: 0.025,
+                    chlorki: 12.4,
+                    siarczany: 0,
+                    potas: 0,
+                    metnosc: 0.11,
+                    barwa: 10,
+                    magnez: 0,
+                    olow: 0,
+                    rtec: 0
                 },
                 history: []
             },
             {
                 name: "SUW Kosynierów Gdyńskich",
-                coords: [52.7500, 15.2500],
-                address: "Kosynierów Gdyńskich",
+                coords: [52.7498, 15.2495],
+                address: "ul. Kosynierów Gdyńskich",
                 data: {
-                    pH: "7.5",
-                    twardosc: "412",
-                    azotany: "1.53",
-                    fluorki: "Brak danych",
-                    zelazo: "0.051",
-                    chlor: "0.16",
-                    mangan: "<0.025",
-                    chlorki: "32.2",
-                    siarczany: "Brak danych",
-                    potas: "Brak danych",
-                    metnosc: "0.59",
-                    barwa: "5",
-                    magnez: "Brak danych",
-                    olow: "0",
-                    rtec: "0"
+                    pH: 7.5,
+                    twardosc: 412,
+                    azotany: 1.53,
+                    fluorki: 0,
+                    zelazo: 0.051,
+                    chlor: 0.20,
+                    mangan: 0.025,
+                    chlorki: 32.2,
+                    siarczany: 0,
+                    potas: 0,
+                    metnosc: 0.59,
+                    barwa: 5,
+                    magnez: 0,
+                    olow: 0,
+                    rtec: 0
                 },
                 history: []
             },
             {
                 name: "SUW Ursus",
                 coords: [52.7400, 15.2600],
-                address: "Ursus",
+                address: "ul. Ursus",
                 data: {
-                    pH: "7.4",
-                    twardosc: "292",
-                    azotany: "1.02",
-                    fluorki: "Brak danych",
-                    zelazo: "<0.040",
-                    chlor: "<0.05",
-                    mangan: "<0.025",
-                    chlorki: "34.3",
-                    siarczany: "Brak danych",
-                    potas: "Brak danych",
-                    metnosc: "0.10",
-                    barwa: "5",
-                    magnez: "Brak danych",
-                    olow: "0",
-                    rtec: "0"
+                    pH: 7.4,
+                    twardosc: 292,
+                    azotany: 1.02,
+                    fluorki: 0,
+                    zelazo: 0.040,
+                    chlor: 0.10,
+                    mangan: 0.025,
+                    chlorki: 34.3,
+                    siarczany: 0,
+                    potas: 0,
+                    metnosc: 0.10,
+                    barwa: 5,
+                    magnez: 0,
+                    olow: 0,
+                    rtec: 0
                 },
                 history: []
             },
             {
                 name: "SUW Piłsudskiego",
-                coords: [52.7600, 15.2700],
-                address: "Piłsudskiego",
+                coords: [52.7602, 15.2705],
+                address: "ul. Piłsudskiego",
                 data: {
-                    pH: "7.4",
-                    twardosc: "294",
-                    azotany: "1.10",
-                    fluorki: "Brak danych",
-                    zelazo: "<0.040",
-                    chlor: "0.20",
-                    mangan: "<0.025",
-                    chlorki: "32.2",
-                    siarczany: "Brak danych",
-                    potas: "Brak danych",
-                    metnosc: "0.15",
-                    barwa: "5",
-                    magnez: "Brak danych",
-                    olow: "0",
-                    rtec: "0"
+                    pH: 7.4,
+                    twardosc: 294,
+                    azotany: 1.10,
+                    fluorki: 0,
+                    zelazo: 0.040,
+                    chlor: 0.20,
+                    mangan: 0.025,
+                    chlorki: 32.2,
+                    siarczany: 0,
+                    potas: 0,
+                    metnosc: 0.15,
+                    barwa: 5,
+                    magnez: 0,
+                    olow: 0,
+                    rtec: 0
                 },
                 history: []
             }
@@ -818,21 +884,21 @@ export const waterStations = {
                 coords: [52.7320, 15.2400],
                 address: "ul. Mickiewicza 50A, Gorzów Wielkopolski",
                 data: {
-                    pH: "7.4",
-                    twardosc: "289",
-                    azotany: "1.06",
-                    fluorki: "0",
-                    zelazo: "0.04",
-                    chlor: "0.05",
-                    mangan: "0.025",
-                    chlorki: "35.6",
-                    siarczany: "0",
-                    potas: "0",
-                    metnosc: "0.15",
-                    barwa: "6",
-                    magnez: "0",
-                    olow: "0",
-                    rtec: "0"
+                    pH: 7.4,
+                    twardosc: 289,
+                    azotany: 1.06,
+                    fluorki: 0,
+                    zelazo: 0.04,
+                    chlor: 0.15,
+                    mangan: 0.025,
+                    chlorki: 35.6,
+                    siarczany: 0,
+                    potas: 0,
+                    metnosc: 0.15,
+                    barwa: 6,
+                    magnez: 0,
+                    olow: 0,
+                    rtec: 0
                 }
             }
         ],
@@ -840,15 +906,31 @@ export const waterStations = {
             "Centrum": "SUW Centralny",
             "Śródmieście": "SUW Centralny",
             "Zakanale": "SUW Centralny",
-            "Górczyn": "SUW Kosynierów Gdyńskich",
+            "Górczyn": ["SUW Kosynierów Gdyńskich", "SUW Ursus", "SUW Piłsudskiego"],
             "Kłodawa": "SUW Kłodawa",
             "Siedlice": "SUW Siedlice",
             "Maszewo": "SUW Maszewo"
         },
-        info: "Woda w Gorzowie pochodzi z kilku SUW-ów. Górczyn obejmuje SUW Kosynierów Gdyńskich, Ursus i Piłsudskiego – wybierz w dropdownie, aby porównać dane. Twoja woda pochodzi z najbliższego SUW-a."
+        info: "Woda w Gorzowie pochodzi z kilku SUW-ów. Górczyn obejmuje SUW Kosynierów Gdyńskich, Ursus i Piłsudskiego – dane uśredniane przez aplikację."
     },
     "Legnica": {
-        average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
+        average: {
+            pH: 7.3,
+            twardosc: 226,
+            azotany: 4.8,
+            zelazo: 0.015,
+            fluorki: 0,
+            chlor: 0.079,
+            chlorki: 0,
+            siarczany: 55,
+            potas: 0,
+            metnosc: 0.12,
+            barwa: 2.5,
+            mangan: 0.015,
+            magnez: 18,
+            olow: 0,
+            rtec: 0
+        },
         stations: [
             {
                 name: "ZPW Przybków",
@@ -896,10 +978,25 @@ export const waterStations = {
             "Osiedle Nad Stawem": "ZPW Przybków",
             "Osiedle Zielone": "ZPW Przybków"
         },
-        info: "Woda w Legnicy pochodzi z ZPW Przybków, uzdatniana z Kaczawy przez stawy infiltracyjne. Brak zones, wszystkie dzielnice przypisane do jedynej stacji."
+        info: "Woda w Legnicy pochodzi z ZPW Przybków, uzdatniana z Kaczawy przez stawy infiltracyjne."
     },
     "Radom": {
-        average: { pH: 0, twardosc: 0, azotany: 0, zelazo: 0, fluorki: 0, chlor: 0, chlorki: 0, siarczany: 0, potas: 0, metnosc: 0, barwa: 0, mangan: 0 },
+        average: {
+            pH: 7.32,
+            twardosc: 308.4,
+            azotany: 0,
+            zelazo: 0.0284,
+            fluorki: 0,
+            chlor: 0.196,
+            chlorki: 0,
+            siarczany: 0,
+            potas: 0,
+            metnosc: 0.374,
+            barwa: 2.5,
+            mangan: 0,
+            olow: 0,
+            rtec: 0
+        },
         stations: [
             {
                 name: "SUW Malczew",
@@ -1081,7 +1178,7 @@ export const waterStations = {
             "Malczew": "SUW Malczew",
             "Gołębiów": "SUW Malczew",
             "Zamłynie": "SUW Malczew",
-            "Śródmieście": "SUW Malczew",
+            "Śródmieście": ["SUW Malczew", "SUW Shawnów"],
             "Halinów": "SUW Shawnów",
             "Ustronie": "SUW Shawnów",
             "Wacyn": "SUW Shawnów",
@@ -1091,23 +1188,25 @@ export const waterStations = {
             "Firlej": "SUW Firlej",
             "Rajec": "SUW Firlej"
         },
-        info: "Woda w Radomiu pochodzi z 5 SUW: Malczew, Shawnów, Potkanów, Lesiów i Firlej, zaopatrujących różne dzielnice miasta."
+        info: "Woda w Radomiu pochodzi z 5 SUW. Śródmieście obsługiwane przez Malczew i Shawnów – dane uśredniane przez aplikację."
     },
     "Płock": {
         average: {
             pH: 7.3,
-            twardosc: 238,
+            twardosc: 260,
             azotany: 0.01,
-            chlorki: 0.01,
             zelazo: 0.01,
-            mangan: 0.01,
-            chlor: 0,
             fluorki: 0,
+            chlor: 0,
+            chlorki: 0.01,
             siarczany: 0,
             potas: 0,
-            metnosc: 0,
-            barwa: 0,
-            magnez: 0
+            metnosc: 0.2,
+            barwa: 2,
+            mangan: 0.01,
+            magnez: 0,
+            olow: 0,
+            rtec: 0
         },
         stations: [
             {
@@ -1159,7 +1258,7 @@ export const waterStations = {
         ],
         measurementPoints: [],
         zones: {
-            "Śródmieście": "Wodociąg Płock",
+            "Śródmieście": ["Wodociąg Płock", "Wodociąg Góry"],
             "Podolszyce": "Wodociąg Płock",
             "Międzytorze": "Wodociąg Płock",
             "Radziwie": "Wodociąg Płock",
@@ -1181,23 +1280,25 @@ export const waterStations = {
             "Osiedle Zielony Jar": "Wodociąg Płock",
             "Góry": "Wodociąg Góry"
         },
-        info: "Woda w Płocku pochodzi z dwóch SUW: Wodociąg Płock i Wodociąg Góry, zaopatrujących całe miasto. Brak danych o chlorkach, azotanach, żelazie i manganie – zalecamy kontakt z Wodociągami Płockimi."
+        info: "Woda w Płocku pochodzi z dwóch SUW. Śródmieście obsługiwane przez obie stacje – dane uśredniane przez aplikację."
     },
     "Koszalin": {
         average: {
             pH: 7.8,
             twardosc: 242.5,
             azotany: 0.515,
-            chlorki: 29.05,
             zelazo: 0.06,
-            mangan: 0.015,
-            chlor: 0,
             fluorki: 0,
-            siarczany: 0,
+            chlor: 0,
+            chlorki: 29.05,
+            siarczany: 52.65,
             potas: 0,
-            metnosc: 0,
-            barwa: 0,
-            magnez: 0
+            metnosc: 0.2,
+            barwa: 5,
+            mangan: 7.5,
+            magnez: 0,
+            olow: 0,
+            rtec: 0
         },
         stations: [
             {
@@ -1426,7 +1527,7 @@ export const waterStations = {
             }
         ],
         zones: {
-            "Śródmieście": "SUW Koszalin (Podgórna)",
+            "Śródmieście": ["SUW Koszalin (Podgórna)", "SUW Mostowo"],
             "Rokosowo": "SUW Koszalin (Podgórna)",
             "Na Skarpie": "SUW Koszalin (Podgórna)",
             "Przylesie": "SUW Koszalin (Podgórna)",
@@ -1448,28 +1549,44 @@ export const waterStations = {
             "Stare Bielice": "SUW Koszalin (Podgórna)",
             "Mostowo": "SUW Mostowo"
         },
-        info: "Woda w Koszalinie pochodzi z dwóch SUW: Koszalin (Podgórna) i Mostowo, zaopatrujących całe miasto."
+        info: "Woda w Koszalinie pochodzi z dwóch SUW. Śródmieście obsługiwane przez obie stacje – dane uśredniane przez aplikację."
     },
     "Olsztyn": {
-        average: { pH: 7.46, twardosc: 267.2, azotany: 2.6, zelazo: 0.0378, mangan: 32, chlor: 0, fluorki: 0.378, chlorki: 9.86, siarczany: 15.68, potas: 0, metnosc: 0.144, barwa: 9.2, magnez: 12.4 },
+        average: {
+            pH: 7.46,
+            twardosc: 267.2,
+            azotany: 2.6,
+            zelazo: 0.0378,
+            fluorki: 0.378,
+            chlor: 0,
+            chlorki: 9.86,
+            siarczany: 15.68,
+            potas: 0,
+            metnosc: 0.144,
+            barwa: 9.2,
+            mangan: 32,
+            magnez: 12.4,
+            olow: 0,
+            rtec: 0
+        },
         stations: [
             {
                 name: "SUW Karolin",
                 coords: [53.765, 20.466],
                 address: "ul. Kalinowskiego",
-                data: { 
-                    pH: "7.4", 
-                    twardosc: "283", 
-                    azotany: "2.6", 
-                    zelazo: "0.057", 
-                    mangan: "48", 
-                    chlor: "0", 
-                    fluorki: "0.26", 
-                    chlorki: "17.9", 
-                    siarczany: "27", 
-                    potas: "0", 
-                    metnosc: "0.21", 
-                    barwa: "10", 
+                data: {
+                    pH: "7.4",
+                    twardosc: "283",
+                    azotany: "2.6",
+                    zelazo: "0.057",
+                    mangan: "48",
+                    chlor: "0",
+                    fluorki: "0.26",
+                    chlorki: "17.9",
+                    siarczany: "27",
+                    potas: "0",
+                    metnosc: "0.21",
+                    barwa: "10",
                     magnez: "10",
                     olow: "0",
                     rtec: "0"
@@ -1480,19 +1597,19 @@ export const waterStations = {
                 name: "SUW Zachód",
                 coords: [53.769, 20.452],
                 address: "ul. Leśna",
-                data: { 
-                    pH: "7.6", 
-                    twardosc: "239", 
-                    azotany: "2.8", 
-                    zelazo: "0.035", 
-                    mangan: "27", 
-                    chlor: "0", 
-                    fluorki: "0.52", 
-                    chlorki: "13.2", 
-                    siarczany: "6", 
-                    potas: "0", 
-                    metnosc: "0.14", 
-                    barwa: "9", 
+                data: {
+                    pH: "7.6",
+                    twardosc: "239",
+                    azotany: "2.8",
+                    zelazo: "0.035",
+                    mangan: "27",
+                    chlor: "0",
+                    fluorki: "0.52",
+                    chlorki: "13.2",
+                    siarczany: "6",
+                    potas: "0",
+                    metnosc: "0.14",
+                    barwa: "9",
                     magnez: "14",
                     olow: "0",
                     rtec: "0"
@@ -1503,19 +1620,19 @@ export const waterStations = {
                 name: "SUW Kortowo",
                 coords: [53.757, 20.456],
                 address: "ul. Słoneczna",
-                data: { 
-                    pH: "7.4", 
-                    twardosc: "272", 
-                    azotany: "2.4", 
-                    zelazo: "0.031", 
-                    mangan: "26", 
-                    chlor: "0", 
-                    fluorki: "0.33", 
-                    chlorki: "7.6", 
-                    siarczany: "20.3", 
-                    potas: "0", 
-                    metnosc: "0.11", 
-                    barwa: "8", 
+                data: {
+                    pH: "7.4",
+                    twardosc: "272",
+                    azotany: "2.4",
+                    zelazo: "0.031",
+                    mangan: "26",
+                    chlor: "0",
+                    fluorki: "0.33",
+                    chlorki: "7.6",
+                    siarczany: "20.3",
+                    potas: "0",
+                    metnosc: "0.11",
+                    barwa: "8",
                     magnez: "13",
                     olow: "0",
                     rtec: "0"
@@ -1526,19 +1643,19 @@ export const waterStations = {
                 name: "SUW Jaroty",
                 coords: [53.747, 20.475],
                 address: "ul. Jarocka",
-                data: { 
-                    pH: "7.4", 
-                    twardosc: "307", 
-                    azotany: "2.3", 
-                    zelazo: "0.037", 
-                    mangan: "32", 
-                    chlor: "0", 
-                    fluorki: "0.27", 
-                    chlorki: "5.4", 
-                    siarczany: "20.1", 
-                    potas: "0", 
-                    metnosc: "0.14", 
-                    barwa: "9", 
+                data: {
+                    pH: "7.4",
+                    twardosc: "307",
+                    azotany: "2.3",
+                    zelazo: "0.037",
+                    mangan: "32",
+                    chlor: "0",
+                    fluorki: "0.27",
+                    chlorki: "5.4",
+                    siarczany: "20.1",
+                    potas: "0",
+                    metnosc: "0.14",
+                    barwa: "9",
                     magnez: "11",
                     olow: "0",
                     rtec: "0"
@@ -1549,19 +1666,19 @@ export const waterStations = {
                 name: "SUW Likusy",
                 coords: [53.805, 20.465],
                 address: "ul. Bałtycka",
-                data: { 
-                    pH: "7.5", 
-                    twardosc: "235", 
-                    azotany: "2.9", 
-                    zelazo: "0.029", 
-                    mangan: "27", 
-                    chlor: "0", 
-                    fluorki: "0.51", 
-                    chlorki: "5.2", 
-                    siarczany: "5", 
-                    potas: "0", 
-                    metnosc: "0.12", 
-                    barwa: "10", 
+                data: {
+                    pH: "7.5",
+                    twardosc: "235",
+                    azotany: "2.9",
+                    zelazo: "0.029",
+                    mangan: "27",
+                    chlor: "0",
+                    fluorki: "0.51",
+                    chlorki: "5.2",
+                    siarczany: "5",
+                    potas: "0",
+                    metnosc: "0.12",
+                    barwa: "10",
                     magnez: "14",
                     olow: "0",
                     rtec: "0"
@@ -1580,14 +1697,10 @@ export const waterStations = {
             "Jaroty": "SUW Jaroty",
             "Pieczewo": "SUW Jaroty",
             "Likusy": "SUW Likusy",
-            "Redykajny": "SUW Likusy"
+            "Redykajny": "SUW Likusy",
+            "Śródmieście": ["SUW Karolin", "SUW Zachód"]
         },
-        info: "Dane z PWiK Olsztyn, marzec 2025. Przypisanie do dzielnic oparte na lokalizacji SUW. Twoja woda najprawdopodobniej pochodzi z pokazanej stacji, ale dane mogą się różnić.",
-        norms: {
-            polish: { pH: "6.5–9.5", twardosc: "60–500", azotany: "<50", zelazo: "<0.2", mangan: "<0.05", chlorki: "<250", metnosc: "<1", barwa: "<15", chlor: "<0.3", fluorki: "<1.5" },
-            who: { azotany: "≤50", zelazo: "≤0.3", mangan: "≤0.4", fluorki: "≤1.5" },
-            german: { twardosc: "<150", azotany: "≤50", pH: "6.5–9.5" }
-        }
+        info: "Dane z PWiK Olsztyn, marzec 2025. Śródmieście obsługiwane przez Karolin i Zachód – dane uśredniane przez aplikację."
     },
     "Lublin": {
         average: {
@@ -1595,15 +1708,17 @@ export const waterStations = {
             twardosc: 363.5,
             azotany: 9.46,
             zelazo: 0.051,
-            mangan: 0.009,
-            chlor: 0.21,
             fluorki: 0.4,
+            chlor: 0.21,
             chlorki: 28.56,
             siarczany: 44.25,
             potas: 0.01,
             metnosc: 0.25,
             barwa: 4.9,
-            magnez: 18.05
+            mangan: 0.009,
+            magnez: 18.05,
+            olow: 4.375,
+            rtec: 0.5
         },
         stations: [
             {
@@ -1624,8 +1739,8 @@ export const waterStations = {
                     metnosc: "0.19",
                     barwa: "4.9",
                     magnez: "10.4",
-                    olow: "<2.5",
-                    rtec: "<0.5"
+                    olow: "2.5",
+                    rtec: "0.5"
                 },
                 history: []
             },
@@ -1647,8 +1762,8 @@ export const waterStations = {
                     metnosc: "0.24",
                     barwa: "4.9",
                     magnez: "23.2",
-                    olow: "<5",
-                    rtec: "<0.5"
+                    olow: "5",
+                    rtec: "0.5"
                 },
                 history: []
             },
@@ -1670,8 +1785,8 @@ export const waterStations = {
                     metnosc: "0.19",
                     barwa: "4.9",
                     magnez: "11.1",
-                    olow: "<2.5",
-                    rtec: "<0.5"
+                    olow: "2.5",
+                    rtec: "0.5"
                 },
                 history: []
             },
@@ -1693,8 +1808,8 @@ export const waterStations = {
                     metnosc: "0.19",
                     barwa: "4.9",
                     magnez: "13.9",
-                    olow: "<5",
-                    rtec: "<0.5"
+                    olow: "5",
+                    rtec: "0.5"
                 },
                 history: []
             },
@@ -1716,8 +1831,8 @@ export const waterStations = {
                     metnosc: "0.33",
                     barwa: "4.9",
                     magnez: "23.3",
-                    olow: "<5",
-                    rtec: "<0.5"
+                    olow: "5",
+                    rtec: "0.5"
                 },
                 history: []
             },
@@ -1739,8 +1854,8 @@ export const waterStations = {
                     metnosc: "0.19",
                     barwa: "4.9",
                     magnez: "9.7",
-                    olow: "<5",
-                    rtec: "<0.5"
+                    olow: "5",
+                    rtec: "0.5"
                 },
                 history: []
             },
@@ -1762,8 +1877,8 @@ export const waterStations = {
                     metnosc: "0.43",
                     barwa: "4.9",
                     magnez: "20.6",
-                    olow: "<5",
-                    rtec: "<0.5"
+                    olow: "5",
+                    rtec: "0.5"
                 },
                 history: []
             },
@@ -1785,8 +1900,8 @@ export const waterStations = {
                     metnosc: "0.19",
                     barwa: "4.9",
                     magnez: "32.2",
-                    olow: "<5",
-                    rtec: "<0.5"
+                    olow: "5",
+                    rtec: "0.5"
                 },
                 history: []
             }
@@ -1806,28 +1921,30 @@ export const waterStations = {
             "Czechów Północny": "SUW Bursaki",
             "Felin": "SUW Ruta",
             "Hajdów-Zadębie": "SUW Ruta",
-            "Śródmieście": "SUW Centralna",
+            "Śródmieście": ["SUW Centralna", "SUW Mełgiewska"],
             "Stare Miasto": "SUW Centralna",
             "Tatary": "SUW Mełgiewska",
             "Rury": "SUW Mełgiewska"
         },
-        info: "Woda w Lublinie pochodzi z 8 SUW, zaopatrujących różne dzielnice miasta. Średnia twardość jest wysoka – może wysuszać cerę, szczególnie u kobiet (zalecamy filtr zmiękczający 99 zł). Azotany w normie, bezpieczne dla dzieci. Mangan i żelazo niskie, nie wpływają na smak. pH neutralne, bezpieczne."
+        info: "Woda w Lublinie pochodzi z 8 SUW. Śródmieście obsługiwane przez Centralna i Mełgiewska – dane uśredniane przez aplikację."
     },
     "Częstochowa": {
         average: {
-            pH: "0",
-            twardosc: "0",
-            azotany: "0",
-            zelazo: "0",
-            fluorki: "0",
-            chlor: "0",
-            chlorki: "0",
-            siarczany: "0",
-            potas: "0",
-            metnosc: "0",
-            barwa: "0",
-            mangan: "0",
-            magnez: "0"
+            pH: 7.6,
+            twardosc: 200,
+            azotany: 29.1,
+            zelazo: 0.049,
+            fluorki: 0.2,
+            chlor: 0,
+            chlorki: 26.2,
+            siarczany: 49.4,
+            potas: 1.45,
+            metnosc: 0.22,
+            barwa: 5,
+            mangan: 0,
+            magnez: 3.13,
+            olow: 2,
+            rtec: 0
         },
         stations: [
             {
@@ -1838,17 +1955,17 @@ export const waterStations = {
                     pH: "7.6",
                     twardosc: "189",
                     azotany: "18.2",
-                    fluorki: "<0.20",
+                    fluorki: "0.20",
                     zelazo: "0.041",
                     mangan: "0",
                     chlorki: "17.9",
                     siarczany: "3.79",
                     potas: "1.58",
                     metnosc: "0.14",
-                    barwa: "<5",
+                    barwa: "5",
                     magnez: "1.94",
                     chlor: "0",
-                    olow: "<2.0",
+                    olow: "2.0",
                     rtec: "0"
                 },
                 history: []
@@ -1861,17 +1978,17 @@ export const waterStations = {
                     pH: "7.6",
                     twardosc: "192",
                     azotany: "41.7",
-                    fluorki: "<0.20",
+                    fluorki: "0.20",
                     zelazo: "0.063",
                     mangan: "0",
                     chlorki: "26.4",
                     siarczany: "78.4",
                     potas: "1.18",
                     metnosc: "0.33",
-                    barwa: "<5",
+                    barwa: "5",
                     magnez: "3.41",
                     chlor: "0",
-                    olow: "<2.0",
+                    olow: "2.0",
                     rtec: "0"
                 },
                 history: []
@@ -1884,17 +2001,17 @@ export const waterStations = {
                     pH: "7.7",
                     twardosc: "198",
                     azotany: "17.3",
-                    fluorki: "<0.20",
+                    fluorki: "0.20",
                     zelazo: "0.051",
                     mangan: "0",
                     chlorki: "23.8",
                     siarczany: "58.0",
                     potas: "1.52",
                     metnosc: "0.29",
-                    barwa: "<5",
+                    barwa: "5",
                     magnez: "3.28",
                     chlor: "0",
-                    olow: "<2.0",
+                    olow: "2.0",
                     rtec: "0"
                 },
                 history: []
@@ -1907,17 +2024,17 @@ export const waterStations = {
                     pH: "7.5",
                     twardosc: "221",
                     azotany: "39.2",
-                    fluorki: "<0.20",
+                    fluorki: "0.20",
                     zelazo: "0.041",
                     mangan: "0",
                     chlorki: "36.8",
                     siarczany: "57.5",
                     potas: "1.51",
                     metnosc: "0.11",
-                    barwa: "<5",
+                    barwa: "5",
                     magnez: "3.89",
                     chlor: "0",
-                    olow: "<2.0",
+                    olow: "2.0",
                     rtec: "0"
                 },
                 history: []
@@ -1927,31 +2044,32 @@ export const waterStations = {
         zones: {
             "Mirów": "SDW Mirów",
             "Podjasnogórska": "SDW Mirów",
-            "Śródmieście": "SDW Mirów",
+            "Śródmieście": ["SDW Mirów", "SUW Wielki Bór"],
             "Kiedrzyn": "SUW Wielki Bór",
             "Wyczerpy – Aniołów": "SUW Wielki Bór",
             "Północ": "SUW Wielki Bór",
             "Zawodzie – Dąbie": "SDW Rząsawa",
             "Tysiąclecie": "SUW Wierzchowisko"
         },
-        info: "Data from the second half of 2024."
+        info: "Data from the second half of 2024. Śródmieście obsługiwane przez Mirów i Wielki Bór – dane uśredniane przez aplikację."
     },
     "Rzeszów": {
         average: {
             pH: 7.80,
             twardosc: 250,
             azotany: 6.2,
-            fluorki: "Brak danych",
             zelazo: 0.019,
-            mangan: 15,
+            fluorki: 0,
+            chlor: 0,
             chlorki: 33.8,
             siarczany: 42.9,
             potas: 0,
             metnosc: 0.20,
             barwa: 5,
+            mangan: 15,
             magnez: 0,
-            olow: "<0.50",
-            rtec: "<0.10"
+            olow: 0.50,
+            rtec: 0.10
         },
         stations: [
             {
@@ -1962,7 +2080,7 @@ export const waterStations = {
                     pH: "7.80",
                     twardosc: "250",
                     azotany: "6.2",
-                    fluorki: "Brak danych",
+                    fluorki: "0",
                     zelazo: "0.019",
                     mangan: "15",
                     chlorki: "33.8",
@@ -1971,29 +2089,3017 @@ export const waterStations = {
                     metnosc: "0.20",
                     barwa: "5",
                     magnez: "0",
-                    olow: "<0.50",
-                    rtec: "<0.10"
+                    chlor: "0",
+                    olow: "0.50",
+                    rtec: "0.10"
                 },
-                health: {
-                    pH: "pH w normie (6.5–9.5) – bezpieczne dla zdrowia.",
-                    twardosc: "Twardość wysoka (>150 mg/l) – może wysuszać cerę, szczególnie u kobiet.",
-                    azotany: "Azotany w normie (<50 mg/l) – bezpieczne dla dzieci, ale warto monitorować.",
-                    fluorki: "Brak danych na temat fluorków – skontaktuj się z wodociągami.",
-                    zelazo: "Żelazo w normie (<0.2 mg/l) – nie wpływa na smak ani zdrowie.",
-                    mangan: "Mangan w normie (<50 µg/l) – bezpieczny poziom."
-                },
-                filterRecommendation: "Wysoka twardość (250 mg/l) – zalecamy filtr zmiękczający. Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa dzieci ze względu na azotany.",
                 history: []
             }
         ],
         measurementPoints: [],
-        info: "Woda w Rzeszowie pochodzi z rzeki Wisłok, uzdatniana w SUW Zwięczyca. Twardość jest wysoka – może wysuszać cerę (zalecamy filtr zmiękczający). Azotany w normie, ale warto monitorować dla dzieci. Woda zaopatruje całe miasto – podział na dzielnice nie jest potrzebny.",
-        fun_facts: {
-            water_sources: "SUW Zwięczyca korzysta z ujęcia wody z rzeki Wisłok."
+        zones: {
+            "Śródmieście": "SUW Zwięczyca",
+            "Zalesie": "SUW Zwięczyca",
+            "Staromieście": "SUW Zwięczyca",
+            "Pobitno": "SUW Zwięczyca",
+            "Baranówka": "SUW Zwięczyca"
+        },
+        info: "Woda w Rzeszowie pochodzi z rzeki Wisłok, uzdatniana w SUW Zwięczyca."
+    },
+    "Poznań": {
+        average: {
+            pH: 7.61,
+            twardosc: 287.2,
+            azotany: 1.96,
+            zelazo: 0.042,
+            fluorki: 0.35,
+            chlor: 0,
+            chlorki: 0,
+            siarczany: 48.2,
+            potas: 0,
+            metnosc: 0,
+            barwa: 7.2,
+            mangan: 0,
+            magnez: 15.6,
+            olow: 0.0004,
+            rtec: 0.0001
+        },
+        stations: [
+            {
+                name: "SUW Poznań (Wiśniowa)",
+                coords: [52.3748, 16.9098],
+                address: "ul. Wiśniowa 13, 61-477 Poznań",
+                data: {
+                    pH: "7.8",
+                    twardosc: "270",
+                    azotany: "4.3",
+                    zelazo: "0.03",
+                    fluorki: "0.22",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "81",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "5.0",
+                    magnez: "17",
+                    olow: "0.0001",
+                    rtec: "0.0001"
+                },
+                history: []
+            },
+            {
+                name: "SUW Mosina",
+                coords: [52.2454, 16.8470],
+                address: "ul. Czereśniowa 1, 62-050 Mosina",
+                data: {
+                    pH: "7.5",
+                    twardosc: "353",
+                    azotany: "1.5",
+                    zelazo: "0.02",
+                    fluorki: "0.23",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "152",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "2.5",
+                    magnez: "15",
+                    olow: "0.001",
+                    rtec: "0.0001"
+                },
+                history: []
+            },
+            {
+                name: "SUW Gruszczyn",
+                coords: [52.4316, 17.0727],
+                address: "ul. Swarzędzka 67a, Gruszczyn, 62-006 Kobylnica",
+                data: {
+                    pH: "7.5",
+                    twardosc: "313",
+                    azotany: "1.5",
+                    zelazo: "0.02",
+                    fluorki: "0.2",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "53",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "5.0",
+                    magnez: "18",
+                    olow: "0.001",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Biedrusko",
+                coords: [52.5333, 16.9333],
+                address: "Biedrusko, gmina Suchy Las",
+                data: {
+                    pH: "7.6",
+                    twardosc: "360",
+                    azotany: "0.5",
+                    zelazo: "0.01",
+                    fluorki: "0.2",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "81",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "2.5",
+                    magnez: "10",
+                    olow: "0.0001",
+                    rtec: "0.0001"
+                },
+                history: []
+            },
+            {
+                name: "SUW Zielątkowo",
+                coords: [52.4833, 16.8333],
+                address: "Zielątkowo, gmina Suchy Las",
+                data: {
+                    pH: "7.5",
+                    twardosc: "280",
+                    azotany: "0",
+                    zelazo: "0.03",
+                    fluorki: "0.4",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "7.5",
+                    magnez: "0",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Boduszewo",
+                coords: [52.5667, 17.0333],
+                address: "Boduszewo, gmina Murowana Goślina",
+                data: {
+                    pH: "7.5",
+                    twardosc: "330",
+                    azotany: "1.0",
+                    zelazo: "0.05",
+                    fluorki: "0.2",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "120",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "5.0",
+                    magnez: "11",
+                    olow: "0.0001",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Długa Goślina",
+                coords: [52.5833, 17.0167],
+                address: "Długa Goślina, gmina Murowana Goślina",
+                data: {
+                    pH: "7.8",
+                    twardosc: "220",
+                    azotany: "2.2",
+                    zelazo: "0.01",
+                    fluorki: "0.4",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "1",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "12.5",
+                    magnez: "14",
+                    olow: "0.0001",
+                    rtec: "0.0001"
+                },
+                history: []
+            },
+            {
+                name: "SUW Kamińsko",
+                coords: [52.5667, 17.0667],
+                address: "Kamińsko, gmina Murowana Goślina",
+                data: {
+                    pH: "7.5",
+                    twardosc: "430",
+                    azotany: "1.0",
+                    zelazo: "0.08",
+                    fluorki: "0.2",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "190",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "5",
+                    magnez: "15",
+                    olow: "0.0001",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Łopuchowo",
+                coords: [52.6000, 17.0000],
+                address: "Łopuchowo, gmina Murowana Goślina",
+                data: {
+                    pH: "7.5",
+                    twardosc: "210",
+                    azotany: "1.0",
+                    zelazo: "0.01",
+                    fluorki: "0.3",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "3",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "10",
+                    magnez: "12",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Murowana Goślina",
+                coords: [52.5736, 17.0092],
+                address: "ul. Kochanowskiego 22, 62-095 Murowana Goślina",
+                data: {
+                    pH: "7.5",
+                    twardosc: "220",
+                    azotany: "2.0",
+                    zelazo: "0.05",
+                    fluorki: "0.5",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "1",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "10",
+                    magnez: "17",
+                    olow: "0.0001",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Dębiec",
+                coords: [52.3667, 16.9167],
+                address: "Dębiec, Poznań",
+                data: {
+                    pH: "7.7",
+                    twardosc: "270",
+                    azotany: "5.0",
+                    zelazo: "0.03",
+                    fluorki: "0.8",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "9",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "10",
+                    magnez: "25",
+                    olow: "0.001",
+                    rtec: "0.0001"
+                },
+                history: []
+            },
+            {
+                name: "SUW Dziećmierowo",
+                coords: [52.2333, 17.0333],
+                address: "Dziećmierowo, gmina Kórnik",
+                data: {
+                    pH: "7.6",
+                    twardosc: "225",
+                    azotany: "2.0",
+                    zelazo: "0.1",
+                    fluorki: "0.5",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "1",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "10",
+                    magnez: "24",
+                    olow: "0.0001",
+                    rtec: "0.0001"
+                },
+                history: []
+            },
+            {
+                name: "SUW Kamionki",
+                coords: [52.2500, 17.0667],
+                address: "Kamionki, gmina Kórnik",
+                data: {
+                    pH: "7.7",
+                    twardosc: "230",
+                    azotany: "3.0",
+                    zelazo: "0.1",
+                    fluorki: "0.5",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "24",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "5",
+                    magnez: "18",
+                    olow: "0.0001",
+                    rtec: "0.0001"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [
+            {
+                name: "Punkt Jeżyce",
+                coords: [52.4167, 16.8833],
+                address: "Rynek Jeżycki, Poznań",
+                data: {
+                    pH: "7.8",
+                    twardosc: "270",
+                    azotany: "4.3",
+                    zelazo: "0.03",
+                    fluorki: "0.22",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "81",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "5.0",
+                    magnez: "17",
+                    olow: "0.0001",
+                    rtec: "0.0001"
+                }
+            },
+            {
+                name: "Punkt Rataje",
+                coords: [52.3833, 16.9333],
+                address: "ul. Katowicka, Poznań",
+                data: {
+                    pH: "7.5",
+                    twardosc: "313",
+                    azotany: "1.5",
+                    zelazo: "0.02",
+                    fluorki: "0.2",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "53",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "5.0",
+                    magnez: "18",
+                    olow: "0.001",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "Punkt Grunwald",
+                coords: [52.3833, 16.8833],
+                address: "ul. Grunwaldzka, Poznań",
+                data: {
+                    pH: "7.5",
+                    twardosc: "220",
+                    azotany: "2.0",
+                    zelazo: "0.05",
+                    fluorki: "0.5",
+                    chlor: "0",
+                    chlorki: "0",
+                    siarczany: "1",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "10",
+                    magnez: "17",
+                    olow: "0.0001",
+                    rtec: "0"
+                }
+            }
+        ],
+        zones: {
+            "Stare Miasto": "SUW Poznań (Wiśniowa)",
+            "Śródmieście": ["SUW Poznań (Wiśniowa)", "SUW Gruszczyn"],
+            "Wilda": "SUW Poznań (Wiśniowa)",
+            "Łazarz": "SUW Poznań (Wiśniowa)",
+            "Piątkowo": "SUW Poznań (Wiśniowa)",
+            "Jeżyce": "SUW Poznań (Wiśniowa)",
+            "Rataje": "SUW Gruszczyn",
+            "Nowe Miasto": "SUW Gruszczyn",
+            "Antoninek": "SUW Gruszczyn",
+            "Chartowo": "SUW Gruszczyn",
+            "Dębiec": "SUW Dębiec",
+            "Grunwald": "SUW Murowana Goślina",
+            "Winogrady": "SUW Murowana Goślina",
+            "Junikowo": "SUW Murowana Goślina",
+            "Morasko": "SUW Murowana Goślina",
+            "Naramowice": "SUW Mosina",
+            "Podolany": "SUW Mosina",
+            "Strzeszyn": "SUW Mosina",
+            "Krzyżowniki": "SUW Mosina",
+            "Rataje Południowe": "SUW Mosina",
+            "Biedrusko": "SUW Biedrusko",
+            "Zielątkowo": "SUW Zielątkowo",
+            "Boduszewo": "SUW Boduszewo",
+            "Długa Goślina": "SUW Długa Goślina",
+            "Kamińsko": "SUW Kamińsko",
+            "Łopuchowo": "SUW Łopuchowo",
+            "Murowana Goślina": "SUW Murowana Goślina",
+            "Dziećmierowo": "SUW Dziećmierowo",
+            "Kamionki": "SUW Kamionki"
+        },
+        info: "Woda w Poznaniu pochodzi z 13 SUW. Śródmieście obsługiwane przez Poznań (Wiśniowa) i Gruszczyn – dane uśredniane przez aplikację."
+    },
+    "Sosnowiec": {
+        average: {
+            pH: 7.35,
+            twardosc: 151.5,
+            azotany: 0,
+            zelazo: 0.0307,
+            fluorki: 0,
+            chlor: 0.07,
+            chlorki: 0,
+            siarczany: 0,
+            potas: 0,
+            metnosc: 0.1,
+            barwa: 5,
+            mangan: 0.005,
+            magnez: 0,
+            olow: 0,
+            rtec: 0
+        },
+        stations: [
+            {
+                name: "SUW Goczałkowice",
+                coords: [49.9333, 18.9667],
+                address: "Goczałkowice-Zdrój",
+                data: {
+                    pH: "7.3",
+                    twardosc: "80",
+                    azotany: "0",
+                    zelazo: "0.0514",
+                    fluorki: "0",
+                    chlor: "0.05",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.10",
+                    barwa: "5",
+                    mangan: "0.005",
+                    magnez: "0",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Maczki",
+                coords: [50.2747, 19.1667],
+                address: "Sosnowiec-Maczki",
+                data: {
+                    pH: "7.4",
+                    twardosc: "223",
+                    azotany: "0",
+                    zelazo: "0.01",
+                    fluorki: "0",
+                    chlor: "0.09",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.1",
+                    barwa: "5",
+                    mangan: "0.005",
+                    magnez: "0",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [],
+        zones: {
+            "Śródmieście": ["SUW Goczałkowice", "SUW Maczki"],
+            "Pogoń": "SUW Goczałkowice",
+            "Zagórze": "SUW Goczałkowice",
+            "Milowice": "SUW Goczałkowice",
+            "Maczki": "SUW Maczki",
+            "Klimontów": "SUW Maczki",
+            "Kazimierz Górniczy": "SUW Maczki",
+            "Porąbka": "SUW Maczki"
+        },
+        info: "Śródmieście w Sosnowcu obsługiwane przez obie stacje – dane uśredniane przez aplikację."
+    },
+    "Wrocław": {
+        average: {
+            pH: 7.6,
+            twardosc: 300.3,
+            azotany: 6.53,
+            zelazo: 0.0177,
+            fluorki: 0.20,
+            chlor: 0,
+            chlorki: 57.7,
+            siarczany: 109.3,
+            potas: 0,
+            metnosc: 0.5,
+            barwa: 2,
+            mangan: 5,
+            magnez: 16.3,
+            olow: 0,
+            rtec: 0
+        },
+        stations: [
+            {
+                name: "ZPW Na Grobli",
+                coords: [51.0995, 17.0396],
+                address: "ul. Na Grobli, Wrocław",
+                data: {
+                    pH: "7.5",
+                    twardosc: "270",
+                    azotany: "3.0",
+                    zelazo: "0.014",
+                    fluorki: "0.19",
+                    chlor: "0",
+                    chlorki: "49",
+                    siarczany: "93",
+                    potas: "0",
+                    metnosc: "0.5",
+                    barwa: "2",
+                    mangan: "5",
+                    magnez: "13",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "ZPW Mokry Dwór",
+                coords: [51.1561, 16.9453],
+                address: "Mokry Dwór, Wrocław",
+                data: {
+                    pH: "7.7",
+                    twardosc: "288",
+                    azotany: "12.8",
+                    zelazo: "0.01",
+                    fluorki: "0.18",
+                    chlor: "0",
+                    chlorki: "45",
+                    siarczany: "86",
+                    potas: "0",
+                    metnosc: "0.5",
+                    barwa: "2",
+                    mangan: "5",
+                    magnez: "14",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "Leśnica pompownia II stopnia",
+                coords: [51.1450, 16.8650],
+                address: "Leśnica, Wrocław",
+                data: {
+                    pH: "7.6",
+                    twardosc: "343",
+                    azotany: "3.8",
+                    zelazo: "0.029",
+                    fluorki: "0.22",
+                    chlor: "0",
+                    chlorki: "79",
+                    siarczany: "149",
+                    potas: "0",
+                    metnosc: "0.5",
+                    barwa: "2",
+                    mangan: "5",
+                    magnez: "22",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [],
+        zones: {
+            "Śródmieście": ["ZPW Na Grobli", "ZPW Mokry Dwór"],
+            "Stare Miasto": "ZPW Na Grobli",
+            "Krzyki": "ZPW Na Grobli",
+            "Fabryczna": "ZPW Mokry Dwór",
+            "Psie Pole": "ZPW Mokry Dwór",
+            "Leśnica": "Leśnica pompownia II stopnia",
+            "Maślice": "Leśnica pompownia II stopnia",
+            "Stabłowice": "Leśnica pompownia II stopnia"
+        },
+        info: "Dane z I kwartału 2025 roku, na podstawie raportu MPWiK Wrocław. Śródmieście obsługiwane przez Na Grobli i Mokry Dwór – dane uśredniane przez aplikację."
+    },
+    "Gdańsk": {
+        average: {
+            pH: 7.59,
+            twardosc: 246.1,
+            azotany: 0,
+            zelazo: 0,
+            fluorki: 0.26,
+            chlor: 0.02,
+            chlorki: 24.9,
+            siarczany: 45.6,
+            potas: 2.86,
+            metnosc: 0,
+            barwa: 0,
+            mangan: 0,
+            magnez: 10,
+            olow: 0,
+            rtec: 0
+        },
+        stations: [
+            {
+                name: "SUW Pręgowo",
+                coords: [54.2630, 18.5560],
+                address: "Pręgowo, Gdańsk",
+                data: {
+                    pH: "7.7",
+                    twardosc: "234",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0.21",
+                    chlor: "0.02",
+                    chlorki: "20.2",
+                    siarczany: "32.2",
+                    potas: "3.49",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "9.84",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Lipce",
+                coords: [54.3210, 18.6410],
+                address: "Lipce, Gdańsk",
+                data: {
+                    pH: "7.5",
+                    twardosc: "240",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0.36",
+                    chlor: "0.02",
+                    chlorki: "14.7",
+                    siarczany: "28.2",
+                    potas: "5.17",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "12.7",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Czarny Dwór",
+                coords: [54.3890, 18.5880],
+                address: "Czarny Dwór, Gdańsk",
+                data: {
+                    pH: "7.4",
+                    twardosc: "285",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0.29",
+                    chlor: "0",
+                    chlorki: "46.2",
+                    siarczany: "66.3",
+                    potas: "3.54",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "10.9",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Zaspa Wodna",
+                coords: [54.4050, 18.6050],
+                address: "Zaspa Wodna, Gdańsk",
+                data: {
+                    pH: "7.5",
+                    twardosc: "309",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0.31",
+                    chlor: "0",
+                    chlorki: "52",
+                    siarczany: "86.2",
+                    potas: "3.74",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "11.9",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Osowa",
+                coords: [54.4130, 18.4700],
+                address: "Osowa, Gdańsk",
+                data: {
+                    pH: "7.7",
+                    twardosc: "189",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0.18",
+                    chlor: "0",
+                    chlorki: "8.57",
+                    siarczany: "26",
+                    potas: "1.4",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "6.19",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Dolina Radości",
+                coords: [54.4000, 18.5500],
+                address: "Dolina Radości, Gdańsk",
+                data: {
+                    pH: "7.7",
+                    twardosc: "221",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0.31",
+                    chlor: "0",
+                    chlorki: "11.6",
+                    siarczany: "25.9",
+                    potas: "2.15",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "8.66",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Smęgorzyno",
+                coords: [54.3500, 18.7000],
+                address: "Smęgorzyno, Gdańsk",
+                data: {
+                    pH: "7.6",
+                    twardosc: "245",
+                    azotany: "0",
+                    zelazo: "0",
+                    fluorki: "0.25",
+                    chlor: "0",
+                    chlorki: "15.7",
+                    siarczany: "53.4",
+                    potas: "2.51",
+                    metnosc: "0",
+                    barwa: "0",
+                    mangan: "0",
+                    magnez: "10",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [],
+        zones: {
+            "Zakoniczyn": "SUW Pręgowo",
+            "Chełm": "SUW Pręgowo",
+            "Wzgórze Mickiewicza": "SUW Pręgowo",
+            "Ujeścisko": "SUW Pręgowo",
+            "Matemblewo": "SUW Pręgowo",
+            "Niedźwiednik": "SUW Pręgowo",
+            "Siedlce": "SUW Pręgowo",
+            "Suchanino": "SUW Pręgowo",
+            "Aniołki": "SUW Pręgowo",
+            "Stogi": "SUW Lipce",
+            "Krakowiec": "SUW Lipce",
+            "Górki Zachodnie": "SUW Lipce",
+            "Przeróbka": "SUW Lipce",
+            "Sobieszewo": "SUW Lipce",
+            "Orunia": "SUW Lipce",
+            "Olszynka": "SUW Lipce",
+            "Rudniki": "SUW Lipce",
+            "Śródmieście": ["SUW Lipce", "SUW Czarny Dwór"],
+            "Przymorze": "SUW Czarny Dwór",
+            "Zaspa": "SUW Czarny Dwór",
+            "Nowy Port": "SUW Czarny Dwór",
+            "Letnica": "SUW Czarny Dwór",
+            "Brzeźno": "SUW Zaspa Wodna",
+            "Wrzeszcz Dolny": "SUW Czarny Dwór",
+            "Żabianka": "SUW Czarny Dwór",
+            "Osowa": "SUW Osowa",
+            "Kiełpino": "SUW Osowa",
+            "Matarnia": "SUW Osowa",
+            "Jasień": "SUW Osowa",
+            "Morena": "SUW Osowa",
+            "Kokoszki": "SUW Osowa",
+            "Wrzeszcz Górny": "SUW Dolina Radości",
+            "Oliwa": "SUW Dolina Radości",
+            "VII Dwór": "SUW Dolina Radości",
+            "Smęgorzyno": "SUW Smęgorzyno",
+            "Łostowice": "SUW Pręgowo"
+        },
+        info: "Dane na podstawie raportu Gdańskie Wodociągi S.A. Śródmieście obsługiwane przez Lipce i Czarny Dwór – dane uśredniane przez aplikację."
+    },
+    "Łódź": {
+        average: {
+            pH: 7.3,
+            twardosc: 199,
+            azotany: 1.41,
+            zelazo: 0.031,
+            fluorki: 0.13,
+            chlor: 0.38,
+            chlorki: 11.5,
+            siarczany: 21.5,
+            potas: 1.04,
+            metnosc: 0.46,
+            barwa: 0,
+            mangan: 25.5,
+            magnez: 5.6,
+            olow: 2.0,
+            rtec: 1.0
+        },
+        stations: [
+            {
+                name: "SUW Dąbrowa",
+                coords: [51.7330, 19.4660],
+                address: "Dąbrowa, Łódź",
+                data: {
+                    pH: "7.3",
+                    twardosc: "199",
+                    azotany: "1.41",
+                    zelazo: "0.031",
+                    fluorki: "0.13",
+                    chlor: "0.38",
+                    chlorki: "11.5",
+                    siarczany: "21.5",
+                    potas: "1.04",
+                    metnosc: "0.46",
+                    barwa: "0",
+                    mangan: "25.5",
+                    magnez: "5.6",
+                    olow: "2.0",
+                    rtec: "1.0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Jedlicze",
+                coords: [51.8000, 19.4330],
+                address: "Jedlicze, Łódź",
+                data: {
+                    pH: "7.3",
+                    twardosc: "199",
+                    azotany: "1.41",
+                    zelazo: "0.031",
+                    fluorki: "0.13",
+                    chlor: "0.38",
+                    chlorki: "11.5",
+                    siarczany: "21.5",
+                    potas: "1.04",
+                    metnosc: "0.46",
+                    barwa: "0",
+                    mangan: "25.5",
+                    magnez: "5.6",
+                    olow: "2.0",
+                    rtec: "1.0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Lodowa",
+                coords: [51.7660, 19.5160],
+                address: "Lodowa, Łódź",
+                data: {
+                    pH: "7.3",
+                    twardosc: "199",
+                    azotany: "1.41",
+                    zelazo: "0.031",
+                    fluorki: "0.13",
+                    chlor: "0.38",
+                    chlorki: "11.5",
+                    siarczany: "21.5",
+                    potas: "1.04",
+                    metnosc: "0.46",
+                    barwa: "0",
+                    mangan: "25.5",
+                    magnez: "5.6",
+                    olow: "2.0",
+                    rtec: "1.0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Pomorska",
+                coords: [51.7760, 19.4330],
+                address: "Pomorska, Łódź",
+                data: {
+                    pH: "7.3",
+                    twardosc: "199",
+                    azotany: "1.41",
+                    zelazo: "0.031",
+                    fluorki: "0.13",
+                    chlor: "0.38",
+                    chlorki: "11.5",
+                    siarczany: "21.5",
+                    potas: "1.04",
+                    metnosc: "0.46",
+                    barwa: "0",
+                    mangan: "25.5",
+                    magnez: "5.6",
+                    olow: "2.0",
+                    rtec: "1.0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Pilica (Tomaszów Mazowiecki)",
+                coords: [51.5310, 20.0080],
+                address: "Tomaszów Mazowiecki",
+                data: {
+                    pH: "7.3",
+                    twardosc: "199",
+                    azotany: "1.41",
+                    zelazo: "0.031",
+                    fluorki: "0.13",
+                    chlor: "0.38",
+                    chlorki: "11.5",
+                    siarczany: "21.5",
+                    potas: "1.04",
+                    metnosc: "0.46",
+                    barwa: "0",
+                    mangan: "25.5",
+                    magnez: "5.6",
+                    olow: "2.0",
+                    rtec: "1.0"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [],
+        zones: {
+            "Górna": "SUW Dąbrowa",
+            "Bałuty": "SUW Jedlicze",
+            "Widzew": "SUW Lodowa",
+            "Polesie": "SUW Pomorska",
+            "Śródmieście": ["SUW Dąbrowa", "SUW Lodowa"]
+        },
+        info: "Dane uśrednione dla całego miasta na podstawie raportu ZWiK Łódź. Śródmieście obsługiwane przez Dąbrowa i Lodowa – dane uśredniane przez aplikację."
+    },
+    "Tarnów": {
+        average: {
+            pH: 7.48,
+            twardosc: 271.6,
+            azotany: 8.532,
+            zelazo: 0.01,
+            fluorki: 0,
+            chlor: 0.208,
+            chlorki: 0,
+            siarczany: 0,
+            potas: 0,
+            metnosc: 0,
+            barwa: 2.5,
+            mangan: 27.6,
+            magnez: 12.18,
+            olow: 1.0,
+            rtec: 0.05
+        },
+        stations: [
+            {
+                name: "SUW Zbylitowska Góra",
+                coords: [50.0148, 20.9719],
+                address: "ul. Wilsona 58, 33-100 Tarnów",
+                data: {
+                    pH: "7.7",
+                    twardosc: "213",
+                    azotany: "3.24",
+                    fluorki: "0",
+                    zelazo: "0.01",
+                    chlor: "0.21",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "2.5",
+                    mangan: "21",
+                    magnez: "10.4",
+                    olow: "1.0",
+                    rtec: "0.05"
+                },
+                history: []
+            },
+            {
+                name: "SUW Kępa Bogumiłowicka",
+                coords: [50.005, 20.965],
+                address: "Kępa Bogumiłowicka, Tarnów",
+                data: {
+                    pH: "7.5",
+                    twardosc: "240",
+                    azotany: "2.04",
+                    fluorki: "0",
+                    zelazo: "0.01",
+                    chlor: "0.17",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "2.5",
+                    mangan: "27",
+                    magnez: "11.9",
+                    olow: "1.0",
+                    rtec: "0.05"
+                },
+                history: []
+            },
+            {
+                name: "SUW Świerczków",
+                coords: [50.01, 20.96],
+                address: "ul. Chemiczna 126, Tarnów",
+                data: {
+                    pH: "7.5",
+                    twardosc: "261",
+                    azotany: "8.18",
+                    fluorki: "0",
+                    zelazo: "0.01",
+                    chlor: "0.25",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "2.5",
+                    mangan: "29",
+                    magnez: "10.8",
+                    olow: "1.0",
+                    rtec: "0.05"
+                },
+                history: []
+            },
+            {
+                name: "SUW Poręba Radlna",
+                coords: [50.02, 20.99],
+                address: "Poręba Radlna, 33-112",
+                data: {
+                    pH: "7.4",
+                    twardosc: "334",
+                    azotany: "11.8",
+                    fluorki: "0",
+                    zelazo: "0.01",
+                    chlor: "0.21",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "2.5",
+                    mangan: "34",
+                    magnez: "14.3",
+                    olow: "1.0",
+                    rtec: "0.05"
+                },
+                history: []
+            },
+            {
+                name: "SUW Łękawica",
+                coords: [50.03, 20.95],
+                address: "Łękawica, 33-112",
+                data: {
+                    pH: "7.3",
+                    twardosc: "310",
+                    azotany: "17.4",
+                    fluorki: "0",
+                    zelazo: "0.01",
+                    chlor: "0.20",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "2.5",
+                    mangan: "27",
+                    magnez: "13.5",
+                    olow: "1.0",
+                    rtec: "0.05"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [],
+        zones: {
+            "Błonie": "SUW Łękawica",
+            "Centrum": ["SUW Kępa Bogumiłowicka", "SUW Świerczków"],
+            "Chyszów": "SUW Świerczków",
+            "Gumniska": "SUW Zbylitowska Góra",
+            "Jasna": "SUW Zbylitowska Góra",
+            "Klikowa": "SUW Kępa Bogumiłowicka",
+            "Krzyż": "SUW Zbylitowska Góra",
+            "Legionów Dąbrowskiego": "SUW Łękawica",
+            "Mościce": "SUW Zbylitowska Góra",
+            "Nauczycielskie": "SUW Kępa Bogumiłowicka",
+            "Piaskówka": "SUW Poręba Radlna",
+            "Rzędzin": "SUW Kępa Bogumiłowicka",
+            "Strusina": "SUW Poręba Radlna",
+            "Westerplatte": "SUW Łękawica",
+            "Zabłocie": "SUW Świerczków",
+            "Zielone": "SUW Zbylitowska Góra"
+        },
+        info: "Dane na podstawie wyników badań Tarnowskich Wodociągów z 29 kwietnia 2025. Centrum obsługiwane przez Kępa Bogumiłowicka i Świerczków – dane uśredniane przez aplikację."
+    },
+    "Białystok": {
+        average: {
+            pH: 7.25,
+            twardosc: 215,
+            azotany: 5.3,
+            zelazo: 0.022,
+            fluorki: 0.205,
+            chlor: 0,
+            chlorki: 10.05,
+            siarczany: 28.3,
+            potas: 0,
+            metnosc: 0.2,
+            barwa: 5,
+            mangan: 10,
+            magnez: 0,
+            olow: 3,
+            rtec: 0.050
+        },
+        stations: [
+            {
+                name: "SUW Pietrasze",
+                coords: [53.1197, 23.1544],
+                address: "ul. Wysockiego 160, Białystok",
+                data: {
+                    pH: "7.20",
+                    twardosc: "211",
+                    azotany: "5.3",
+                    zelazo: "0.02",
+                    fluorki: "0.15",
+                    mangan: "10",
+                    chlorki: "11",
+                    siarczany: "50",
+                    potas: "0",
+                    metnosc: "0.20",
+                    barwa: "5",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "3",
+                    rtec: "0.050"
+                },
+                history: []
+            },
+            {
+                name: "SUW Jurowce",
+                coords: [53.1769, 23.1222],
+                address: "Jurowce, Białystok",
+                data: {
+                    pH: "7.30",
+                    twardosc: "219",
+                    azotany: "5.3",
+                    zelazo: "0.024",
+                    fluorki: "0.26",
+                    mangan: "10",
+                    chlorki: "9.1",
+                    siarczany: "6.6",
+                    potas: "0",
+                    metnosc: "0.20",
+                    barwa: "5",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "3",
+                    rtec: "0.050"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [],
+        zones: {
+            "Centrum": ["SUW Pietrasze", "SUW Jurowce"],
+            "Dojlidy": "SUW Pietrasze",
+            "Śródmieście": "SUW Pietrasze",
+            "Kleosin": "SUW Pietrasze",
+            "Nowe Miasto": "SUW Pietrasze",
+            "Piaski": "SUW Pietrasze",
+            "Piasta": "SUW Pietrasze",
+            "Popławki": "SUW Pietrasze",
+            "Starosielce": "SUW Pietrasze",
+            "Zawady": "SUW Pietrasze",
+            "Zdziary": "SUW Pietrasze",
+            "Zielone Wzgórza": "SUW Pietrasze",
+            "Tatary": "SUW Jurowce",
+            "Jurowce": "SUW Jurowce",
+            "Nowodworce": "SUW Jurowce",
+            "Bialostoczek": "SUW Jurowce",
+            "Bojary": "SUW Jurowce",
+            "Dolistowo": "SUW Jurowce",
+            "Goniwilk": "SUW Jurowce",
+            "Pogranicze": "SUW Jurowce",
+            "Srebrzyszcze": "SUW Jurowce"
+        },
+        info: "Dane na podstawie Wodociągów Białostockich, marzec 2025 dla SUW Pietrasze, wrzesień 2024 dla SUW Jurowce. Centrum obsługiwane przez obie stacje – dane uśredniane przez aplikację."
+    },
+    "Piła": {
+        average: {
+            pH: 7.75,
+            twardosc: 212,
+            azotany: 0.666,
+            zelazo: 0.035,
+            fluorki: 0,
+            chlor: 0.065,
+            chlorki: 0,
+            siarczany: 0,
+            potas: 0,
+            metnosc: 0,
+            barwa: 4,
+            mangan: 14,
+            magnez: 0,
+            olow: 0,
+            rtec: 0
+        },
+        stations: [
+            {
+                name: "SUW Piła",
+                coords: [53.1510, 16.7380],
+                address: "ul. Wałecka 20, Piła",
+                data: {
+                    pH: "7.75",
+                    twardosc: "212",
+                    azotany: "0.666",
+                    zelazo: "0.035",
+                    fluorki: "0",
+                    mangan: "14",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0",
+                    barwa: "4",
+                    magnez: "0",
+                    chlor: "0.065",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [],
+        zones: {
+            "Górne": "SUW Piła",
+            "Motylewo": "SUW Piła",
+            "Podlasie": "SUW Piła",
+            "Staszyce": "SUW Piła"
+        },
+        info: "Dane z MWiK Piła, I kwartał 2025 r."
+    },
+    "Siedlce": {
+        average: {
+            pH: 7.54,
+            twardosc: 144.8,
+            azotany: 0.576,
+            zelazo: 0.044,
+            fluorki: 0,
+            chlor: 0,
+            chlorki: 4.34,
+            siarczany: 5.14,
+            potas: 0,
+            metnosc: 0.194,
+            barwa: 7.2,
+            mangan: 7.2,
+            magnez: 6.5,
+            olow: 0.8,
+            rtec: 0
+        },
+        stations: [
+            {
+                name: "SUW Sekuła I",
+                coords: [52.1678, 22.2900],
+                address: "ul. Domanicka 101, 08-110 Siedlce",
+                data: {
+                    pH: "7.5",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.19",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Sekuła II",
+                coords: [52.1680, 22.2902],
+                address: "ul. Leśna 8, 08-110 Siedlce",
+                data: {
+                    pH: "7.4",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.12",
+                    barwa: "6",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Purzec",
+                coords: [52.2000, 22.3500],
+                address: "Purzec 28A, 08-110 Purzec",
+                data: {
+                    pH: "7.3",
+                    twardosc: "312",
+                    azotany: "1.24",
+                    zelazo: "0.04",
+                    fluorki: "0",
+                    mangan: "7",
+                    chlorki: "5.0",
+                    siarczany: "2.8",
+                    potas: "0",
+                    metnosc: "0.10",
+                    barwa: "7",
+                    magnez: "13.1",
+                    chlor: "0",
+                    olow: "2.0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Stok Lacki",
+                coords: [52.1700, 22.2500],
+                address: "ul. Chabrowa 20, 08-110 Stok Lacki",
+                data: {
+                    pH: "7.9",
+                    twardosc: "181",
+                    azotany: "0.838",
+                    zelazo: "0.04",
+                    fluorki: "0",
+                    mangan: "7",
+                    chlorki: "5.0",
+                    siarczany: "9.0",
+                    potas: "0",
+                    metnosc: "0.18",
+                    barwa: "9",
+                    magnez: "8.6",
+                    chlor: "0",
+                    olow: "2.0",
+                    rtec: "0"
+                },
+                history: []
+            },
+            {
+                name: "SUW Ujrzanów",
+                coords: [52.1800, 22.3200],
+                address: "Ujrzanów 118, 08-110 Ujrzanów",
+                data: {
+                    pH: "7.5",
+                    twardosc: "231",
+                    azotany: "0.858",
+                    zelazo: "0.04",
+                    fluorki: "0",
+                    mangan: "7",
+                    chlorki: "11.7",
+                    siarczany: "13.9",
+                    potas: "0",
+                    metnosc: "0.21",
+                    barwa: "7",
+                    magnez: "10.8",
+                    chlor: "0",
+                    olow: "2.0",
+                    rtec: "0"
+                },
+                history: []
+            }
+        ],
+        measurementPoints: [
+            {
+                name: "Sklep spożywczy Wołyńce",
+                coords: [52.1900, 22.2800],
+                address: "ul. Bursztynowa 18, 08-110 Wołyńce",
+                data: {
+                    pH: "7.4",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.49",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "Zespół Oświatowy Nowe Iganie",
+                coords: [52.1600, 22.3000],
+                address: "ul. Siedlecka 113, 08-110 Nowe Iganie",
+                data: {
+                    pH: "7.4",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.20",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "Straż Pożarna Składowa",
+                coords: [52.1650, 22.2850],
+                address: "ul. Składowa 7, 08-110 Siedlce",
+                data: {
+                    pH: "7.6",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.33",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "Miejskie Przedszkole Nr 1",
+                coords: [52.1700, 22.2950],
+                address: "ul. Wiązowa 7, 08-110 Siedlce",
+                data: {
+                    pH: "7.7",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.21",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "Zespół Oświatowy Golice",
+                coords: [52.1900, 22.3100],
+                address: "ul. Szkolna 2, 08-110 Golice",
+                data: {
+                    pH: "7.3",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.19",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "PSSE Siedlce",
+                coords: [52.1680, 22.2800],
+                address: "ul. Księcia Józefa Poniatowskiego 31, 08-110 Siedlce",
+                data: {
+                    pH: "7.5",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.15",
+                    barwa: "6",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "Straż Pożarna Czerwonego Krzyża",
+                coords: [52.1750, 22.2900],
+                address: "ul. Czerwonego Krzyża 45, 08-110 Siedlce",
+                data: {
+                    pH: "7.6",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.45",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "Zespół Oświatowo-Wychowawczy Strzała",
+                coords: [52.1500, 22.2700],
+                address: "ul. Sokołowska 1, 08-110 Chodów",
+                data: {
+                    pH: "7.3",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.36",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            },
+            {
+                name: "Miejska Biblioteka Publiczna filia nr 2",
+                coords: [52.1720, 22.3000],
+                address: "ul. Kaszubska 1, 08-110 Siedlce",
+                data: {
+                    pH: "7.6",
+                    twardosc: "0",
+                    azotany: "0",
+                    zelazo: "0.05",
+                    fluorki: "0",
+                    mangan: "15",
+                    chlorki: "0",
+                    siarczany: "0",
+                    potas: "0",
+                    metnosc: "0.57",
+                    barwa: "7",
+                    magnez: "0",
+                    chlor: "0",
+                    olow: "0",
+                    rtec: "0"
+                }
+            }
+        ],
+        zones: {
+            "Śródmieście": ["SUW Sekuła I", "SUW Sekuła II"],
+            "Osiedle Tysiąclecia": "SUW Sekuła I",
+            "Osiedle Młynarska": "SUW Sekuła II",
+            "Osiedle Północ": "SUW Purzec",
+            "Nowe Siedlce": "SUW Purzec",
+            "Osiedle Zachód": "SUW Stok Lacki",
+            "Roskosz": "SUW Stok Lacki",
+            "Osiedle Wschód": "SUW Ujrzanów",
+            "Sekuła": "SUW Ujrzanów"
+        },
+        info: "Dane z PWIK Siedlce, luty-marzec 2025 r. Śródmieście obsługiwane przez SUW Sekuła I i Sekuła II – dane uśredniane przez aplikację."
+    },"Głogów": {
+        "average": {
+            "pH": 7.10,
+            "twardosc": 252,
+            "azotany": 1.34,
+            "zelazo": 0.033,
+            "fluorki": 0,
+            "chlor": 0,
+            "chlorki": 0,
+            "siarczany": 0,
+            "potas": 0,
+            "metnosc": 0,
+            "barwa": 7.6,
+            "mangan": 30,
+            "magnez": 0,
+            "olow": 0.50,
+            "rtec": 0.10
+        },
+        "stations": [
+            {
+                "name": "PWiK Głogów",
+                "coords": [51.6422, 16.0725],
+                "address": "ul. Łąkowa 52, 67-200 Głogów",
+                "data": {
+                    "pH": 7.10,
+                    "twardosc": 252,
+                    "azotany": 1.34,
+                    "fluorki": 0,
+                    "zelazo": 0.033,
+                    "mangan": 30,
+                    "chlorki": 0,
+                    "siarczany": 0,
+                    "potas": 0,
+                    "metnosc": 0,
+                    "barwa": 7.6,
+                    "magnez": 0,
+                    "chlor": 0,
+                    "olow": 0.50,
+                    "rtec": 0.10
+                },
+                "history": []
+            }
+        ],
+        "measurementPoints": [],
+        "zones": {},
+        "info": "Dane z 2025 roku na podstawie analizy PWiK Głogów. Mętność: 0.24 NTU. Brak danych o strefach zaopatrywania – do uzupełnienia."
+    },"Konin": {
+        "average": {
+            "pH": 7.8,
+            "twardosc": 253,
+            "azotany": 2.65,
+            "zelazo": 0.030,
+            "fluorki": 0.23,
+            "chlor": 0.25,
+            "chlorki": 62,
+            "siarczany": 45,
+            "potas": 0,
+            "metnosc": 0,
+            "barwa": 0,
+            "mangan": 20,
+            "magnez": 16,
+            "olow": 0,
+            "rtec": 0
+        },
+        "stations": [
+            {
+                "name": "Stacja Wodociągowa Konin – Kurów",
+                "coords": [52.2167, 18.2500],
+                "address": "ul. Poznańska 49, 62-510 Konin",
+                "data": {
+                    "pH": 7.8,
+                    "twardosc": 253,
+                    "azotany": 2.65,
+                    "fluorki": 0.23,
+                    "zelazo": 0.030,
+                    "mangan": 20,
+                    "chlorki": 62,
+                    "siarczany": 45,
+                    "potas": 0,
+                    "metnosc": 0,
+                    "barwa": 0,
+                    "magnez": 16,
+                    "chlor": 0.25,
+                    "olow": 0,
+                    "rtec": 0
+                },
+                "history": []
+            }
+        ],
+        "measurementPoints": [],
+        "zones": {},
+        "info": "Dane z I kwartału 2025 roku na podstawie analizy PWiK Konin. Mętność: 0.20 NTU. Brak danych o strefach zaopatrywania – do uzupełnienia."
+    },"Jelenia Góra": {
+        "average": {
+            "pH": 7.2,
+            "twardosc": 32.5,
+            "azotany": 2.5,
+            "zelazo": 0.072,
+            "fluorki": 0.1525,
+            "chlor": 0,
+            "chlorki": 11.875,
+            "siarczany": 12.725,
+            "potas": 0,
+            "metnosc": 0,
+            "barwa": 0,
+            "mangan": 13.25,
+            "magnez": 2.0875,
+            "olow": 0.605,
+            "rtec": 0.10
+        },
+        "stations": [
+            {
+                "name": "Grabarów",
+                "coords": [50.8991, 15.7292],
+                "address": "ul. Dębowa 2, 58-500 Jelenia Góra",
+                "data": {
+                    "pH": 7.0,
+                    "twardosc": 88,
+                    "azotany": 6,
+                    "fluorki": 0.27,
+                    "zelazo": 0.022,
+                    "mangan": 17,
+                    "chlorki": 30,
+                    "siarczany": 26,
+                    "potas": 0,
+                    "metnosc": 0,
+                    "barwa": 0,
+                    "magnez": 6.0,
+                    "chlor": 0,
+                    "olow": 0.50,
+                    "rtec": 0.10
+                },
+                "history": []
+            },
+            {
+                "name": "Sosnówka",
+                "coords": [50.8186, 15.7234],
+                "address": "ul. Krośnieńska, 58-560 Jelenia Góra",
+                "data": {
+                    "pH": 7.3,
+                    "twardosc": 30,
+                    "azotany": 2,
+                    "fluorki": 0.14,
+                    "zelazo": 0.093,
+                    "mangan": 11,
+                    "chlorki": 10.0,
+                    "siarczany": 12,
+                    "potas": 0,
+                    "metnosc": 0,
+                    "barwa": 0,
+                    "magnez": 1.8,
+                    "chlor": 0,
+                    "olow": 0.50,
+                    "rtec": 0.10
+                },
+                "history": []
+            },
+            {
+                "name": "Leśniczówka",
+                "coords": [50.8423, 15.6837],
+                "address": "ul. Kręta, 58-560 Jelenia Góra",
+                "data": {
+                    "pH": 7.3,
+                    "twardosc": 7,
+                    "azotany": 1,
+                    "fluorki": 0.10,
+                    "zelazo": 0.037,
+                    "mangan": 10,
+                    "chlorki": 2.4,
+                    "siarczany": 8.4,
+                    "potas": 0,
+                    "metnosc": 0,
+                    "barwa": 0,
+                    "magnez": 0.27,
+                    "chlor": 0,
+                    "olow": 0.50,
+                    "rtec": 0.10
+                },
+                "history": []
+            },
+            {
+                "name": "Kamienna Wieża",
+                "coords": [50.9045, 15.6948],
+                "address": "ul. Wczasowa 10, 58-560 Jelenia Góra",
+                "data": {
+                    "pH": 7.2,
+                    "twardosc": 5,
+                    "azotany": 1,
+                    "fluorki": 0.10,
+                    "zelazo": 0.137,
+                    "mangan": 15,
+                    "chlorki": 5.1,
+                    "siarczany": 4.5,
+                    "potas": 0,
+                    "metnosc": 0,
+                    "barwa": 0,
+                    "magnez": 0.27,
+                    "chlor": 0,
+                    "olow": 0.92,
+                    "rtec": 0.10
+                },
+                "history": []
+            }
+        ],
+        "measurementPoints": [],
+        "zones": {
+            "Śródmieście": "Grabarów",
+            "Podzamcze": "Grabarów",
+            "Cieplice": "Sosnówka",
+            "Sobieszów": "Sosnówka",
+            "Jagniątków": "Leśniczówka",
+            "Marcinkowice": "Leśniczówka",
+            "Zabobrze": "Kamienna Wieża",
+            "Wojanów": "Kamienna Wieża"
+        },
+        "info": "Dane z II półrocza 2024 roku na podstawie analizy PWiK Wodnik Jelenia Góra. Twardość w mg/l CaCO₃, pomimo oznaczenia mg/l w tabeli. Brak danych o mętności i barwie. Strefy zaopatrywania są szacunkowe – do weryfikacji."
+    },"Kraków": {
+        "average": {
+            "pH": "0",
+            "twardosc": "0",
+            "azotany": "0",
+            "zelazo": "0",
+            "fluorki": "0",
+            "chlor": "0",
+            "chlorki": "0",
+            "siarczany": "0",
+            "potas": "0",
+            "metnosc": "0",
+            "barwa": "0",
+            "mangan": "0",
+            "magnez": "0"
+        },
+        "stations": [
+            {
+                "name": "ZUW Raba",
+                "coords": [50.0583, 19.9333],
+                "address": "Nowowiejska 27, 32-410 Dobczyce",
+                "data": {
+                    "pH": "7.8",
+                    "twardosc": "126",
+                    "azotany": "2.3",
+                    "zelazo": "<0.01",
+                    "fluorki": "0.04",
+                    "mangan": "<5",
+                    "chlor": "<0.3",
+                    "chlorki": "17.3",
+                    "siarczany": "17",
+                    "potas": "0",
+                    "metnosc": "<0.1",
+                    "barwa": "1",
+                    "magnez": "6.9"
+                },
+                "history": []
+            },
+            {
+                "name": "ZUW Rudawa",
+                "coords": [50.0750, 19.9333],
+                "address": "Filtrowa 1, 30-148 Kraków",
+                "data": {
+                    "pH": "7.7",
+                    "twardosc": "290",
+                    "azotany": "15.3",
+                    "zelazo": "<0.01",
+                    "fluorki": "0.04",
+                    "mangan": "<5",
+                    "chlor": "<0.3",
+                    "chlorki": "33.1",
+                    "siarczany": "45",
+                    "potas": "0",
+                    "metnosc": "<0.1",
+                    "barwa": "4",
+                    "magnez": "11.2"
+                },
+                "history": []
+            },
+            {
+                "name": "ZUW Dłubnia",
+                "coords": [50.0333, 19.9667],
+                "address": "Na Stoku 33, 31-708 Kraków",
+                "data": {
+                    "pH": "7.8",
+                    "twardosc": "304",
+                    "azotany": "19.5",
+                    "zelazo": "<0.01",
+                    "fluorki": "0.06",
+                    "mangan": "<5",
+                    "chlor": "<0.3",
+                    "chlorki": "28.0",
+                    "siarczany": "30",
+                    "potas": "0",
+                    "metnosc": "<0.1",
+                    "barwa": "3",
+                    "magnez": "10.2"
+                },
+                "history": []
+            },
+            {
+                "name": "ZUW Bielany",
+                "coords": [50.0833, 19.9167],
+                "address": "Księcia Józefa 299, 30-243 Kraków",
+                "data": {
+                    "pH": "7.5",
+                    "twardosc": "291",
+                    "azotany": "10.3",
+                    "zelazo": "<0.01",
+                    "fluorki": "0.10",
+                    "mangan": "<5",
+                    "chlor": "<0.3",
+                    "chlorki": "39.9",
+                    "siarczany": "70",
+                    "potas": "0",
+                    "metnosc": "<0.1",
+                    "barwa": "5",
+                    "magnez": "10.5"
+                },
+                "history": []
+            }
+        ],
+        "measurementPoints": [],
+        "zones": {
+            "Podgórze": "ZUW Raba",
+            "Podgórze Duchackie": "ZUW Raba",
+            "Kraków-Płaszów": "ZUW Raba",
+            "Swoszowice": "ZUW Raba",
+            "Bieżanów-Prokocim": "ZUW Raba",
+            "Czyżyny": "ZUW Raba",
+            "Mistrzejowice": "ZUW Raba",
+            "Prądnik Czerwony": "ZUW Rudawa",
+            "Prądnik Biały": "ZUW Rudawa",
+            "Bieńczyce": "ZUW Dłubnia",
+            "Wzgórza Krzesławickie": "ZUW Dłubnia",
+            "Nowa Huta": "ZUW Dłubnia",
+            "Stare Miasto": "ZUW Bielany",
+            "Grzegórzki": "ZUW Bielany",
+            "Krowodrza": "ZUW Bielany",
+            "Zwierzyniec": "ZUW Bielany",
+            "Debniki": "ZUW Bielany",
+            "Łagiewniki-Borek Fałęcki": "ZUW Bielany"
+        },
+        "info": "Dane pochodzą z oficjalnej strony wodociągów Kraków (2024).",
+        "fun_facts": {
+            "water_sources": "Woda w Krakowie pochodzi z czterech zakładów uzdatniania: ZUW Raba (Zbiornik Dobczycki), ZUW Rudawa (Rzeka Rudawa), ZUW Dłubnia (Rzeka Dłubnia) oraz ZUW Bielany (Rzeka Sanka i warstwy wodonośne)."
         }
-    }
+    },"Szczecin": {
+    average: {
+        pH: "0",
+        twardosc: "0",
+        azotany: "0",
+        zelazo: "0",
+        fluorki: "0",
+        chlor: "0",
+        chlorki: "0",
+        siarczany: "0",
+        potas: "0",
+        metnosc: "0",
+        barwa: "0",
+        mangan: "0",
+        magnez: "0",
+        olow: "0",
+        rtec: "0"
+    },
+    stations: [
+        {
+            name: "ZPW Miedwie",
+            coords: [53.3667, 14.8667],
+            address: "Rejon Jeziora Miedwie",
+            data: {
+                pH: "7.6",
+                twardosc: "238",
+                azotany: "0",
+                fluorki: "0.20",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "50",
+                siarczany: "96",
+                potas: "6.3",
+                metnosc: "0",
+                barwa: "0",
+                magnez: "18",
+                chlor: "0",
+                olow: "0",
+                rtec: "0"
+            },
+            history: []
+        },
+        {
+            name: "ZPW Pilchowo",
+            coords: [53.4667, 14.4833],
+            address: "Rejon Pilchowo",
+            data: {
+                pH: "7.7",
+                twardosc: "311",
+                azotany: "0",
+                fluorki: "0.13",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "25",
+                siarczany: "116",
+                potas: "2.3",
+                metnosc: "0",
+                barwa: "0",
+                magnez: "10",
+                chlor: "0",
+                olow: "0",
+                rtec: "0"
+            },
+            history: []
+        },
+        {
+            name: "ZPW Skolwin",
+            coords: [53.5167, 14.6167],
+            address: "Rejon Skolwin",
+            data: {
+                pH: "7.6",
+                twardosc: "182",
+                azotany: "0",
+                fluorki: "0.21",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "9",
+                siarczany: "0",
+                potas: "2.1",
+                metnosc: "0",
+                barwa: "0",
+                magnez: "9.3",
+                chlor: "0",
+                olow: "0",
+                rtec: "0"
+            },
+            history: []
+        },
+        {
+            name: "Strefa Wody Mieszanej",
+            coords: [53.4333, 14.5000],
+            address: "Rejon Zachód",
+            data: {
+                pH: "7.7",
+                twardosc: "275",
+                azotany: "0",
+                fluorki: "0.17",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "38",
+                siarczany: "106",
+                potas: "4.3",
+                metnosc: "0",
+                barwa: "0",
+                magnez: "14",
+                chlor: "0",
+                olow: "0",
+                rtec: "0"
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [
+        {
+            name: "ZPW Pomorzany M+P",
+            coords: [53.4000, 14.5333],
+            address: "ul. Szczawiowa 9-14",
+            data: {
+                pH: "7.6",
+                twardosc: "237",
+                azotany: "1.19",
+                fluorki: "0.18",
+                zelazo: "0.021",    // 21 µg/l = 0.021 mg/l
+                mangan: "<10",      // <10 µg/l
+                chlorki: "52",
+                siarczany: "92",
+                potas: "0",
+                metnosc: "0.09",    // 0,09 NTU
+                barwa: "<5",        // <5 mg/l Pt
+                magnez: "18",
+                chlor: "0.14",
+                olow: "<2.5",       // <2,5 µg/l
+                rtec: "<0.3"        // <0,3 µg/l
+            }
+        }
+    ],
+    zones: {
+        "Centrum": "ZPW Miedwie",
+        "Stare Miasto": "ZPW Miedwie",
+        "Turzyn": "ZPW Miedwie",
+        "Śródmieście-Zachód": "ZPW Miedwie",
+        "Nowe Miasto": "ZPW Miedwie",
+        "Dąbie": "ZPW Miedwie",
+        "Zdroje": "ZPW Miedwie",
+        "Podjuchy": "ZPW Miedwie",
+        "Słoneczne": "ZPW Miedwie",
+        "Bukowe-Klęskowo": "ZPW Miedwie",
+        "Gumieńce": "Strefa Wody Mieszanej",
+        "Krzekowo": "Strefa Wody Mieszanej",
+        "Osów": "Strefa Wody Mieszanej",
+        "Arkońskie-Niemierzyn": "Strefa Wody Mieszanej",
+        "Pogodno": "Strefa Wody Mieszanej",
+        "Świerczewo": "Strefa Wody Mieszanej",
+        "Warszewo": "ZPW Pilchowo",
+        "Żelechowa": "ZPW Pilchowo",
+        "Bukowo": "ZPW Pilchowo",
+        "Golęcino-Gocław": "ZPW Pilchowo",
+        "Stołczyn": "ZPW Skolwin",
+        "Skolwin": "ZPW Skolwin"
+    },
+    info: "Data from April 2025. ZPW Miedwie supplies most of central and southern Szczecin, while ZPW Pilchowo and ZPW Skolwin cover the northern parts. Strefa Wody Mieszanej combines water from ZPW Miedwie and ZPW Pilchowo."
+},"Dąbrowa Górnicza": {
+    average: {
+        pH: "7.3",
+        twardosc: "276",
+        azotany: "11.0",
+        fluorki: "0.12",
+        zelazo: "0.04",
+        mangan: "0.5",
+        chlorki: "22.9",
+        siarczany: "60",
+        barwa: "5",
+        metnosc: "0.55",
+        magnez: "26.0",
+        potas: "0.57",
+        olow: "0",
+        rtec: "0",
+        chlor: "0.14"
+    },
+    stations: [
+        {
+            name: "SUW Ujejsce",
+            coords: [50.3667, 19.2500],
+            address: "Rejon Ujejsce",
+            data: {
+                pH: "7.3",
+                twardosc: "350",
+                azotany: "22",
+                fluorki: "0.12",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "18",
+                siarczany: "61",
+                barwa: "5",
+                metnosc: "0.30",
+                magnez: "37.2",
+                potas: "0.92",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.13"
+            },
+            history: []
+        },
+        {
+            name: "SUW Ząbkowice",
+            coords: [50.3667, 19.3167],
+            address: "Rejon Ząbkowice",
+            data: {
+                pH: "7.8",
+                twardosc: "258",
+                azotany: "9.4",
+                fluorki: "0.11",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "14",
+                siarczany: "74",
+                barwa: "5",
+                metnosc: "0.52",
+                magnez: "27.3",
+                potas: "0",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.21"
+            },
+            history: []
+        },
+        {
+            name: "SUW Trzebiesławice",
+            coords: [50.3333, 19.2500],
+            address: "Rejon Trzebiesławice",
+            data: {
+                pH: "6.5",
+                twardosc: "275",
+                azotany: "5.2",
+                fluorki: "0.13",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "38",
+                siarczany: "41",
+                barwa: "5",
+                metnosc: "0.52",
+                magnez: "24.9",
+                potas: "0",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.07"
+            },
+            history: []
+        },
+        {
+            name: "Zbiorczy SUW zakupiony",
+            coords: [50.3200, 19.2000],
+            address: "Dąbrowa Górnicza - zakupiona woda",
+            data: {
+                pH: "7.5",
+                twardosc: "222",
+                azotany: "7.5",
+                fluorki: "0.10",
+                zelazo: "0.15",
+                mangan: "2.0",
+                chlorki: "21.5",
+                siarczany: "63",
+                barwa: "5",
+                metnosc: "0.85",
+                magnez: "14.5",
+                potas: "1.35",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.13"
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [
+        {
+            name: "ul. Topolowa 18",
+            coords: [50.3700, 19.2500],
+            address: "ul. Topolowa 18",
+            data: {
+                pH: "7.3",
+                twardosc: "350",
+                azotany: "22",
+                fluorki: "0.12",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "18",
+                siarczany: "61",
+                barwa: "5",
+                metnosc: "0.30",
+                magnez: "37.2",
+                potas: "0.92",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.13"
+            }
+        },
+        {
+            name: "ul. Księdza Stanisława 5",
+            coords: [50.3700, 19.3200],
+            address: "ul. Księdza Stanisława 5",
+            data: {
+                pH: "7.8",
+                twardosc: "258",
+                azotany: "9.4",
+                fluorki: "0.11",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "14",
+                siarczany: "74",
+                barwa: "5",
+                metnosc: "0.52",
+                magnez: "27.3",
+                potas: "0",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.21"
+            }
+        },
+        {
+            name: "ul. Zachodnia 107",
+            coords: [50.3300, 19.2500],
+            address: "ul. Zachodnia 107",
+            data: {
+                pH: "6.5",
+                twardosc: "275",
+                azotany: "5.2",
+                fluorki: "0.13",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "38",
+                siarczany: "41",
+                barwa: "5",
+                metnosc: "0.52",
+                magnez: "24.9",
+                potas: "0",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.07"
+            }
+        },
+        {
+            name: "ul. Podlesie",
+            coords: [50.3100, 19.1900],
+            address: "ul. Podlesie",
+            data: {
+                pH: "7.2",
+                twardosc: "238",
+                azotany: "2.4",
+                fluorki: "0.084",
+                zelazo: "0.052",
+                mangan: "0",
+                chlorki: "23",
+                siarczany: "78",
+                barwa: "5",
+                metnosc: "0.49",
+                magnez: "15.8",
+                potas: "2.81",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.07"
+            }
+        },
+        {
+            name: "Ratanice",
+            coords: [50.3500, 19.3000],
+            address: "Ratanice",
+            data: {
+                pH: "7.4",
+                twardosc: "293",
+                azotany: "0",
+                fluorki: "0.11",
+                zelazo: "0.053",
+                mangan: "0",
+                chlorki: "26",
+                siarczany: "100",
+                barwa: "5",
+                metnosc: "0.56",
+                magnez: "24.9",
+                potas: "1.68",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.03"
+            }
+        },
+        {
+            name: "Kuźniczka Nowa",
+            coords: [50.3400, 19.2800],
+            address: "Kuźniczka Nowa",
+            data: {
+                pH: "7.7",
+                twardosc: "246",
+                azotany: "26",
+                fluorki: "0.16",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "17",
+                siarczany: "48",
+                barwa: "5",
+                metnosc: "0.84",
+                magnez: "12.8",
+                potas: "0",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.10"
+            }
+        },
+        {
+            name: "ul. Gołonoska",
+            coords: [50.3300, 19.2000],
+            address: "ul. Gołonoska",
+            data: {
+                pH: "7.6",
+                twardosc: "110",
+                azotany: "1.7",
+                fluorki: "0.052",
+                zelazo: "0.510",
+                mangan: "8.0",
+                chlorki: "20",
+                siarczany: "25",
+                barwa: "5",
+                metnosc: "1.5",
+                magnez: "4.56",
+                potas: "2.60",
+                olow: "0",
+                rtec: "0",
+                chlor: "0.30"
+            }
+        },
+        {
+            name: "ul. Dolomitowa 6",
+            coords: [50.3000, 19.2500],
+            address: "ul. Dolomitowa 6",
+            data: {
+                pH: "7.7",
+                twardosc: "308",
+                azotany: "9.8",
+                fluorki: "0.11",
+                zelazo: "0",
+                mangan: "0",
+                chlorki: "15",
+                siarczany: "47",
+                barwa: "5",
+                metnosc: "0.22",
+                magnez: "25.4",
+                potas: "0",
+                olow: "0",
+                rtec: "0",
+                chlor: "0"
+            }
+        }
+    ],
+    zones: {
+        "Ujejsce": "SUW Ujejsce",
+        "Sikorka": "SUW Ujejsce",
+        "Łosień": "SUW Ujejsce",
+        "Ząbkowice": "SUW Ząbkowice",
+        "Tucznawa": "SUW Ząbkowice",
+        "Trzebiesławice": "SUW Trzebiesławice",
+        "Strzemieszyce": "SUW Trzebiesławice",
+        "Centrum": "Zbiorczy SUW zakupiony",
+        "Gołonóg": "Zbiorczy SUW zakupiony",
+        "Reden": "Zbiorczy SUW zakupiony",
+        "Mydlice": "Zbiorczy SUW zakupiony",
+        "Błędów": "Zbiorczy SUW zakupiony",
+        "Zielona": "Zbiorczy SUW zakupiony",
+        "Łęknice": "Zbiorczy SUW zakupiony",
+        "Okradzionów": "Zbiorczy SUW zakupiony",
+        "Antoniów": "Zbiorczy SUW zakupiony",
+        "Łęka": "Zbiorczy SUW zakupiony",
+        "Marianki": "Zbiorczy SUW zakupiony",
+        "Bugaj": "Zbiorczy SUW zakupiony",
+        "Ratanice": "Zbiorczy SUW zakupiony",
+        "Kuźniczka Nowa": "Zbiorczy SUW zakupiony"
+    },
+    info: "Zaopatrzenie w wodę w Dąbrowie Górniczej pochodzi z trzech własnych stacji uzdatniania wody (Ujejsce, Ząbkowice, Trzebiesławice) oraz wody zakupionej od zewnętrznych dostawców (GPW Katowice, ZGK Psary, PWiK Olkusz, P.U.W HKW, PPHU Dolomit). Punkty pomiarowe to miejsca w sieci wodociągowej, gdzie pobierano próbki wody, prawdopodobnie z kranu (kurek czerpalny), np. próbka z ul. Dolomitowa 6 została pobrana 01.03.2024."
+},"Gdynia": {
+    average: {
+        pH: "7.5",
+        twardosc: "213",
+        azotany: "0.75",
+        fluorki: "0.25",
+        zelazo: "0.035",
+        mangan: "11",
+        chlorki: "14",
+        siarczany: "40",
+        barwa: "5",
+        metnosc: "0.30",
+        magnez: "8",
+        potas: "2",
+        olow: "1.0",
+        rtec: "0.10"
+    },
+    stations: [
+        {
+            name: "SUW Rumia",
+            coords: [54.5000, 18.4000],
+            address: "Rumia, stacja uzdatniania wody",
+            data: {
+                pH: "7.4",
+                twardosc: "232",
+                azotany: "0.65",
+                fluorki: "0.20",
+                zelazo: "0.090",
+                mangan: "10",
+                chlorki: "16",
+                siarczany: "67",
+                barwa: "5",
+                metnosc: "0.30",
+                magnez: "7",
+                potas: "2",
+                olow: "1.0",
+                rtec: "0.10"
+            },
+            history: []
+        },
+        {
+            name: "SUW Reda",
+            coords: [54.5000, 18.5000],
+            address: "Reda, stacja uzdatniania wody",
+            data: {
+                pH: "7.4",
+                twardosc: "268",
+                azotany: "0.50",
+                fluorki: "0.21",
+                zelazo: "0.052",
+                mangan: "10",
+                chlorki: "20",
+                siarczany: "44",
+                barwa: "7",
+                metnosc: "0.30",
+                magnez: "9",
+                potas: "2",
+                olow: "1.0",
+                rtec: "0.10"
+            },
+            history: []
+        },
+        {
+            name: "SUW Sieradzka",
+            coords: [54.4500, 18.5000],
+            address: "Gdynia, rejon centralny",
+            data: {
+                pH: "7.5",
+                twardosc: "197",
+                azotany: "0.50",
+                fluorki: "0.30",
+                zelazo: "0.030",
+                mangan: "10",
+                chlorki: "12",
+                siarczany: "33",
+                barwa: "4",
+                metnosc: "0.30",
+                magnez: "11",
+                potas: "2",
+                olow: "1.0",
+                rtec: "0.10"
+            },
+            history: []
+        },
+        {
+            name: "SUW Kolibki",
+            coords: [54.4500, 18.5000],
+            address: "Gdynia, rejon południowy",
+            data: {
+                pH: "7.5",
+                twardosc: "224",
+                azotany: "0.36",
+                fluorki: "0.26",
+                zelazo: "0.019",
+                mangan: "10",
+                chlorki: "12",
+                siarczany: "39",
+                barwa: "4",
+                metnosc: "0.30",
+                magnez: "9",
+                potas: "2",
+                olow: "1.0",
+                rtec: "0.10"
+            },
+            history: []
+        },
+        {
+            name: "SUW Wielki Kack",
+            coords: [54.4500, 18.5000],
+            address: "Gdynia, rejon południowo-zachodni",
+            data: {
+                pH: "7.7",
+                twardosc: "167",
+                azotany: "1.2",
+                fluorki: "0.24",
+                zelazo: "0.030",
+                mangan: "13",
+                chlorki: "8",
+                siarczany: "37",
+                barwa: "3",
+                metnosc: "0.30",
+                magnez: "6",
+                potas: "2",
+                olow: "1.0",
+                rtec: "0.10"
+            },
+            history: []
+        },
+        {
+            name: "SUW Wiczlino",
+            coords: [54.4500, 18.5500],
+            address: "Gdynia, rejon Wiczlino",
+            data: {
+                pH: "7.7",
+                twardosc: "187",
+                azotany: "2.3",
+                fluorki: "0.26",
+                zelazo: "0.051",
+                mangan: "15",
+                chlorki: "15",
+                siarczany: "17",
+                barwa: "4",
+                metnosc: "0.30",
+                magnez: "6",
+                potas: "2",
+                olow: "1.0",
+                rtec: "0.10"
+            },
+            history: []
+        }
+    ],
+    zones: {
+        "Pogórze": "SUW Rumia",
+        "Obłuże": "SUW Rumia",
+        "Oksywie": "SUW Rumia",
+        "Babie Doły": "SUW Rumia",
+        "Chylonia": "SUW Reda",
+        "Cisowa": "SUW Reda",
+        "Pustki Cisowskie": "SUW Reda",
+        "Demptowo": "SUW Reda",
+        "Leszczynki": "SUW Reda",
+        "Grabówek": "SUW Reda",
+        "Śródmieście": "SUW Reda",
+        "Redłowo": "SUW Sieradzka",
+        "Mały Kack": "SUW Sieradzka",
+        "Wiczlino": "SUW Sieradzka",
+        "Wz. Św. Maksymiliana": "SUW Sieradzka",
+        "Kamienna Góra": "SUW Sieradzka",
+        "Orłowo": "SUW Kolibki",
+        "Karwiny": "SUW Wielki Kack",
+        "Wielki Kack": "SUW Wielki Kack",
+        "Działki Leśne": "SUW Wiczlino",
+        "Witomino": "SUW Wiczlino",
+        "Dąbrowa": "SUW Wiczlino",
+        "Chwarzno": "SUW Wiczlino"
+    },
+    info: "Zaopatrzenie w wodę w Gdyni pochodzi z sześciu stacji uzdatniania wody (SUW Rumia, Reda, Sieradzka, Kolibki, Wielki Kack, Wiczlino) zarządzanych przez PEWiK Gdynia. Dane dotyczą wyłącznie dzielnic Gdyni i nie obejmują innych miejscowości (np. Rumia, Reda), które PEWiK również zaopatruje. Brak danych o chlorze – zgodnie z logiką aplikacji, pokazano mangan."
+},"Warszawa": {
+    average: {
+        pH: "0",
+        twardosc: "0",
+        azotany: "0",
+        zelazo: "0",
+        fluorki: "0",
+        chlor: "0",
+        chlorki: "0",
+        siarczany: "0",
+        potas: "0",
+        metnosc: "0",
+        barwa: "0",
+        mangan: "0",
+        magnez: "0",
+        olow: "0",
+        rtec: "0"
+    },
+    stations: [
+        {
+            name: "SUW Filtry",
+            coords: [52.2186, 20.9833],
+            address: "ul. Koszykowa 81, 02-008",
+            data: {
+                pH: "7.4",
+                twardosc: "292",
+                azotany: "9.4",
+                zelazo: "0.02",
+                mangan: "5",
+                fluorki: "0.15",
+                barwa: "3",
+                siarczany: "79",
+                chlorki: "190",
+                olow: "0.5",
+                rtec: "0.10",
+                chlor: "brak danych",
+                metnosc: "0.12",
+                potas: "brak danych",
+                magnez: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "SUW Praga",
+            coords: [52.2522, 21.0667],
+            address: "ul. Brukselska 21, 03-973",
+            data: {
+                pH: "7.5",
+                twardosc: "291",
+                azotany: "8.9",
+                zelazo: "0.023",
+                mangan: "5",
+                fluorki: "0.17",
+                barwa: "2",
+                siarczany: "62",
+                chlorki: "193",
+                olow: "0.5",
+                rtec: "0.10",
+                chlor: "brak danych",
+                metnosc: "0.21",
+                potas: "brak danych",
+                magnez: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "Zakład Północny",
+            coords: [52.3167, 21.0167],
+            address: "ul. Czajki 10, 03-149",
+            data: {
+                pH: "7.3",
+                twardosc: "276",
+                azotany: "8.4",
+                zelazo: "0.02",
+                mangan: "10",
+                fluorki: "0.071",
+                barwa: "2",
+                siarczany: "100",
+                chlorki: "25",
+                olow: "0.5",
+                rtec: "0.10",
+                chlor: "0.13",
+                metnosc: "0.20",
+                potas: "brak danych",
+                magnez: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "SUW Radość",
+            coords: [52.1667, 21.1833],
+            address: "Radość, Wawer",
+            data: {
+                pH: "7.4",
+                twardosc: "brak danych",
+                azotany: "brak danych",
+                zelazo: "0.022",
+                mangan: "5",
+                fluorki: "brak danych",
+                barwa: "6",
+                siarczany: "brak danych",
+                chlorki: "brak danych",
+                olow: "brak danych",
+                rtec: "brak danych",
+                chlor: "0.28",
+                metnosc: "0.28",
+                potas: "brak danych",
+                magnez: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "SUW Falenica",
+            coords: [52.1500, 21.2000],
+            address: "Falenica, Wawer",
+            data: {
+                pH: "7.5",
+                twardosc: "brak danych",
+                azotany: "brak danych",
+                zelazo: "0.02",
+                mangan: "5",
+                fluorki: "brak danych",
+                barwa: "2",
+                siarczany: "brak danych",
+                chlorki: "brak danych",
+                olow: "brak danych",
+                rtec: "brak danych",
+                chlor: "brak danych",
+                metnosc: "0.25",
+                potas: "brak danych",
+                magnez: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "SUW Stara Miłosna",
+            coords: [52.2000, 21.2500],
+            address: "Stara Miłosna, Wesoła",
+            data: {
+                pH: "7.4",
+                twardosc: "brak danych",
+                azotany: "brak danych",
+                zelazo: "0.02",
+                mangan: "5",
+                fluorki: "brak danych",
+                barwa: "6",
+                siarczany: "brak danych",
+                chlorki: "brak danych",
+                olow: "brak danych",
+                rtec: "brak danych",
+                chlor: "brak danych",
+                metnosc: "0.22",
+                potas: "brak danych",
+                magnez: "brak danych"
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [],
+    zones: {
+        "Wola": "SUW Filtry",
+        "Bemowo": "SUW Filtry",
+        "Ursus": "SUW Filtry",
+        "Włochy": "SUW Filtry",
+        "Ochota": "SUW Filtry",
+        "Ursynów": "SUW Filtry",
+        "Mokotów": "SUW Filtry",
+        "Wilanów": "SUW Filtry",
+        "Pruszków": "SUW Filtry",
+        "Piastów": "SUW Filtry",
+        "Raszyn": "SUW Filtry",
+        "Praga-Północ": "SUW Praga",
+        "Praga-Południe": "SUW Praga",
+        "Targówek": "SUW Praga",
+        "Rembertów": "SUW Praga",
+        "Białołęka": "Zakład Północny",
+        "Śródmieście": "SUW Filtry",
+        "Żoliborz": "SUW Filtry",
+        "Wawer": "SUW Radość",
+        "Wesoła": "SUW Stara Miłosna"
+    },
+    info: "Dane ze stycznia 2025. Śródmieście i Żoliborz używają uśrednionych danych z SUW Filtry i SUW Praga z powodu strefy mieszania."
+},"Kielce": {
+    average: {
+        pH: "0",
+        twardosc: "0",
+        azotany: "0",
+        zelazo: "0",
+        fluorki: "0",
+        chlor: "0",
+        chlorki: "0",
+        siarczany: "0",
+        potas: "0",
+        metnosc: "0",
+        barwa: "0",
+        mangan: "0",
+        magnez: "0",
+        olow: "0",
+        rtec: "0"
+    },
+    stations: [
+        {
+            name: "Ujęcie Zagnańsk",
+            coords: [50.9833, 20.6500],
+            address: "Zagnańsk, 26-050",
+            data: {
+                pH: "7.4",
+                twardosc: "202.2",
+                azotany: "17.1",
+                zelazo: "0.044",
+                fluorki: "0.1",
+                chlor: "0.16",
+                chlorki: "15.8",
+                siarczany: "51.5",
+                potas: "brak danych",
+                metnosc: "<1.0",
+                barwa: "<5",
+                mangan: "5",
+                magnez: "12.1",
+                olow: "<2",
+                rtec: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "Ujęcie Białogon",
+            coords: [50.8557, 20.5572],
+            address: "Białogon, 25-406 Kielce",
+            data: {
+                pH: "7.8",
+                twardosc: "258.2",
+                azotany: "21.1",
+                zelazo: "0.012",
+                fluorki: "0.1",
+                chlor: "brak danych",
+                chlorki: "29.0",
+                siarczany: "39.1",
+                potas: "brak danych",
+                metnosc: "<1.0",
+                barwa: "<5",
+                mangan: "12",
+                magnez: "8.7",
+                olow: "5",
+                rtec: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "Studnie awaryjno-wspomagające",
+            coords: [50.8667, 20.6167],
+            address: "Różne lokalizacje w Kielcach",
+            data: {
+                pH: "7.7",
+                twardosc: "326.9",
+                azotany: "29.6",
+                zelazo: "0.03",
+                fluorki: "0.1",
+                chlor: "brak danych",
+                chlorki: "29.3",
+                siarczany: "45.1",
+                potas: "brak danych",
+                metnosc: "<1.0",
+                barwa: "<5",
+                mangan: "5",
+                magnez: "17.8",
+                olow: "3.9",
+                rtec: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "Ujęcie Dyminy",
+            coords: [50.8167, 20.6167],
+            address: "Dyminy, 25-900 Kielce",
+            data: {
+                pH: "7.8",
+                twardosc: "324.6",
+                azotany: "23.3",
+                zelazo: "0.02",
+                fluorki: "0.1",
+                chlor: "brak danych",
+                chlorki: "33.0",
+                siarczany: "31.9",
+                potas: "brak danych",
+                metnosc: "<1.0",
+                barwa: "<5",
+                mangan: "5",
+                magnez: "26.8",
+                olow: "1.5",
+                rtec: "brak danych"
+            },
+            history: []
+        },
+        {
+            name: "Ujęcie Bolechowice",
+            coords: [50.7833, 20.5833],
+            address: "Bolechowice, 26-052 Nowiny",
+            data: {
+                pH: "7.9",
+                twardosc: "270.0",
+                azotany: "17.0",
+                zelazo: "0.02",
+                fluorki: "0.1",
+                chlor: "brak danych",
+                chlorki: "49.6",
+                siarczany: "50.8",
+                potas: "brak danych",
+                metnosc: "<1.0",
+                barwa: "<5",
+                mangan: "5",
+                magnez: "10.5",
+                olow: "4",
+                rtec: "brak danych"
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [],
+    zones: {
+        "Centrum": "Ujęcie Białogon",
+        "Białogon": "Ujęcie Białogon",
+        "Szydłówek": "Ujęcie Białogon",
+        "Dąbrowa": "Ujęcie Białogon",
+        "Czarnów": "Ujęcie Białogon",
+        "Barwinek": "Ujęcie Białogon",
+        "Ślichowice": "Ujęcie Zagnańsk",
+        "Malików": "Ujęcie Zagnańsk",
+        "Na Stoku": "Ujęcie Zagnańsk",
+        "Niewachlów I": "Ujęcie Zagnańsk",
+        "Niewachlów II": "Ujęcie Zagnańsk",
+        "Dyminy": "Ujęcie Dyminy",
+        "Skrzetle": "Ujęcie Dyminy",
+        "Sitkówka": "Ujęcie Dyminy"
+    },
+    info: "Dane z 2025 roku, na podstawie parametrów jakości wody."
+},"Katowice": {
+    average: {
+        pH: "0",
+        twardosc: "0",
+        azotany: "0",
+        zelazo: "0",
+        fluorki: "0",
+        chlor: "0",
+        chlorki: "0",
+        siarczany: "0",
+        potas: "0",
+        metnosc: "0",
+        barwa: "0",
+        mangan: "0",
+        magnez: "0",
+        olow: "0",
+        rtec: "0"
+    },
+    stations: [
+        {
+            name: "Średnia dla Katowic",
+            coords: [50.2649, 19.0238],
+            address: "Katowice, dane uśrednione",
+            data: {
+                pH: "7.5",
+                twardosc: "0",
+                azotany: "3.4",
+                zelazo: "0.025",
+                fluorki: "0",
+                chlor: "0.21",
+                chlorki: "21",
+                siarczany: "58",
+                potas: "0",
+                metnosc: "0.5",
+                barwa: "5",
+                mangan: "5",
+                magnez: "0",
+                olow: "<3.0",
+                rtec: "0"
+            },
+            history: []
+        }
+    ],
+    measurementPoints: [],
+    zones: {
+        "Śródmieście": "Średnia dla Katowic",
+        "Koszutka": "Średnia dla Katowic",
+        "Bogucice": "Średnia dla Katowic",
+        "Dąb": "Średnia dla Katowic",
+        "Wełnowiec-Józefowiec": "Średnia dla Katowic",
+        "Załęże": "Średnia dla Katowic",
+        "Brynów": "Średnia dla Katowic",
+        "Ligota-Panewniki": "Średnia dla Katowic",
+        "Zarzecze": "Średnia dla Katowic",
+        "Piotrowice-Ochojec": "Średnia dla Katowic",
+        "Podlesie": "Średnia dla Katowic",
+        "Szopienice-Burowiec": "Średnia dla Katowic",
+        "Janów-Nikiszowiec": "Średnia dla Katowic",
+        "Giszowiec": "Średnia dla Katowic",
+        "Murcki": "Średnia dla Katowic",
+        "Kostuchna": "Średnia dla Katowic"
+    },
+    info: "Dane z 2025 roku,obecnie tylko uśrednione dla Katowic. W przyszłości planujemy dodać szczegółowe dane dla konkretnych SUW."
+}
 };
-
 export const bottleData = {
     "Nałęczowianka": {
         wapn: { value: 130, norm: "Korzystna: >150 mg/l", color: "orange", desc: "Wapń: Dobry dla kości, ale trochę mało!" },
@@ -2230,13 +5336,20 @@ export async function findWaterStation() {
         });
         L.marker([userLat, userLon]).addTo(window.map).bindPopup(`Lokalizacja: ${street}, ${city}`).openPopup();
 
+        // Najpierw sprawdź dopasowanie adresu SUW
         let closestStation = null;
         let minStationDistance = Infinity;
         stations.forEach(station => {
-            const distance = parseFloat(getDistance(userLat, userLon, station.coords[0], station.coords[1]));
-            if (distance < minStationDistance) {
-                minStationDistance = distance;
+            // Sprawdź, czy ulica zawiera nazwę ulicy z adresu SUW (case-insensitive)
+            if (station.address.toLowerCase().includes(street.toLowerCase())) {
                 closestStation = station;
+                minStationDistance = 0; // Priorytet dla dopasowania adresu
+            } else {
+                const distance = parseFloat(getDistance(userLat, userLon, station.coords[0], station.coords[1]));
+                if (distance < minStationDistance) {
+                    minStationDistance = distance;
+                    closestStation = station;
+                }
             }
         });
 
@@ -2256,18 +5369,17 @@ export async function findWaterStation() {
             L.marker(closestStation.coords).addTo(window.map).bindPopup(`${closestStation.name} (${closestStation.address})`).openPopup();
 
             const params = closestStation.data;
-
             const basicParams = getSelectedParameters(params);
             const premiumParams = getPremiumParameters(params);
             const allParams = [...basicParams, ...premiumParams];
             const parameters = allParams.map(param => {
                 const color = getColor(param.name, param.value);
                 const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
-                const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm; // Używamy jednostki z param.unit w normie
+                const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm;
                 return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${normWithUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
             });
 
-            waterInfoHTML += `<h4>Najbliższa stacja SUW: ${closestStation.name} (${closestStation.address})</h4><p>Odległość: ${minStationDistance} km</p><p class="note">To najbliższa stacja uzdatniania wody na podstawie Twojej lokalizacji.</p>Jakość wody:<br>${parameters.join('')}`;
+            waterInfoHTML += `<h4>Najbliższa stacja SUW: ${closestStation.name} (${closestStation.address})</h4><p>Odległość: ${minStationDistance.toFixed(2)} km</p><p class="note">To najbliższa stacja uzdatniania wody na podstawie Twojej lokalizacji.</p>Jakość wody:<br>${parameters.join('')}`;
             const filterRec = suggestWaterFilter(params);
             waterInfoHTML += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
         } else {
@@ -2282,11 +5394,11 @@ export async function findWaterStation() {
             const pointParameters = pointAllParams.map(param => {
                 const color = getColor(param.name, param.value);
                 const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
-                const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm; // Używamy jednostki z param.unit w normie
+                const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm;
                 return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${normWithUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
             });
 
-            waterInfoHTML += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${minPointDistance} km</p><p class="note">Dane z punktów pomiarowych mogą być bardziej precyzyjne dla Twojej lokalizacji.</p>Jakość wody:<br>${pointParameters.join('')}`;
+            waterInfoHTML += `<h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${minPointDistance.toFixed(2)} km</p><p class="note">Dane z punktów pomiarowych mogą być bardziej precyzyjne dla Twojej lokalizacji.</p>Jakość wody:<br>${pointParameters.join('')}`;
             const pointFilterRec = suggestWaterFilter(pointParams);
             waterInfoHTML += `<p><strong>Rekomendacja:</strong> ${pointFilterRec.summary}</p>`;
             L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
@@ -2339,42 +5451,109 @@ export function showDistrictData(userLat, userLon) {
         const stations = waterStations[city]?.stations || [];
         const measurementPoints = waterStations[city]?.measurementPoints || [];
         const zones = waterStations[city]?.zones || {};
-        const stationName = zones[selectedDistrict];
-        const station = stations.find(s => s.name === stationName);
+        const suw = zones[selectedDistrict];
 
-        if (!station) {
+        console.log('Wybrana dzielnica:', selectedDistrict, 'SUW:', suw); // Debug
+
+        if (!suw) {
             stationInfo.innerHTML = '<p>Brak danych dla wybranej dzielnicy!</p>';
             return;
         }
 
-        const distance = parseFloat(getDistance(userLat, userLon, station.coords[0], station.coords[1]));
-        window.map.setView(station.coords, 14);
+        // Funkcja parseValue z ranking.js
+        function parseValue(value) {
+            if (typeof value === 'string') {
+                if (value.startsWith('<')) {
+                    return parseFloat(value.replace('<', '')) || 0;
+                } else if (value.includes('–')) {
+                    const range = value.split('–').map(parseFloat);
+                    return (range[0] + range[1]) / 2;
+                } else if (value === 'Brak danych') {
+                    return 0;
+                }
+                return parseFloat(value) || 0;
+            }
+            return parseFloat(value) || 0;
+        }
+
+        let params = {};
+        let stationNames = [];
+        let avgCoords = [0, 0];
+        let stationCount = 0;
+
+        if (typeof suw === 'string') {
+            const station = stations.find(s => s.name === suw);
+            if (!station) {
+                stationInfo.innerHTML = '<p>Brak danych dla SUW w dzielnicy!</p>';
+                return;
+            }
+            params = station.data;
+            stationNames = [station.name];
+            avgCoords = station.coords;
+            stationCount = 1;
+        } else if (Array.isArray(suw)) {
+            const validStations = suw.map(name => stations.find(s => s.name === name)).filter(s => s);
+            if (validStations.length === 0) {
+                stationInfo.innerHTML = '<p>Brak danych dla SUW-ów w dzielnicy!</p>';
+                return;
+            }
+            // Uśrednianie parametrów
+            const paramKeys = Object.keys(validStations[0].data);
+            paramKeys.forEach(key => {
+                const values = validStations.map(s => parseValue(s.data[key])).filter(v => !isNaN(v));
+                params[key] = values.length > 0 ? values.reduce((sum, v) => sum + v, 0) / values.length : 0;
+            });
+            stationNames = validStations.map(s => s.name);
+            // Uśrednianie współrzędnych
+            avgCoords = validStations.reduce(
+                (acc, s) => [acc[0] + s.coords[0], acc[1] + s.coords[1]],
+                [0, 0]
+            ).map(coord => coord / validStations.length);
+            stationCount = validStations.length;
+        }
+
+        // Obliczanie odległości od użytkownika
+        const distance = parseFloat(getDistance(userLat, userLon, avgCoords[0], avgCoords[1]));
+
+        // Aktualizacja mapy
+        window.map.setView(avgCoords, 14);
         window.map.eachLayer(layer => {
             if (layer instanceof L.Marker) window.map.removeLayer(layer);
         });
-        L.marker(station.coords).addTo(window.map).bindPopup(`${station.name} (${station.address})`).openPopup();
         L.marker([userLat, userLon]).addTo(window.map).bindPopup(`Twoja lokalizacja: ${document.getElementById('street').value.trim()}, ${city}`);
+        if (stationCount === 1) {
+            L.marker(avgCoords).addTo(window.map).bindPopup(`${stationNames[0]} (${stations.find(s => s.name === stationNames[0]).address})`).openPopup();
+        } else {
+            stationNames.forEach(name => {
+                const station = stations.find(s => s.name === name);
+                L.marker(station.coords).addTo(window.map).bindPopup(`${name} (${station.address})`);
+            });
+        }
 
-        const params = station.data;
-
+        // Generowanie parametrów
         const basicParams = getSelectedParameters(params);
         const premiumParams = getPremiumParameters(params);
         const allParams = [...basicParams, ...premiumParams];
         const parameters = allParams.map(param => {
             const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
             const color = getColor(param.name, param.value);
-            const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`; // Poprawka: zawsze używamy jednostki
+            const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
             return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
         });
 
-        let result = `<h4>Stacja SUW dla dzielnicy ${selectedDistrict}: ${station.name} (${station.address})</h4><p>Odległość: ${distance} km</p><p class="note">Dane dla wybranej dzielnicy mogą różnić się od domyślnych wyników powyżej.</p>Jakość wody:<br>${parameters.join('')}`;
+        // Generowanie wyniku
+        let result = `<h4>Dane dla dzielnicy ${selectedDistrict}</h4>`;
+        result += `<p class="note">Dane ${stationCount > 1 ? 'uśrednione dla SUW-ów' : 'z SUW'}: ${stationNames.join(', ')}</p>`;
+        result += `<p>Odległość od Twojej lokalizacji: ${distance.toFixed(2)} km</p>`;
+        result += `Jakość wody:<br>${parameters.join('')}`;
         const filterRec = suggestWaterFilter(params);
         result += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
 
+        // Punkty pomiarowe
         let closestPoint = null;
         let minPointDistance = Infinity;
         const relevantPoints = measurementPoints.filter(point => {
-            const pointDistricts = Object.keys(zones).filter(d => zones[d] === stationName);
+            const pointDistricts = Object.keys(zones).filter(d => zones[d] === suw || (Array.isArray(zones[d]) && zones[d].some(s => suw.includes(s))));
             return pointDistricts.includes(selectedDistrict);
         });
         relevantPoints.forEach(point => {
@@ -2393,11 +5572,14 @@ export function showDistrictData(userLat, userLon) {
             const pointParameters = pointAllParams.map(param => {
                 const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
                 const color = getColor(param.name, param.value);
-                const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`; // Poprawka: zawsze używamy jednostki
+                const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
                 return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
             });
 
-            result += `<h4>Najbliższy punkt pomiarowy w dzielnicy ${selectedDistrict}: ${closestPoint.name} (${closestPoint.address})</h4><p>Odległość: ${minPointDistance} km</p><p class="note">Dane z punktów pomiarowych mogą być bardziej precyzyjne dla Twojej lokalizacji.</p>Jakość wody:<br>${pointParameters.join('')}`;
+            result += `<h4>Najbliższy punkt pomiarowy w dzielnicy ${selectedDistrict}: ${closestPoint.name} (${closestPoint.address})</h4>`;
+            result += `<p>Odległość: ${minPointDistance.toFixed(2)} km</p>`;
+            result += `<p class="note">Dane z punktów pomiarowych mogą być bardziej precyzyjne dla Twojej lokalizacji.</p>`;
+            result += `Jakość wody:<br>${pointParameters.join('')}`;
             const pointFilterRec = suggestWaterFilter(pointParams);
             result += `<p><strong>Rekomendacja:</strong> ${pointFilterRec.summary}</p>`;
             L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
@@ -2420,8 +5602,9 @@ export function showAllSUW() {
 
         const city = document.getElementById('city-premium')?.value?.trim();
         const waterInfo = document.getElementById('waterInfo');
-        if (!city || !waterInfo) {
-            console.error('Brak wymaganych elementów HTML: city-premium, waterInfo');
+        const mapElement = document.getElementById('map');
+        if (!city || !waterInfo || !mapElement || !window.map) {
+            console.error('Brak wymaganych elementów HTML: city-premium, waterInfo, map lub window.map');
             return;
         }
 
@@ -2436,6 +5619,22 @@ export function showAllSUW() {
             return;
         }
 
+        window.map.eachLayer(layer => {
+            if (layer instanceof L.Marker) window.map.removeLayer(layer);
+        });
+
+        stations.forEach(station => {
+            L.marker(station.coords).addTo(window.map).bindPopup(`${station.name} (${station.address})`);
+        });
+
+        if (stations.length > 0) {
+            const avgLat = stations.reduce((sum, s) => sum + s.coords[0], 0) / stations.length;
+            const avgLon = stations.reduce((sum, s) => sum + s.coords[1], 0) / stations.length;
+            window.map.setView([avgLat, avgLon], 12);
+            mapElement.style.display = 'block';
+            window.map.invalidateSize();
+        }
+
         let result = `<h3>Wyniki dla miasta: ${city}</h3>`;
         if (stations.length === 1) {
             result += `<p>To miasto ma tylko jeden SUW – dane poniżej.</p>`;
@@ -2443,19 +5642,16 @@ export function showAllSUW() {
 
         stations.forEach(station => {
             const params = station.data;
-            const selectedParams = getSelectedParameters(params);
-            const sixthParam = selectedParams.find(param => param.name === 'mangan') ? 'mangan' : selectedParams.find(param => param.name === 'zelazo') ? 'zelazo' : 'fluorki';
-            const sixthParamData = selectedParams.find(param => param.name === sixthParam);
-            const parameters = [
-                `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc} mg/l (norma: 60–500) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany} mg/l (norma: <50) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc} NTU (norma: <1) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc))}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor} mg/l (norma: <0.3) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor))}</div>`,
-                isPremium && !sixthParamData
-                    ? `<div class="parameter">${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: Brak danych</div>`
-                    : `<div class="parameter"><span class="dot ${getColor(sixthParam, sixthParamData.value)}"></span> ${sixthParam.charAt(0).toUpperCase() + sixthParam.slice(1)}: ${sixthParamData.displayValue} ${sixthParamData.unit || ''} (norma: ${sixthParamData.norm}${sixthParam === 'mangan' ? ' µg/l' : sixthParamData.unit ? ` ${sixthParamData.unit}` : ''}) – ${getParameterDescription(sixthParam, sixthParamData.value, getColor(sixthParam, sixthParamData.value))}</div>`
-            ];
+            const basicParams = getSelectedParameters(params);
+            const premiumParams = getPremiumParameters(params);
+            const allParams = [...basicParams, ...premiumParams];
+            const parameters = allParams.map(param => {
+                const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
+                const color = getColor(param.name, param.value);
+                const displayValue = param.displayValue === 'Brak danych' || param.value === undefined ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
+                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+            });
+
             result += `<h4>Stacja SUW: ${station.name} (${station.address})</h4>Jakość wody:<br>${parameters.join('')}`;
             const filterRec = suggestWaterFilter(params);
             result += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
@@ -2467,7 +5663,6 @@ export function showAllSUW() {
         document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
     }
 }
-
 
 export function showAllMeasurementPoints() {
     try {
@@ -2491,18 +5686,16 @@ export function showAllMeasurementPoints() {
         let result = `<h3>Punkty pomiarowe w ${city}</h3>`;
         measurementPoints.forEach(point => {
             const params = point.data;
-            const parameters = [
-                `<div class="parameter"><span class="dot ${getColor('pH', params.pH)}"></span> pH: ${params.pH} (norma: 6.5–9.5) – ${getParameterDescription('pH', params.pH, getColor('pH', params.pH), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('twardosc', params.twardosc)}"></span> Twardość: ${params.twardosc} mg/l (optymalnie: <120 mg/l) – ${getParameterDescription('twardosc', params.twardosc, getColor('twardosc', params.twardosc), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('azotany', params.azotany)}"></span> Azotany: ${params.azotany} mg/l (norma: <50 mg/l) – ${getParameterDescription('azotany', params.azotany, getColor('azotany', params.azotany), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('chlor', params.chlor)}"></span> Chlor wolny: ${params.chlor} mg/l (norma: <0.3 mg/l) – ${getParameterDescription('chlor', params.chlor, getColor('chlor', params.chlor), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('fluorki', params.fluorki)}"></span> Fluorki: ${params.fluorki} mg/l (norma: <1.5 mg/l) – ${getParameterDescription('fluorki', params.fluorki, getColor('fluorki', params.fluorki), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('zelazo', params.zelazo)}"></span> Żelazo: ${params.zelazo} mg/l (norma: <0.2 mg/l) – ${getParameterDescription('zelazo', params.zelazo, getColor('zelazo', params.zelazo), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('mangan', params.mangan)}"></span> Mangan: ${params.mangan} µg/l (norma: <50 µg/l) – ${getParameterDescription('mangan', params.mangan, getColor('mangan', params.mangan), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('chlorki', params.chlorki)}"></span> Chlorki: ${params.chlorki} mg/l (norma: <250 mg/l) – ${getParameterDescription('chlorki', params.chlorki, getColor('chlorki', params.chlorki), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('metnosc', params.metnosc)}"></span> Mętność: ${params.metnosc} NTU (norma: <1 NTU) – ${getParameterDescription('metnosc', params.metnosc, getColor('metnosc', params.metnosc), params.azotany)}</div>`,
-                `<div class="parameter"><span class="dot ${getColor('barwa', params.barwa)}"></span> Barwa: ${params.barwa} mgPt/dm³ (norma: <15 mgPt/dm³) – ${getParameterDescription('barwa', params.barwa, getColor('barwa', params.barwa), params.azotany)}</div>`
-            ];
+            const basicParams = getSelectedParameters(params);
+            const premiumParams = getPremiumParameters(params);
+            const allParams = [...basicParams, ...premiumParams];
+            const parameters = allParams.map(param => {
+                const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
+                const color = getColor(param.name, param.value);
+                const displayValue = param.displayValue === 'Brak danych' || param.value === undefined ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
+                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+            });
+
             result += `<h4>Punkt pomiarowy: ${point.name} (${point.address})</h4>Jakość wody:<br>${parameters.join('')}`;
         });
 

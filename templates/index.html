@@ -6,8 +6,16 @@
     <title>AquaTest</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="/static/style.css">
     <link rel="manifest" href="/manifest.json">
+    <style>
+        .aquabot-container { border: 1px solid #ccc; padding: 10px; max-width: 400px; margin-top: 20px; }
+        .aquabot-messages { max-height: 300px; overflow-y: auto; margin-bottom: 10px; }
+        .bot-message { background: #e6f3ff; padding: 5px; margin: 5px; border-radius: 5px; }
+        .user-message { background: #d4edda; padding: 5px; margin: 5px; border-radius: 5px; text-align: right; }
+        .aquabot-input { width: 80%; padding: 5px; }
+        .aquabot-send { padding: 5px 10px; }
+    </style>
 </head>
 <body>
     <header>
@@ -19,7 +27,6 @@
             <button onclick="scrollToSection('water-check')">Sprawdź kranówkę</button>
             <button onclick="scrollToSection('station-finder')">Znajdź stacje</button>
             <button onclick="scrollToSection('bottled-water')">Woda butelkowana</button>
-            <button onclick="scrollToSection('world-water')">Porównaj wody</button>
             <button onclick="scrollToSection('quizzes')">Quizy</button>
             <button onclick="scrollToSection('community-section')">Społeczność</button>
             <button onclick="scrollToSection('user-rankings')">Rankingi</button>
@@ -94,6 +101,10 @@
             <div class="result-section">
                 <h3>Najbliższe stacje i punkty</h3>
                 <div id="waterInfo" class="result-box"></div>
+                <p style="font-size: 0.9em; color: #666;">
+                    Brakuje parametrów (np. ołów, rtęć)? Oznacza to, że wodociągi ich nie podały – nie wiemy dlaczego. Poproś o ich dodanie do publicznych raportów!
+                </p>
+                <button id="request-data-btn">Poproś wodociągi o dane</button>
             </div>
             <div class="result-section">
                 <h3>Wszystkie SUW-y</h3>
@@ -118,15 +129,24 @@
                     <option value="azotany">Azotany</option>
                     <option value="zelazo">Żelazo</option>
                     <option value="mangan">Mangan</option>
+                    <option value="chlor">Chlor wolny</option>
                 </select>
                 <button id="ranking-miast-btn2">Pokaż ranking miast</button>
                 <input id="city-for-suw-ranking" type="text" placeholder="Wpisz miasto dla SUW">
                 <div id="city-for-suw-suggestions"></div>
                 <button id="ranking-suw-btn2">Pokaż ranking SUW w mieście</button>
+                <button id="ranking-district-btn">Pokaż ranking dzielnic</button>
             </div>
             <div class="result-section">
                 <h3>Wyniki rankingu</h3>
-                <div id="rankings2" class="result-box"></div>
+                <div id="rankings2" class="result-box">
+                    <ol>
+                        <li><img src="/static/assets/icons/goldendrop.svg" class="droplet-icon" alt="Gold Droplet"> Toruń - 110 mg/l</li>
+                        <li><img src="/static/assets/icons/silverdrop.svg" class="droplet-icon" alt="Silver Droplet"> Grudziądz - 150 mg/l</li>
+                        <li><img src="/static/assets/icons/bronzedrop.svg" class="droplet-icon" alt="Bronze Droplet"> Zielona Góra - 180 mg/l</li>
+                    </ol>
+                </div>
+                <p style="font-size: 0.9em; color: #666;">Uwaga: Brak danych dla chloru wolnego może oznaczać, że miasto lub stacja uzdatniania nie używa chloru w procesie uzdatniania wody. To nie wpływa na jakość wody w rankingu.</p>
             </div>
         </section>
 
@@ -155,23 +175,6 @@
             <div class="result-section">
                 <h3>Ranking wód butelkowanych</h3>
                 <div id="bottle-rankings" class="result-box"></div>
-            </div>
-        </section>
-
-        <section id="world-water" class="section">
-            <h2>Porównaj wody świata</h2>
-            <div class="input-result-group">
-                <div class="input-box">
-                    <input id="world-water" type="text" placeholder="Wpisz miasto świata (np. Tokio, Paryż)">
-                    <div id="world-water-suggestions"></div>
-                    <input id="local-city" type="text" placeholder="Wpisz miasto lokalne (np. Koszalin)">
-                    <div id="local-city-suggestions"></div>
-                    <button id="compare-world-water-btn">Porównaj</button>
-                </div>
-            </div>
-            <div class="result-section">
-                <h3>Porównanie wód</h3>
-                <div id="world-water-result" class="result-box"></div>
             </div>
         </section>
 
@@ -249,11 +252,21 @@
             <div id="posts-list"></div>
         </section>
 
-        <section id="aquabot-section" class="section">
-            <h2>Aquabot</h2>
-            <p>Aquabot jest w budowie. Wkrótce będziesz mógł wysyłać wiadomości do Łukiego!</p>
-        </section>
-
+       <section id="aquabot-section" class="section">
+    <h2>AquaBot – Twój ekspert od wody</h2>
+    <div id="aqua-bot-main" class="aquabot-container" data-type="main">
+        <div id="aqua-bot-main-messages" class="aquabot-messages"></div>
+        <input id="aqua-bot-main-input" class="aquabot-input" type="text" placeholder="Napisz do AquaBota...">
+        <button id="aqua-bot-main-send" class="aquabot-send">Wyślij</button>
+    </div>
+</section>
+<script type="module">
+    import { startAquaBot } from '/static/js/aquabot.js';
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM załadowany, wywołuję startAquaBot');
+        startAquaBot('main');
+    });
+</script>
         <section id="user-rankings" class="section">
             <h2>Rankingi użytkowników</h2>
             <div class="input-result-group">
@@ -314,11 +327,16 @@
     </nav>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script type="module" src="/static/js/main.js"></script>
+    <script type="module">
+        import { startAquaBot } from '/static/js/aquabot.js';
+        startAquaBot('main');
+    </script>
     <script>
         function scrollToSection(sectionId) {
             document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
         }
     </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e15ef15ccdb004',t:'MTc0Njk2MzMwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

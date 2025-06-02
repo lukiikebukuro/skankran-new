@@ -1,6 +1,6 @@
-import { setUsername, fetchUserStats, togglePremium, logout, suggestCities, suggestBottles } from '/static/js/utils.js';
+import { setUsername, fetchUserStats, togglePremium, logout, suggestCities, suggestBottles, selectBottle } from '/static/js/utils.js';
 import { fetchPosts, addPost, addComment, togglePostComments, markPostAsSolved } from '/static/js/community.js';
-import { generateRanking, generateSUWRanking, displayUserRankings, submitUserRating, generateBottleRanking, displayUserBottleRankings } from '/static/js/ranking.js';
+import { generateRanking, generateSUWRanking, generateDistrictRanking, submitUserRating, generateBottleRanking, displayUserBottleRankings } from '/static/js/ranking.js';
 import { checkWater, findWaterStation, displayHistory, waterStations, showAllSUW, showAllMeasurementPoints } from '/static/js/waterAnalysis.js';
 import { toggleQuiz, checkQuizSkin, checkQuizWellbeing } from '/static/js/quiz.js';
 import { startAquaBot } from '/static/js/aquaBot.js';
@@ -14,6 +14,14 @@ export let lastCheckedData = {};
 
 window.onload = function() {
     try {
+        // Ukrywanie sekcji
+        const compareSection = Array.from(document.querySelectorAll('section h2'))
+            .find(h2 => h2.textContent.includes("Porównaj wody świata"))?.closest('section');
+        if (compareSection) compareSection.style.display = 'none';
+        const userRankingsSection = Array.from(document.querySelectorAll('section h2'))
+            .find(h2 => h2.textContent.includes("Ranking wód według użytkowników"))?.closest('section');
+        if (userRankingsSection) userRankingsSection.style.display = 'none';
+
         // Inicjalizacja użytkownika
         const savedUsername = localStorage.getItem('username');
         if (savedUsername) {
@@ -55,7 +63,6 @@ window.onload = function() {
                 generateRanking(rankingParameter.value);
             });
         }
-        displayUserRankings(); // Domyślnie pokazujemy wszystkie rankingi
 
         // Logowanie i przypisywanie event listenerów
         const elements = {
@@ -68,9 +75,9 @@ window.onload = function() {
             'show-history-btn': document.getElementById('show-history-btn'),
             'ranking-miast-btn2': document.getElementById('ranking-miast-btn2'),
             'ranking-suw-btn2': document.getElementById('ranking-suw-btn2'),
+            'ranking-district-btn': document.getElementById('ranking-district-btn'),
+            'request-data-btn': document.getElementById('request-data-btn'),
             'city-for-suw-ranking': document.getElementById('city-for-suw-ranking'),
-            'bottle': document.getElementById('bottle'),
-            'check-butelkowana-btn': document.getElementById('check-butelkowana-btn'),
             'quiz-skin-btn': document.getElementById('quiz-skin-btn'),
             'quiz-wellbeing-btn': document.getElementById('quiz-wellbeing-btn'),
             'check-skin-quiz-btn': document.getElementById('check-skin-quiz-btn'),
@@ -85,10 +92,9 @@ window.onload = function() {
             'toggle-reminders': document.getElementById('toggle-reminders'),
             'alert-city': document.getElementById('alert-city'),
             'toggle-alerts': document.getElementById('toggle-alerts'),
-            'bottleRankingParameter': document.getElementById('bottleRankingParameter'),
+            'bottle': document.getElementById('bottle'),
             'ranking-bottles-btn': document.getElementById('ranking-bottles-btn'),
-            'show-user-rankings-btn': document.getElementById('show-user-rankings-btn'),
-            'community-nav-btn': document.getElementById('community-nav-btn')
+            'check-butelkowana-btn': document.getElementById('check-butelkowana-btn')
         };
         for (const [id, element] of Object.entries(elements)) {
             if (!element) {
@@ -110,16 +116,25 @@ window.onload = function() {
         if (elements['show-history-btn']) elements['show-history-btn'].addEventListener('click', () => displayHistory(document.getElementById('city-premium').value));
         if (elements['ranking-miast-btn2']) elements['ranking-miast-btn2'].addEventListener('click', () => {
             const parameter = document.getElementById('rankingParameter2').value;
-            generateRanking(parameter); // Only call generateRanking, no need to copy content
+            generateRanking(parameter);
         });
         if (elements['ranking-suw-btn2']) elements['ranking-suw-btn2'].addEventListener('click', () => {
             const city = document.getElementById('city-for-suw-ranking').value;
             generateSUWRanking(city, document.getElementById('rankingParameter2').value);
-            document.getElementById('rankings2').innerHTML = document.getElementById('rankings')?.innerHTML || 'Ranking w trakcie generowania...';
+        });
+        if (elements['ranking-district-btn']) elements['ranking-district-btn'].addEventListener('click', () => {
+            const city = document.getElementById('city-for-suw-ranking').value;
+            generateDistrictRanking(city, document.getElementById('rankingParameter2').value);
+        });
+        if (elements['request-data-btn']) elements['request-data-btn'].addEventListener('click', () => {
+            const city = document.getElementById('city-premium').value;
+            const missingParams = ['ołów', 'rtęć'];
+            const email = getWaterUtilityEmail(city);
+            const subject = 'Prośba o dodanie parametrów do raportów o jakości wody';
+            const body = `Szanowni Państwo,\n\nJako mieszkaniec ${city} proszę o dodanie do publicznych raportów o jakości wody informacji o następujących parametrach: ${missingParams.join(', ')}.\n\nZ poważaniem,\n[Twoje imię]`;
+            window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         });
         if (elements['city-for-suw-ranking']) elements['city-for-suw-ranking'].addEventListener('keyup', (e) => suggestCities(e.target.value, 'city-for-suw-ranking'));
-        if (elements['bottle']) elements['bottle'].addEventListener('keyup', (e) => suggestBottles(e.target.value));
-        if (elements['check-butelkowana-btn']) elements['check-butelkowana-btn'].addEventListener('click', () => checkWater('bottle'));
         if (elements['quiz-skin-btn']) elements['quiz-skin-btn'].addEventListener('click', () => toggleQuiz('skin'));
         if (elements['quiz-wellbeing-btn']) elements['quiz-wellbeing-btn'].addEventListener('click', () => toggleQuiz('wellbeing'));
         if (elements['check-skin-quiz-btn']) elements['check-skin-quiz-btn'].addEventListener('click', checkQuizSkin);
@@ -131,32 +146,18 @@ window.onload = function() {
         if (elements['post-filter']) elements['post-filter'].addEventListener('change', fetchPosts);
         if (elements['post-sort']) elements['post-sort'].addEventListener('change', fetchPosts);
         if (elements['submit-rating-btn']) elements['submit-rating-btn'].addEventListener('click', submitUserRating);
-        if (elements['toggle-reminders']) elements['toggle-reminders'].addEventListener('click', toggleReminders);
+        if (elements['toggle-reminders']) elements['toggle-reminders'].addEventListener('click', () => {
+            alert('Funkcja przypomnień nie jest jeszcze zaimplementowana.');
+        });
         if (elements['alert-city']) elements['alert-city'].addEventListener('keyup', (e) => suggestCities(e.target.value, 'alert-city'));
         if (elements['toggle-alerts']) elements['toggle-alerts'].addEventListener('click', toggleAlerts);
-        if (elements['bottleRankingParameter']) elements['bottleRankingParameter'].addEventListener('change', () => {
-            generateBottleRanking(document.getElementById('bottleRankingParameter').value);
-        });
+        if (elements['bottle']) elements['bottle'].addEventListener('keyup', (e) => suggestBottles(e.target.value));
         if (elements['ranking-bottles-btn']) elements['ranking-bottles-btn'].addEventListener('click', () => {
-            generateBottleRanking(document.getElementById('bottleRankingParameter').value);
+            const parameter = document.getElementById('bottleRankingParameter').value;
+            generateBottleRanking(parameter);
         });
-        if (elements['show-user-rankings-btn']) elements['show-user-rankings-btn'].addEventListener('click', () => {
-            const filterType = document.getElementById('user-ranking-type').value;
-            displayUserRankings(filterType);
-        });
-        if (elements['community-nav-btn']) elements['community-nav-btn'].addEventListener('click', () => {
-            const communitySection = document.getElementById('community-section');
-            communitySection.style.display = 'block';
-            communitySection.scrollIntoView({ behavior: 'smooth' });
-        });
-
-        // Wczytaj ustawienia przypomnień
-        if (localStorage.getItem('remindersActive') === 'true') {
-            const frequency = localStorage.getItem('reminderFrequency');
-            if (frequency) {
-                document.getElementById('reminder-frequency').value = frequency;
-                toggleReminders();
-            }
+        if (elements['check-butelkowana-btn']) {
+            elements['check-butelkowana-btn'].addEventListener('click', () => checkWater('bottle'));
         }
 
         // Wczytaj ustawienia alertów
@@ -172,40 +173,6 @@ window.onload = function() {
         alert('Wystąpił błąd podczas ładowania strony. Sprawdź konsolę (F12).');
     }
 };
-
-export function toggleReminders() {
-    try {
-        const isPremium = localStorage.getItem('isPremium') === 'true';
-        if (!isPremium) {
-            alert('Funkcja dostępna tylko dla użytkowników Premium! Przejdź na Premium za 9,99 zł/mc na https://x.ai/grok.');
-            return;
-        }
-        const frequency = parseInt(document.getElementById('reminder-frequency').value) * 60 * 60 * 1000;
-        const statusDiv = document.getElementById('reminder-status');
-        const toggleButton = document.getElementById('toggle-reminders');
-
-        if (!remindersActive) {
-            reminderInterval = setInterval(() => {
-                alert('Czas na szklankę wody! 💧');
-            }, frequency);
-            remindersActive = true;
-            toggleButton.textContent = 'Wyłącz przypomnienia';
-            statusDiv.textContent = `Przypomnienia włączone: co ${frequency / (60 * 60 * 1000)}h`;
-            localStorage.setItem('remindersActive', 'true');
-            localStorage.setItem('reminderFrequency', frequency / (60 * 60 * 1000));
-        } else {
-            clearInterval(reminderInterval);
-            remindersActive = false;
-            toggleButton.textContent = 'Włącz przypomnienia';
-            statusDiv.textContent = 'Przypomnienia wyłączone';
-            localStorage.setItem('remindersActive', 'false');
-            localStorage.removeItem('reminderFrequency');
-        }
-    } catch (error) {
-        console.error('Błąd w toggleReminders:', error);
-        alert('Wystąpił błąd w przypomnieniach. Sprawdź konsolę (F12).');
-    }
-}
 
 export function checkWaterChanges() {
     try {
@@ -338,3 +305,44 @@ window.updateVoteResults = updateVoteResults;
 
 // Inicjalizacja wyników głosowania przy ładowaniu strony
 document.addEventListener('DOMContentLoaded', updateVoteResults);
+
+// Funkcja do pobierania maila wodociągów (placeholder – uzupełnij prawdziwe maile)
+function getWaterUtilityEmail(city) {
+    const emailMap = {
+        'Łódź': 'kontakt@zwik.lodz.pl',
+        'Bydgoszcz': 'kontakt@wodociagi.bydgoszcz.pl',
+        'Toruń': 'kontakt@wodociagi.torun.pl',
+        'Zielona Góra': 'kontakt@zwik.zgora.pl',
+        'Grudziądz': 'kontakt@wodociagi.grudziadz.pl',
+        // Dodaj inne miasta
+    };
+    return emailMap[city] || `kontakt@wodociagi-${city.toLowerCase()}.pl`; // Fallback
+}
+
+
+// ... (Twój istniejący kod main.js) ...
+
+// Dodaj to na dole pliku, po wszystkich funkcjach
+document.addEventListener('DOMContentLoaded', () => {
+    const requestButton = document.getElementById('request-data-btn');
+    if (requestButton) {
+        console.log('Przycisk request-data-btn znaleziony'); // Debug
+        requestButton.addEventListener('click', () => {
+            console.log('Kliknięto przycisk request-data-btn'); // Debug
+            const city = document.getElementById('city-premium').value;
+            if (!city) {
+                alert('Wpisz miasto, aby wysłać prośbę do wodociągów!');
+                console.log('Brak miasta w city-premium'); // Debug
+                return;
+            }
+            const missingParams = ['ołów', 'rtęć'];
+            const email = getWaterUtilityEmail(city);
+            const subject = 'Prośba o dodanie parametrów do raportów o jakości wody';
+            const body = `Szanowni Państwo,\n\nJako mieszkaniec ${city} proszę o dodanie do publicznych raportów o jakości wody informacji o następujących parametrach: ${missingParams.join(', ')}.\n\nZ poważaniem,\n[Twoje imię]`;
+            console.log('Mail:', email, 'Temat:', subject, 'Treść:', body); // Debug
+            window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        });
+    } else {
+        console.error('Przycisk request-data-btn nie znaleziony'); // Debug
+    }
+});

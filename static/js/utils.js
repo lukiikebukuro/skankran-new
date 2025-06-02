@@ -1,6 +1,6 @@
 import { fetchPosts } from './community.js';
 
-export const cities = ["Chorzów","Rzeszów", "Lublin", "Częstochowa", "Płock", "Olsztyn", "Tychy", "Poznań", "Gorzów Wielkopolski", "Warszawa", "Wrocław", "Kraków", "Gdańsk", "Kalisz", "Koszalin", "Grudziądz", "Wałbrzych", "Bydgoszcz", "Toruń", "Zielona Góra", "Legnica", "Radom", "Olsztyn"];
+export const cities = ["Chorzów","Gdynia","Kielce","Dąbrowa Górnicza","Szczecin","Piła","Jelenia Góra","Konin","Głogów","Białystok","Tarnów","Siedlce","Łódź", "Mordy", "Rzeszów", "Sosnowiec", "Wrocław","Lublin", "Częstochowa", "Płock","Poznań", "Olsztyn", "Tychy","Gorzów Wielkopolski", "Warszawa", "Kraków", "Gdańsk", "Kalisz", "Koszalin", "Grudziądz", "Wałbrzych", "Bydgoszcz", "Toruń", "Zielona Góra", "Legnica", "Radom",];
 export const bottles = ["Nałęczowianka", "Muszynianka", "Cisowianka", "Staropolanka", "Żywiec Zdrój", "Polaris"];
 
 export function suggestCities(val, inputId = 'city') {
@@ -82,44 +82,88 @@ export function selectBottle(bottle) {
 }
 
 export function getColor(parameter, value) {
-    if (value === null) return 'green-dot'; // Wartości z "<" są poniżej normy, więc zielone
+    console.log(`getColor called with parameter: ${parameter}, value: ${value}, type: ${typeof value}`);
+
+    if (value === null) return 'green-dot';
+
+    let numValue;
+    if (typeof value === 'string' && value.startsWith('<')) {
+        numValue = parseFloat(value.replace('<', ''));
+    } else {
+        numValue = parseFloat(value);
+    }
+
+    console.log(`Parsed numValue: ${numValue}`);
+
+    if (isNaN(numValue)) {
+        console.log('numValue is NaN, returning green-dot');
+        return 'green-dot';
+    }
+
     switch (parameter) {
         case 'pH':
-            if (value < 6.5 || value > 9.5) return 'red-dot';
-            if (value < 7.0 || value > 8.5) return 'orange-dot';
+            if (numValue < 6.5 || numValue > 9.5) return 'red-dot';
+            if (numValue < 7.0 || numValue > 8.5) return 'orange-dot';
             return 'green-dot';
         case 'twardosc':
-            if (value < 60 || value > 250) return 'red-dot';
-            if (value > 150) return 'orange-dot';
+            if (numValue > 220) return 'red-dot';
+            if (numValue > 150) return 'orange-dot';
             return 'green-dot';
         case 'azotany':
-            if (value > 50) return 'red-dot';
-            if (value > 25) return 'orange-dot';
+            if (numValue > 20) return 'red-dot';
+            if (numValue > 10) return 'orange-dot';
             return 'green-dot';
         case 'zelazo':
-            if (value > 0.2) return 'red-dot';
-            if (value > 0.1) return 'orange-dot';
+            if (numValue > 0.2) return 'red-dot';
+            if (numValue > 0.1) return 'orange-dot';
             return 'green-dot';
         case 'fluorki':
-            if (value >= 1.5) return 'red-dot'; // Zmiana dla punktu 3
-            if (value > 1.2) return 'orange-dot';
+            if (numValue >= 1.5) return 'red-dot';
+            if (numValue > 1.2) return 'orange-dot';
             return 'green-dot';
         case 'chlor':
-            if (value > 0.3) return 'red-dot';
-            if (value > 0.15) return 'orange-dot';
+            if (numValue >= 0.27) {
+                console.log(`Chlor ${numValue} >= 0.27, returning red-dot`);
+                return 'red-dot';
+            }
+            if (numValue >= 0.15) {
+                console.log(`Chlor ${numValue} >= 0.15, returning orange-dot`);
+                return 'orange-dot';
+            }
+            console.log(`Chlor ${numValue} < 0.15, returning green-dot`);
             return 'green-dot';
         case 'mangan':
-            if (value > 50) return 'red-dot';
-            if (value > 20) return 'orange-dot';
+            if (numValue > 50) return 'red-dot';
+            if (numValue > 20) return 'orange-dot';
+            return 'green-dot';
+        case 'chlorki':
+            if (numValue >= 250) return 'red-dot';
+            if (numValue >= 125) return 'orange-dot';
+            return 'green-dot';
+        case 'siarczany':
+            if (numValue >= 250) return 'red-dot';
+            if (numValue >= 125) return 'orange-dot';
+            return 'green-dot';
+        case 'barwa':
+            if (numValue >= 15) return 'red-dot';
+            if (numValue >= 7.5) return 'orange-dot';
+            return 'green-dot';
+        case 'magnez':
+            if (numValue >= 50) return 'red-dot';
+            if (numValue >= 25) return 'orange-dot';
+            return 'green-dot';
+        case 'potas':
+            if (numValue >= 12) return 'red-dot';
+            if (numValue >= 6) return 'orange-dot';
             return 'green-dot';
         case 'olow':
-            if (value > 15) return 'red-dot'; // >15 µg/l – czerwony
-            if (value > 10) return 'orange-dot'; // 10–15 µg/l – pomarańczowy
-            return 'green-dot'; // <10 µg/l – zielony
-        case 'rtec':
-            if (value > 1.5) return 'red-dot'; // >1.5 µg/l – czerwony
-            if (value > 1) return 'orange-dot'; // 1–1.5 µg/l – pomarańczowy
-            return 'green-dot'; // <1 µg/l – zielony
+    if (numValue >= 10) return 'red-dot';
+    if (numValue >= 5) return 'orange-dot';
+    return 'green-dot';
+case 'rtec':
+    if (numValue >= 1) return 'red-dot';
+    if (numValue >= 0.5) return 'orange-dot';
+    return 'green-dot';
         default:
             return 'green-dot';
     }
@@ -156,8 +200,6 @@ export function getParameterDescription(parameter, value, color) {
     }
     return descriptions[parameter] || "Brak opisu dla tego parametru.";
 }
-  
-  // Funkcja pomocnicza: Wybiera 6 parametrów z danych
 export function getSelectedParameters(data) {
     const basicParams = [
         { name: 'pH', norm: '6.5–9.5', unit: '' },
@@ -173,8 +215,8 @@ export function getSelectedParameters(data) {
         let displayValue, value, selectedUnit = param.unit;
 
         if (typeof rawValue === 'string' && rawValue.startsWith('<')) {
-            displayValue = rawValue;
-            value = null;
+            displayValue = rawValue; // Zachowaj "<0.3" do wyświetlania
+            value = parseFloat(rawValue.replace('<', '')) || 0; // Parsuj 0.3 do getColor
         } else {
             value = parseFloat(rawValue) || 0;
             displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
@@ -187,7 +229,7 @@ export function getSelectedParameters(data) {
             rawValue = data['mangan'];
             if (typeof rawValue === 'string' && rawValue.startsWith('<')) {
                 displayValue = rawValue;
-                value = null;
+                value = parseFloat(rawValue.replace('<', '')) || 0;
             } else {
                 value = parseFloat(rawValue) || 0;
                 displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
@@ -197,7 +239,6 @@ export function getSelectedParameters(data) {
             selectedUnit = param.fallbackUnit || 'µg/l';
         }
 
-        // Ustawienie jednostki µg/l dla manganu
         if (selectedName === 'mangan') {
             selectedUnit = 'µg/l';
         }
@@ -210,6 +251,48 @@ export function getSelectedParameters(data) {
             color: getColor(selectedName, value),
             norm: selectedNorm,
             unit: selectedUnit
+        };
+    });
+}
+  
+  // Funkcja pomocnicza: Wybiera 6 parametrów z danych
+export function getPremiumParameters(data) {
+    const premiumParams = [
+        "chlorki",
+        "siarczany",
+        "barwa",
+        "magnez",
+        "potas",
+        "olow",
+        "rtec"
+    ];
+
+    return premiumParams.map(param => {
+        let rawValue = data[param];
+        let displayValue, value, unit = (param === 'olow' || param === 'rtec') ? 'μg/l' : 'mg/l';
+
+        if (rawValue === undefined || rawValue === null) {
+            displayValue = 'Brak danych';
+            value = 0;
+        } else if (typeof rawValue === 'string' && rawValue.startsWith('<')) {
+            displayValue = rawValue; // Zachowaj "<X"
+            value = parseFloat(rawValue.replace('<', '')) || 0; // Parsuj wartość liczbową
+        } else if (rawValue === "Brak danych") {
+            displayValue = 'Brak danych';
+            value = 0;
+        } else {
+            value = parseFloat(rawValue) || 0;
+            displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
+        }
+
+        return {
+            name: param,
+            value: value,
+            displayValue: displayValue,
+            description: getParameterDescription(param),
+            color: getColor(param, value),
+            norm: getNorm(param),
+            unit: unit
         };
     });
 }
@@ -471,56 +554,16 @@ export function editComment(commentId, postId) {
         alert('Wystąpił błąd podczas edycji komentarza. Sprawdź konsolę (F12).');
     }
 }
-function getNorm(param) {
+export function getNorm(param) {
     const norms = {
         chlorki: '<250',
         siarczany: '<250',
         barwa: '<15',
         magnez: '<50',
         potas: '<12',
-        olow: '<10', // Norma dla ołowiu w µg/l
-        rtec: '<1'   // Norma dla rtęci w µg/l
+        olow: '<10',
+        rtec: '<1'
     };
     return norms[param] || '';
 }
 
-export function getPremiumParameters(data) {
-    const premiumParams = [
-        "chlorki",
-        "siarczany",
-        "barwa",
-        "magnez",
-        "potas",
-        "olow",
-        "rtec"
-    ];
-
-    return premiumParams.map(param => {
-        let rawValue = data[param];
-        let displayValue, value, unit = (param === 'olow' || param === 'rtec') ? 'μg/l' : 'mg/l';
-
-        if (rawValue === undefined || rawValue === null) {
-            displayValue = 'Brak danych';
-            value = 0;
-        } else if (typeof rawValue === 'string' && rawValue.startsWith('<')) {
-            displayValue = rawValue; // Zachowaj "<X"
-            value = null; // Wartości z "<" traktujemy jako null dla kolorów
-        } else if (rawValue === "Brak danych") {
-            displayValue = 'Brak danych';
-            value = 0;
-        } else {
-            value = parseFloat(rawValue) || 0;
-            displayValue = value === 0 ? 'Brak danych' : `${value.toFixed(2)}`;
-        }
-
-        return {
-            name: param,
-            value: value,
-            displayValue: displayValue,
-            description: getParameterDescription(param),
-            color: getColor(param, value),
-            norm: getNorm(param),
-            unit: unit
-        };
-    });
-}
