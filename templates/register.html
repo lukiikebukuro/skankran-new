@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Rejestracja - Skankran</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FB097HQ344"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-FB097HQ344');
+    </script>
+</head>
+<body>
+    <div class="auth-container">
+        <img src="/static/assets/icons/placeholder.svg" alt="Skankran Logo" class="auth-logo">
+        <h2>Rejestracja</h2>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" name="username" placeholder="Nazwa użytkownika" required class="auth-input">
+            <input type="password" name="password" placeholder="Hasło" required class="auth-input">
+            <button type="submit" id="register-button" class="auth-button">Zarejestruj</button>
+        </form>
+        <a href="/login" class="auth-link">Masz konto? Zaloguj się</a>
+        <a href="/" class="auth-link">Powrót do strony głównej</a>
+        <p style="font-size: 0.65em; color: #999; margin-top: 20px;">Informacje prawne: <a href="/privacy" style="color: #4a90e2; text-decoration: underline;">Polityka Prywatności</a> | <a href="/disclaimer" style="color: #4a90e2; text-decoration: underline;">Klauzula wyłączenia</a></p>
+    </div>
+</body>
+</html>

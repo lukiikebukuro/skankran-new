@@ -1,165 +1,216 @@
-import { getColor } from './utils.js';
+/* globals gtag */
+
+// Na samej górze pliku, obok innych importów:
+import { trackBotQuery } from './analytics.js';
+
+let stationContext = null;
 
 export function startAquaBot(type) {
-    console.log('Inicjalizacja AquaBot dla typu:', type);
-    const botSection = document.getElementById('aqua-bot');
-    const messages = document.getElementById(`aqua-bot-${type}-messages`);
-    const input = document.getElementById(`aqua-bot-${type}-input`);
+    const messagesContainer = document.getElementById(`aqua-bot-${type}-messages`);
+    const inputField = document.getElementById(`aqua-bot-${type}-input`);
     const sendButton = document.getElementById(`aqua-bot-${type}-send`);
 
-    if (!botSection || !messages || !input || !sendButton) {
-        console.error('Brak elementów czatu dla typu:', type);
-        alert('Wystąpił błąd: Brak elementów czatu.');
-        return;
-    }
+    if (!messagesContainer || !inputField || !sendButton) return;
 
+    messagesContainer.innerHTML = ''; // Zawsze czyść widok na starcie
 
-    const addressStyle = localStorage.getItem('aquaBotAddressStyle');
-    let city = localStorage.getItem('aquaBotCity');
-
-    if (!addressStyle) {
-        messages.innerHTML = '<p class="bot-message">Cześć!Jestem AquaBot. Powiem Ci jak parametry z twojej stacji wpływają na włosy, choroby czy czajnik :)  Jak mam się do Ciebie zwracać? 😊</p>';
-    } else if (!city) {
-        messages.innerHTML = `<p class="bot-message">Super, ${addressStyle}! Skąd jesteś? 😊</p>`;
+    const lastCheckedRaw = localStorage.getItem('lastCheckedStation');
+    if (lastCheckedRaw) {
+        try {
+            stationContext = JSON.parse(lastCheckedRaw);
+            hideQuickChips(); // Ukryj quick chips gdy jest stacja
+            initializeBotSession(stationContext, messagesContainer);
+        } catch (e) {
+            appendBotMessage({ text_message: 'Błąd danych stacji. Wybierz ją ponownie.' }, messagesContainer);
+        }
     } else {
-        messages.innerHTML = `<p class="bot-message">Cześć, ${addressStyle} z ${city}! Jak mogę Ci pomóc? 😊</p>`;
+        showQuickChips(); // Pokaż quick chips gdy brak stacji
+        appendBotMessage({ text_message: 'Cześć! Użyj sekcji "Znajdź stacje", abym wiedział, o czym rozmawiać.' }, messagesContainer);
     }
-    input.value = '';
 
-    sendButton.onclick = () => sendMessage(type, input, messages);
-    input.onkeypress = (e) => {
-        if (e.key === 'Enter') sendMessage(type, input, messages);
+    sendButton.onclick = () => sendMessage(inputField, messagesContainer);
+    inputField.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage(inputField, messagesContainer);
+        }
     };
 
-    messages.scrollTop = messages.scrollHeight;
+    // Obsługa quick chips
+    setupQuickChips(inputField, messagesContainer);
 }
 
-async function sendMessage(type, input, messages) {
-    const userMessage = input.value.trim();
-    if (!userMessage) return;
-
-    messages.innerHTML += `<p class="user-message">${userMessage}</p>`;
-    input.value = '';
-    messages.scrollTop = messages.scrollHeight;
-
+async function initializeBotSession(context, messagesContainer) {
+    appendBotMessage({ text_message: 'Chwileczkę, łączę się z centralą...' }, messagesContainer);
+    showTypingIndicator();
+    
     try {
-        let addressStyle = localStorage.getItem('aquaBotAddressStyle');
-        let userCity = localStorage.getItem('aquaBotCity');
-        let selectedStation = localStorage.getItem('aquaBotSelectedStation');
-        let waitingForCategory = localStorage.getItem('aquaBotWaitingForCategory') === 'true';
-        let waitingForSubcategory = localStorage.getItem('aquaBotWaitingForSubcategory') === 'true';
-        let selectedCategory = localStorage.getItem('aquaBotSelectedCategory');
-        let lastParameters = JSON.parse(localStorage.getItem('aquaBotLastParameters') || '[]');
-
-        // Krok 1: Jeśli nie ma addressStyle, ustaw go
-        if (!addressStyle) {
-            addressStyle = userMessage;
-            localStorage.setItem('aquaBotAddressStyle', addressStyle);
-            messages.innerHTML += `<p class="bot-message">Super, ${addressStyle}! Skąd jesteś? (Np. Warszawa, Kraków) 😊</p>`;
-            messages.scrollTop = messages.scrollHeight;
-            return;
-        }
-
-        // Krok 2: Jeśli nie ma userCity, zweryfikuj miasto
-        if (!userCity) {
-            const response = await fetch('http://127.0.0.1:3000/verify_city', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ city: userMessage })
-            });
-            const data = await response.json();
-            console.log("[DEBUG] Verify city response:", data);
-
-            if (data.valid) {
-                userCity = data.city;
-                localStorage.setItem('aquaBotCity', userCity);
-                messages.innerHTML += `<p class="bot-message">Okej, ${addressStyle} z ${userCity.charAt(0).toUpperCase() + userCity.slice(1)}! Wybierz najbliższą geograficznie stacje, znajdziesz ją w zakładce "znajdź stacje" </p>`;
-            } else {
-                messages.innerHTML += `<p class="bot-message">Nie znam miasta '${userMessage}', ${addressStyle}! 😕 Wpisz np. 'Warszawa' lub 'Kraków'.</p>`;
-            }
-            messages.scrollTop = messages.scrollHeight;
-            return;
-        }
-
-        // Krok 3: Wysyłanie żądania do /aquabot z pełnym stanem
-        const response = await fetch('http://127.0.0.1:3000/aquabot', {
+        const response = await fetch('/aquabot/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: userMessage,
-                addressStyle: addressStyle,
-                city: userCity,
-                selectedStation: selectedStation,
-                waitingForCategory: waitingForCategory,
-                waitingForSubcategory: waitingForSubcategory,
-                selectedCategory: selectedCategory,
-                lastParameters: lastParameters,
-                in_conversation: waitingForCategory || waitingForSubcategory || selectedCategory
-            })
+            body: JSON.stringify({ context: context })
         });
-
-        if (!response.ok) {
-            throw new Error(`Błąd HTTP: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`Błąd serwera: ${response.status}`);
         const data = await response.json();
-        console.log("[DEBUG] AquaBot response:", data);
+        if (data.error) throw new Error(data.error);
 
-        const reply = data.reply;
-        if (reply && reply.message) {
-            let replyHtml = `<p>${reply.message}</p>`;
-            if (reply.parameters && reply.parameters.length > 0) {
-                console.log("[DEBUG] Rendering parameters:", reply.parameters);
-                replyHtml += '<div>Parametry poza normą:<ul>';
-                reply.parameters.forEach(param => {
-                    const colorClass = getColor(param.name.toLowerCase(), param.value);
-                    replyHtml += `<li>${param.name}: ${param.value} ${param.unit} <span class="dot ${colorClass}"></span></li>`;
-                });
-                replyHtml += '</ul></div>';
-                replyHtml += '<p>Wpisz kategorię, np.<br>- zdrowie<br>- uroda<br>- codzienne użycie</p>';
-            }
-            messages.innerHTML += `<div class="bot-message">${replyHtml}</div>`;
-        } else {
-            console.log("[DEBUG] No valid reply message found in response");
-            messages.innerHTML += `<p class="bot-message">Brak odpowiedzi, spróbuj ponownie! 😅</p>`;
-        }
-        messages.scrollTop = messages.scrollHeight;
+        hideTypingIndicator();
+        messagesContainer.innerHTML = '';
+        appendBotMessage(data.reply, messagesContainer);
+    } catch (error) {
+        console.error('Błąd inicjalizacji sesji bota:', error);
+        hideTypingIndicator();
+        messagesContainer.innerHTML = '';
+        appendBotMessage({ text_message: `Nie udało się rozpocząć rozmowy. Błąd: ${error.message}` }, messagesContainer);
+    }
+}
 
-        // Reset stanu po zmianie miasta
-        if (data.message && data.message.includes('Zmieniłem na')) {
-            localStorage.setItem('aquaBotSelectedStation', null);
-            localStorage.setItem('aquaBotWaitingForCategory', false);
-            localStorage.setItem('aquaBotWaitingForSubcategory', false);
-            localStorage.setItem('aquaBotSelectedCategory', null);
-            localStorage.setItem('aquaBotLastParameters', '[]');
+async function sendMessage(inputField, messagesContainer) {
+    const userMessage = inputField.value.trim();
+    if (!userMessage) return;
+
+    // Agent melduje o każdym pytaniu do centrali
+    trackBotQuery(userMessage);
+
+    // 🛰️ SATELITA: Trigger custom event dla visitor_tracking.js
+    if (window.skankranTracker) {
+        window.skankranTracker.handleAquaBotQuery(userMessage);
+    }
+
+    // Ukryj quick chips po wysłaniu pierwszej wiadomości
+    hideQuickChips();
+
+    appendUserMessage(userMessage, messagesContainer);
+    inputField.value = '';
+    
+    // Pokaż typing indicator
+    showTypingIndicator();
+
+    try {
+        const response = await fetch('/aquabot/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+        });
+        if (!response.ok) throw new Error(`Błąd serwera: ${response.status}`);
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+
+        hideTypingIndicator();
+        appendBotMessage(data.reply, messagesContainer);
+
+        // Wyślij odpowiedź bota do satelity
+        if (window.skankranTracker && data.reply && data.reply.text_message) {
+            window.skankranTracker.handleAquaBotResponse(userMessage, data.reply.text_message);
         }
 
-        // Zaktualizuj stan w localStorage
-        if (data.waitingForCategory !== undefined) {
-            localStorage.setItem('aquaBotWaitingForCategory', data.waitingForCategory);
-        }
-        if (data.waitingForSubcategory !== undefined) {
-            localStorage.setItem('aquaBotWaitingForSubcategory', data.waitingForSubcategory);
-        }
-        if (data.selectedCategory) {
-            localStorage.setItem('aquaBotSelectedCategory', data.selectedCategory);
-        } else {
-            localStorage.removeItem('aquaBotSelectedCategory');
-        }
-        if (data.city) {
-            localStorage.setItem('aquaBotCity', data.city);
-        }
-        if (data.selectedStation) {
-            localStorage.setItem('aquaBotSelectedStation', data.selectedStation);
-        }
-        if (data.lastParameters) {
-            localStorage.setItem('aquaBotLastParameters', JSON.stringify(data.lastParameters));
-        } else {
-            localStorage.removeItem('aquaBotLastParameters');
-        }
     } catch (error) {
         console.error('Błąd w sendMessage:', error);
-        messages.innerHTML += `<p class="bot-message">Ups, nie mogę połączyć się z serwerem! Sprawdź, czy serwer działa.</p>`;
-        messages.scrollTop = messages.scrollHeight;
+        hideTypingIndicator();
+        const errorReply = { text_message: "Ups, mam problem z połączeniem. Spróbuj zadać pytanie jeszcze raz." };
+        appendBotMessage(errorReply, messagesContainer);
     }
+}
+
+function appendUserMessage(message, container) {
+    const messageElement = document.createElement('div');
+    messageElement.className = 'user-message';
+    messageElement.innerHTML = `<p>${message}</p>`;
+    container.appendChild(messageElement);
+    container.scrollTop = container.scrollHeight;
+}
+
+function appendBotMessage(reply, container) {
+    if (!reply) return;
+    const messageElement = document.createElement('div');
+    messageElement.className = 'bot-message';
+    
+    // Avatar robota
+    const avatar = document.createElement('div');
+    avatar.className = 'bot-message-avatar';
+    avatar.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C11.4477 2 11 2.44772 11 3V4H8C6.34315 4 5 5.34315 5 7V18C5 19.6569 6.34315 21 8 21H16C17.6569 21 19 19.6569 19 18V7C19 5.34315 17.6569 4 16 4H13V3C13 2.44772 12.5523 2 12 2ZM9 9C9 8.44772 9.44772 8 10 8C10.5523 8 11 8.44772 11 9C11 9.55228 10.5523 10 10 10C9.44772 10 9 9.55228 9 9ZM14 8C13.4477 8 13 8.44772 13 9C13 9.55228 13.4477 10 14 10C14.5523 10 15 9.55228 15 9C15 8.44772 14.5523 8 14 8ZM9 13C9 12.4477 9.44772 12 10 12H14C14.5523 12 15 12.4477 15 13C15 13.5523 14.5523 14 14 14H10C9.44772 14 9 13.5523 9 13Z" fill="#0277bd"/>
+        </svg>
+    `;
+    
+    // Zawartość wiadomości
+    const content = document.createElement('div');
+    content.className = 'bot-message-content';
+    let replyHtml = '';
+
+    if (reply.text_message) {
+        replyHtml += `${reply.text_message.replace(/\n/g, '<br>')}`;
+    }
+
+    if (reply.parameters && reply.parameters.length > 0) {
+        replyHtml += '<div style="margin-top: 12px;"><strong style="color: #111827;">Parametry, na które warto zwrócić uwagę:</strong><ul style="margin-top: 8px; padding-left: 20px;">';
+        reply.parameters.forEach(param => {
+            replyHtml += `<li style="margin-bottom: 6px; color: #1f2937;"><span class="dot ${param.color}" style="display: inline-block; width: 16px; height: 16px; border-radius: 50%; margin-right: 10px; vertical-align: middle;"></span><strong style="color: #111827;">${param.name}:</strong> ${param.value}</li>`;
+        });
+        replyHtml += '</ul></div>';
+    }
+
+    content.innerHTML = replyHtml;
+    
+    messageElement.appendChild(avatar);
+    messageElement.appendChild(content);
+    container.appendChild(messageElement);
+    container.scrollTop = container.scrollHeight;
+}
+
+// Funkcje pomocnicze dla typing indicator
+function showTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) {
+        // Dodaj avatar do typing indicator
+        indicator.innerHTML = `
+            <div class="bot-message-avatar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C11.4477 2 11 2.44772 11 3V4H8C6.34315 4 5 5.34315 5 7V18C5 19.6569 6.34315 21 8 21H16C17.6569 21 19 19.6569 19 18V7C19 5.34315 17.6569 4 16 4H13V3C13 2.44772 12.5523 2 12 2ZM9 9C9 8.44772 9.44772 8 10 8C10.5523 8 11 8.44772 11 9C11 9.55228 10.5523 10 10 10C9.44772 10 9 9.55228 9 9ZM14 8C13.4477 8 13 8.44772 13 9C13 9.55228 13.4477 10 14 10C14.5523 10 15 9.55228 15 9C15 8.44772 14.5523 8 14 8ZM9 13C9 12.4477 9.44772 12 10 12H14C14.5523 12 15 12.4477 15 13C15 13.5523 14.5523 14 14 14H10C9.44772 14 9 13.5523 9 13Z" fill="#0277bd"/>
+                </svg>
+            </div>
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        `;
+        indicator.style.display = 'flex';
+    }
+}
+
+function hideTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) {
+        indicator.style.display = 'none';
+    }
+}
+
+// Funkcje pomocnicze dla quick chips
+function showQuickChips() {
+    const quickChips = document.getElementById('aquabot-quick-chips');
+    if (quickChips) {
+        quickChips.style.display = 'flex';
+    }
+}
+
+function hideQuickChips() {
+    const quickChips = document.getElementById('aquabot-quick-chips');
+    if (quickChips) {
+        quickChips.style.display = 'none';
+    }
+}
+
+function setupQuickChips(inputField, messagesContainer) {
+    const quickChipButtons = document.querySelectorAll('.quick-chip');
+    quickChipButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const question = button.getAttribute('data-question');
+            if (question) {
+                inputField.value = question;
+                sendMessage(inputField, messagesContainer);
+            }
+        });
+    });
 }

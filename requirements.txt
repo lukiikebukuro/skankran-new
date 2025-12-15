@@ -1,0 +1,73 @@
+# ============================================
+# SKANKRAN.PL - PYTHON DEPENDENCIES
+# ============================================
+# Instalacja: pip install -r requirements.txt
+# Wersja: 1.0 (Security Hardened - Grant UE)
+# Data: 2025-12-03
+# ============================================
+
+# Core Flask Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Database
+Flask-SQLAlchemy==3.1.1
+
+# Authentication & Sessions
+Flask-Login==0.6.3
+Flask-Session==0.5.0
+
+# Security (MUST-HAVE dla grantu UE)
+Flask-WTF==1.2.1              # CSRF Protection (Art. 32 RODO)
+Flask-Limiter==3.5.0          # Rate Limiting (DDoS protection)
+
+# Google Gemini API
+google-generativeai==0.3.1
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# Production Server (zalecane dla wdrożenia)
+gunicorn==21.2.0              # WSGI server dla produkcji
+
+# Redis (opcjonalnie - dla rate limiting w produkcji)
+# redis==5.0.1
+# Odkomentuj jeśli używasz Redis zamiast memory storage dla Limitera
+
+# Security Audit Tools (do testów - NIE są wymagane w runtime)
+# safety==3.0.1               # Sprawdzanie vulnerability w dependencies
+# bandit==1.7.5               # Static security analysis dla Python
+
+# ============================================
+# INSTRUKCJA INSTALACJI
+# ============================================
+# 1. Utwórz wirtualne środowisko:
+#    python -m venv venv
+#
+# 2. Aktywuj venv:
+#    Windows PowerShell: .\venv\Scripts\Activate.ps1
+#    Windows CMD: venv\Scripts\activate.bat
+#    Linux/Mac: source venv/bin/activate
+#
+# 3. Zainstaluj zależności:
+#    pip install -r requirements.txt
+#
+# 4. Sprawdź czy wszystko działa:
+#    python app.py
+#
+# 5. Test bezpieczeństwa (opcjonalnie):
+#    pip install safety bandit
+#    safety check
+#    bandit -r app.py aquabotBackend.py
+# ============================================
+
+# ============================================
+# NOTES DLA CLAUDE AI
+# ============================================
+# Wszystkie wymienione pakiety są KONIECZNE dla:
+# - Zgodności z RODO (CSRF, rate limiting)
+# - Bezpieczeństwa (Flask-WTF, secure sessions)
+# - Funkcjonalności (Gemini API, SQLAlchemy)
+#
+# NIE USUWAJ żadnego pakietu bez konsultacji!
+# ============================================

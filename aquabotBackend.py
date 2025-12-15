@@ -1,532 +1,312 @@
+# aquabotBackend.py - WERSJA ZABEZPIECZONA (RODO Art. 25 Compliance)
+
 import json
-import random
-import re
-import unicodedata
 import os
-from dotenv import load_dotenv
-from openai import OpenAI
-from fuzzywuzzy import process, fuzz
+import re
+import hashlib
 import time
+import google.generativeai as genai
+from flask import session, request
 
-load_dotenv()
-XAI_API_KEY = os.getenv('XAI_API_KEY')
+# Dynamiczne ścieżki do plików
+try:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    WATER_ANALYSIS_PATH = os.path.join(BASE_DIR, 'waterAnalysis.json')
+    AVERAGES_PATH = os.path.join(BASE_DIR, 'averages.json')
+except NameError:
+    WATER_ANALYSIS_PATH = 'waterAnalysis.json'
+    AVERAGES_PATH = 'averages.json'
 
-def normalize_name(name):
-    """Normalizuje nazwy, usuwając znaki diakrytyczne i zamieniając na małe litery."""
-    if not name:
-        return ""
-    # Usuń specjalne znaki, backslash, punct
-    name = re.sub(r'[\W_]+', ' ', name).strip()  # Zamień non-alphanum na space, strip
-    # Normalize diakrytyki
-    return ''.join(c for c in unicodedata.normalize('NFD', name) if unicodedata.category(c) != 'Mn').lower().strip()
+try:
+    # Inicjalizacja modelu Gemini
+    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+    model = genai.GenerativeModel('gemini-2.5-flash')  # Gemini 2.5 Flash - model z wyższymi limitami
+except Exception as e:
+    print(f"[CRITICAL ERROR] Gemini API configuration failed: {e}")
+    model = None
 
 def parseFloat(value):
-    """Parsuje wartości, w tym '<0.1', na float."""
+    """Helper function to parse float values, handling '<' characters."""
     if isinstance(value, str) and value.startswith('<'):
-        return float(value.replace('<', ''))
+        try:
+            return float(value.replace('<', '').strip())
+        except (ValueError, TypeError):
+            return None
     try:
         return float(value)
     except (ValueError, TypeError):
-        print(f"[DEBUG] Błąd konwersji: {value} nie jest konwertowalne na float")
         return None
-
-def normalize_keys(d):
-    """Rekurencyjnie normalizuje klucze w słowniku lub liście."""
-    if isinstance(d, dict):
-        return {normalize_name(k): normalize_keys(v) for k, v in d.items()}
-    elif isinstance(d, list):
-        return [normalize_keys(item) for item in d]
-    return d
 
 class AquaBot:
-    CATEGORY_ALIASES = {
-        "zdrowie": ["zdrowie", "zdrowie fizyczne", "fizyczne", "zdrowie fiz"],
-        "uroda": ["uroda", "piękno", "wygląd"],
-        "codzienne_uzycie": ["codzienne użycie", "użycie", "gotowanie", "picie"],
-    }
-
-    SUBCATEGORIES = {
-        "zdrowie": ["Picie wody", "Alergie", "Dzieci", "Autoimmunologia/Choroby"],
-        "uroda": ["Skóra", "Włosy", "Oczy"],
-        "codzienne_uzycie": ["Prysznic i kąpiel", "Zmywanie naczyń", "Pranie", "Sprzątanie"]
-    }
-
-    CITY_ALIASES = {
-        "wwa": "warszawa",
-        "waw": "warszawa",
-        "warsaw": "warszawa",
-        "krk": "krakow",
-        "krak": "krakow",
-        "cracow": "krakow",
-        "gd": "gdansk",
-        "gdansk": "gdansk",
-        "wro": "wroclaw",
-        "wroc": "wroclaw",
-        "pozn": "poznan",
-        "poz": "poznan",
-        "szcz": "szczecin",
-        "szc": "szczecin",
-        "lodz": "łodz",
-        "lod": "łodz",
-        "gorzow": "gorzow wielkopolski",
-        "gwk": "gorzow wielkopolski",
-        "radom": "radom",
-        "rdm": "radom",
-        "byd": "bydgoszcz",
-        "tor": "torun",
-        "ziel": "zielona gora",
-        "leg": "legnica",
-        "lub": "lublin",
-        "czest": "czestochowa",
-        "plock": "płock",
-        "olsz": "olsztyn",
-        "tychy": "tychy",
-        "kalisz": "kalisz",
-        "kosz": "koszalin",
-        "grudz": "grudziadz",
-        "walb": "wałbrzych",
-        "pil": "piła",
-        "jel": "jelenia gora",
-        "kon": "konin",
-        "glog": "głogow",
-        "bial": "białystok",
-        "tar": "tarnow",
-        "sied": "siedlce",
-        "mordy": "mordy",
-        "rzesz": "rzeszow",
-        "sosn": "sosnowiec",
-        "dab": "dabrowa gornicza",
-        "chorz": "chorzow",
-        "gdynia": "gdynia",
-        "kiel": "kielce",
-    }
-
-    def __init__(self, userName, city, addressStyle, selectedStation=None, waitingForCategory=False, lastParameters=[], selectedCategory=None, waitingForSubcategory=False, expectingCity=False, in_conversation=False):
-        self.userName = addressStyle
-        self.city = city or None
-        self.addressStyle = addressStyle or "przyjacielu"
-        self.waiting_for_category = waitingForCategory
-        self.selected_category = selectedCategory
-        self.waiting_for_subcategory = waitingForSubcategory
-        self.last_parameters = lastParameters
-        self.chat_history = []
-        self.expecting_city = expectingCity
-        self.in_conversation = in_conversation
-
+    def __init__(self):
+        """Initializes the bot, loading data files as class attributes."""
         try:
-            with open('static/js/waterAnalysis.json', 'r', encoding='utf-8') as f:
-                self.water_data = json.load(f)
-            self.water_data = normalize_keys(self.water_data)
-            print(f"[DEBUG] Loaded cities: {list(self.water_data.keys())}")
+            with open(WATER_ANALYSIS_PATH, 'r', encoding='utf-8') as f:
+                self.full_water_data = json.load(f)
         except Exception as e:
-            print(f"Błąd ładowania waterAnalysis.json: {e}")
-            self.water_data = {}
-
+            print(f"[ERROR] Could not load waterAnalysis.json: {e}")
+            self.full_water_data = {}
+        
         try:
-            with open('advice_templates.json', 'r', encoding='utf-8') as f:
-                self.advice_templates = json.load(f)
+            with open(AVERAGES_PATH, 'r', encoding='utf-8') as f:
+                self.city_averages = json.load(f)
         except Exception as e:
-            print(f"Błąd ładowania advice_templates.json: {e}")
-            self.advice_templates = {}
+            print(f"[ERROR] Could not load averages.json: {e}")
+            self.city_averages = {}
 
-        self.normy = {
-            'ph': {'type': 'range', 'green_min': 7.0, 'green_max': 8.5, 'orange_min': 6.5, 'orange_max': 9.5},
-            'twardosc': {'type': 'upper', 'thresholds': {'orange': 150, 'red': 220}},
-            'azotany': {'type': 'upper', 'thresholds': {'orange': 10, 'red': 20}},
-            'zelazo': {'type': 'upper', 'thresholds': {'orange': 0.1, 'red': 0.2}},
-            'fluorki': {'type': 'upper', 'thresholds': {'orange': 1.2, 'red': 1.5}},
-            'chlor': {'type': 'upper', 'thresholds': {'orange': 0.15, 'red': 0.27}},
-            'mangan': {'type': 'upper', 'thresholds': {'orange': 20, 'red': 50}},
-            'chlorki': {'type': 'upper', 'thresholds': {'orange': 125, 'red': 250}},
-            'siarczany': {'type': 'upper', 'thresholds': {'orange': 125, 'red': 250}},
-            'barwa': {'type': 'upper', 'thresholds': {'orange': 7.5, 'red': 15}},
-            'magnez': {'type': 'upper', 'thresholds': {'orange': 25, 'red': 50}},
-            'potas': {'type': 'upper', 'thresholds': {'orange': 6, 'red': 12}},
-            'olow': {'type': 'upper', 'thresholds': {'orange': 5, 'red': 10}},
-            'rtec': {'type': 'upper', 'thresholds': {'orange': 0.5, 'red': 1}},
+        # MAPOWANIE NAZW
+        self.param_map = {
+            'twardość': 'twardosc', 'twardosc': 'twardosc', 'twardosci': 'twardosc',
+            'azotany': 'azotany', 'azotanów': 'azotany',
+            'żelazo': 'zelazo', 'zelaza': 'zelazo',
+            'fluorki': 'fluorki', 'fluorków': 'fluorki',
+            'chlor': 'chlor', 'chloru': 'chlor', 'chlor wolny': 'chlor',
+            'mangan': 'mangan', 'manganu': 'mangan',
+            'ph': 'ph', 'odczyn': 'ph',
+            'chlorki': 'chlorki', 'chlorków': 'chlorki',
+            'siarczany': 'siarczany', 'siarczanów': 'siarczany',
+            'barwa': 'barwa', 'kolor': 'barwa',
+            'magnez': 'magnez',
+            'potas': 'potas',
+            'ołów': 'olow', 'olow': 'olow',
+            'rtęć': 'rtec', 'rtec': 'rtec'
         }
 
-        self.all_parameters = list(self.normy.keys())
-        self.param_aliases = {
-            'ph': ['ph', 'pH', 'ph?', 'pH?'],
-            'twardosc': ['twardosc', 'twardość', 'twardosci', 'twardoscia', 'twardosc?'],
-            'azotany': ['azotany', 'azotanami', 'azotanow', 'azotany?'],
-            'zelazo': ['zelazo', 'żelazo', 'zelaza', 'żelaza', 'zelazo?'],
-            'fluorki': ['fluorki', 'fluorkami', 'fluorkow', 'fluorki?', 'fluor', 'fluorem', 'fluor?'],
-            'chlor': ['chlor', 'chlorem', 'chlory', 'chlor?'],
-            'mangan': ['mangan', 'manganem', 'mangany', 'mangan?'],
-            'chlorki': ['chlorki', 'chlorkami', 'chlorkow', 'chlorki?'],
-            'siarczany': ['siarczany', 'siarczanami', 'siarczanow', 'siarczany?'],
-            'barwa': ['barwa', 'barwe', 'barwy', 'barwa?'],
-            'magnez': ['magnez', 'magnezem', 'magnezu', 'magnez?'],
-            'potas': ['potas', 'potasem', 'potasu', 'potas?'],
-            'olow': ['olow', 'ołów', 'ołowiem', 'olow?'],
-            'rtec': ['rtec', 'rtęć', 'rtecia', 'rtec?'],
-        }
-        self.status_descriptions = {
-            'green': "OK",
-            'orange': "podwyższone",
-            'red': "za wysokie"
+        # PROGI SKANKRAN
+        self.thresholds = {
+            'ph': {'red_low': 6.5, 'orange_low': 7.0, 'orange_high': 8.5, 'red_high': 9.5},
+            'twardosc': {'red': 220, 'orange': 150},
+            'azotany': {'red': 20, 'orange': 10},
+            'zelazo': {'red': 0.2, 'orange': 0.1},
+            'fluorki': {'red': 1.5, 'orange': 1.2},
+            'chlor': {'red': 0.27, 'orange': 0.15},
+            'mangan': {'red': 50, 'orange': 20},
+            'chlorki': {'red': 250, 'orange': 125},
+            'siarczany': {'red': 250, 'orange': 125},
+            'barwa': {'red': 15, 'orange': 7.5},
+            'magnez': {'red': 50, 'orange': 25},
+            'potas': {'red': 12, 'orange': 6},
+            'olow': {'red': 10, 'orange': 5},
+            'rtec': {'red': 1, 'orange': 0.5}
         }
 
-        if selectedStation:
-            if isinstance(selectedStation, str):
-                self.selected_station = self.find_station_by_name(selectedStation)
-            else:
-                self.selected_station = selectedStation
-        else:
-            self.selected_station = None
-        print(f"[DEBUG] Set selected_station: {self.selected_station}")
-
-        if self.selected_station and not self.in_conversation and not waitingForCategory and not waitingForSubcategory:
-            self.setStation(self.selected_station['name'])
-
-    def find_station_by_name(self, station_name):
-        """Znajduje stację na podstawie nazwy i miasta z ulepszonym fuzzy matchingiem."""
-        if not self.city:
-            print(f"[DEBUG] No city selected for station: {station_name}")
-            return None
-        city_key = normalize_name(self.city)
-        if city_key not in self.water_data:
-            print(f"[DEBUG] City {self.city} not found in water_data")
-            return None
-        stations = self.water_data[city_key].get('stations', [])
-        if not stations:
-            print(f"[DEBUG] No stations found for city: {self.city}")
-            return None
-        normalized_input = normalize_name(station_name)
-        best_match = None
-        best_score = 0
-        for station in stations:
-            norm_station = normalize_name(station['name'])
-            score = fuzz.token_set_ratio(normalized_input, norm_station)
-            if score > best_score and score >= 70:
-                best_score = score
-                best_match = station
-        print(f"[DEBUG] Best station match: {best_match['name'] if best_match else None} with score {best_score}")
-        return best_match
-
-    def call_xai_api(self, prompt, parameters_out_of_norm=[], subcategory=None, max_tokens=100):
-        """Wywołuje API Grok 3 z historią rozmowy i danymi o parametrach wody."""
-        cache_file = "cache.json"
-        try:
-            with open(cache_file, "r") as f:
-                cache = json.load(f)
-            if prompt in cache:
-                return cache[prompt]
-        except FileNotFoundError:
-            cache = {}
-
-        params_description = ""
-        if parameters_out_of_norm:
-            params_description = "Parametry wody poza normą: " + ", ".join([f"{p['name']}: {p['value']} {p['unit']}" for p in parameters_out_of_norm]) + "."
-
-        system_prompt = (
-            f"Jesteś AquaBot, ekspert od wody, troszczący się o użytkownika. "
-            f"Odpowiadaj krótko (max 80 znaków), merytorycznie i wspierająco. "
-            f"Używaj kontekstu ostatnich 5 wiadomości. "
-            f"Parametry wody: {params_description} "
-            f"Podkategoria: {subcategory}. "
-            f"Skup się na wpływie parametrów na {subcategory} w {self.selected_category}. "
-            f"Przykład: 'Wysoka twardość? Użyj filtra, {self.userName}!'"
-        )
-
-        messages = [{"role": "system", "content": system_prompt}]
-        for hist in self.chat_history[-5:]:
-            if hist.startswith("Użytkownik:"):
-                messages.append({"role": "user", "content": hist.replace("Użytkownik: ", "")})
-            else:
-                messages.append({"role": "assistant", "content": hist.replace("AquaBot: ", "")})
-        messages.append({"role": "user", "content": prompt})
-
-        for attempt in range(3):
-            try:
-                completion = self.client.chat.completions.create(
-                    model="grok-3",
-                    messages=messages,
-                    max_tokens=100,
-                    temperature=0.9,
-                    top_p=0.9
-                )
-                content = completion.choices[0].message.content.strip()
-                if len(content) > 80:
-                    last_space = content[:80].rfind(' ')
-                    content = content[:last_space] if last_space != -1 else content[:80]
-                reply = content if content and len(content) >= 20 else f"Ups, coś poszło nie tak, {self.userName}!"
-                cache[prompt] = reply
-                with open(cache_file, "w") as f:
-                    json.dump(cache, f)
-                return reply
-            except Exception as e:
-                print(f"Błąd API Grok 3: {e}")
-                time.sleep(2 ** attempt)
-        return f"Coś nie działa, {self.userName}! Spróbuj później."
-
-    def match_city(self, user_input):
-        """Dopasowuje miasto na podstawie aliasów lub fuzzy matching."""
-        user_input = normalize_name(user_input)
-        print(f"[DEBUG] Trying to match city: {user_input}")
-
-        if user_input in self.CITY_ALIASES:
-            matched_city = self.CITY_ALIASES[user_input]
-            print(f"[DEBUG] Found in aliases: {matched_city}")
-            return matched_city
-
-        print(f"[DEBUG] Checking fuzzy match for {user_input}")
-        available_cities = list(self.water_data.keys())
-        best_match = process.extractOne(user_input, available_cities, scorer=fuzz.token_set_ratio)
-        if best_match and best_match[1] >= 80:
-            print(f"[DEBUG] Best match: {best_match[0]} with score {best_match[1]}")
-            return best_match[0]
-
-        print("[DEBUG] No match found")
-        return None
-
-    def setStation(self, station_name):
-        """Ustawia stację i zwraca parametry poza normą."""
-        if not self.city:
-            print(f"[DEBUG] No city selected for setting station: {station_name}")
-            return {'message': f"Podaj miasto, {self.addressStyle}! Np. 'Warszawa'.", 'parameters': []}
-        city_key = normalize_name(self.city)
-        if city_key not in self.water_data:
-            print(f"[DEBUG] City {self.city} not found in water_data")
-            return {'message': f"Brak danych dla {self.city}, {self.addressStyle}!", 'parameters': []}
-        stations = self.water_data[city_key].get('stations', [])
-        if not stations:
-            print(f"[DEBUG] No stations found for city: {self.city}")
-            return {'message': f"Brak stacji w {self.city}, {self.addressStyle}!", 'parameters': []}
-        normalized_input = normalize_name(station_name)
-        print(f"[DEBUG] Trying to match station: {normalized_input} in city: {city_key}")
-        for station in stations:
-            norm_station = normalize_name(station['name'])
-            if normalized_input == norm_station or normalized_input in norm_station:
-                self.selected_station = station
-                out_of_norm = self.get_out_of_norm_parameters()
-                print(f"[DEBUG] Station set: {station['name']}, parameters out of norm: {out_of_norm}")
-                if out_of_norm:
-                    self.last_parameters = [param['name'].lower() for param in out_of_norm]
-                    self.waiting_for_category = True
-                    return {'message': f"Stacja: {station['name']}. Parametry poza normą:", 'parameters': out_of_norm}
-                return {'message': f"Stacja: {station['name']}. Woda w normie!", 'parameters': []}
-        print(f"[DEBUG] No station found for: {station_name} in {self.city}")
-        return {'message': f"Nie znalazłem '{station_name}' w {self.city}. Spróbuj dokładniej lub sprawdź w 'Znajdź stacje'.", 'parameters': []}
-
-    def get_out_of_norm_parameters(self):
-        """Zwraca parametry poza normą w formacie JSON."""
-        if not self.selected_station or 'data' not in self.selected_station:
-            print("[DEBUG] No selected station or data for parameters")
-            return []
-        data = self.selected_station['data']
-        out_of_norm = []
-        for param, norm in self.normy.items():
-            if param in data and data[param] is not None:
-                value = parseFloat(data[param])
-                if value == 0:
-                    continue
-                status = self.get_parameter_status(param, value)
-                if status in ['orange', 'red']:
-                    unit = "μg/l" if param in ['olow', 'rtec', 'mangan'] else "mg/l"
-                    out_of_norm.append({"name": param.capitalize(), "value": value, "unit": unit})
-        return out_of_norm
-
-    def get_parameter_status(self, param, value):
-        """Określa status parametru względem normy. Wymusza konwersję na float."""
-        norm = self.normy.get(param, {})
-        if not norm or value is None:
-            return 'green'
-        try:
-            value = float(value)
-        except (ValueError, TypeError):
-            print(f"[DEBUG] Błąd konwersji w get_parameter_status dla {param}: {value}")
-            return 'green'
-        if norm['type'] == 'range':
-            if norm['green_min'] <= value <= norm['green_max']:
-                return 'green'
-            elif norm['orange_min'] <= value <= norm['orange_max']:
-                return 'orange'
-            return 'red'
-        elif norm['type'] == 'upper':
-            if value <= norm['thresholds']['orange']:
-                return 'green'
-            elif value <= norm['thresholds']['red']:
-                return 'orange'
-            return 'red'
-        return 'green'
-
-    def match_category(self, message):
-        """Dopasowuje kategorię."""
-        message = normalize_name(message)
-        for category, aliases in self.CATEGORY_ALIASES.items():
-            if any(normalize_name(alias) in message for alias in aliases):
-                return category
-        return None
-
-    def match_subcategory(self, category, user_input):
-        """Dopasowuje podkategorię."""
-        user_input = normalize_name(user_input)
-        if "choroby" in user_input or "autoimmunologia" in user_input:
-            return "Autoimmunologia/Choroby"  # Force match dla wariacji
-        subcats = self.SUBCATEGORIES.get(category, [])
-        best_score = 0
-        best_subcat = None
-        for subcat in subcats:
-            norm_subcat = normalize_name(subcat)
-            score = fuzz.token_sort_ratio(user_input, norm_subcat)
-            if score > best_score:
-                best_score = score
-                best_subcat = subcat
-        if best_score >= 80:
-            return best_subcat
-        return None
-
-    def getHealthAdvice(self, message=""):
-        """Obsługuje zapytania z podkategoriami i templatekami."""
-        print(f"[DEBUG] getHealthAdvice: message={message}, waiting_for_category={self.waiting_for_category}, waiting_for_subcategory={self.waiting_for_subcategory}, in_conversation={self.in_conversation}")
-        message_lower = message.lower().strip()
-        normalized_message = normalize_name(message_lower)
-
-        self.chat_history.append(f"Użytkownik: {message}")
-        if len(self.chat_history) > 10:
-            self.chat_history = self.chat_history[-10:]
-
-        matched_city = self.match_city(normalized_message)
-        if matched_city:
-            self.city = matched_city
-            self.selected_station = None
-            self.waiting_for_category = False
-            self.waiting_for_subcategory = False
-            self.selected_category = None
-            self.last_parameters = []
-            self.expecting_city = False
-            self.in_conversation = False
-            message = f"Zmieniłem na {matched_city.capitalize()}, {self.addressStyle}! 😊 Wybierz stację, np. 'SUW {matched_city.capitalize()}'."
-            self.chat_history.append(f"AquaBot: {message}")
-            return {
-                'message': message,
-                'parameters': [],
-                'waitingForCategory': False,
-                'waitingForSubcategory': False,
-                'in_conversation': False,
-                'selectedCategory': None,
-                'city': self.city
-            }
-
-        if not self.city:
-            return {
-                'message': f"Skąd jesteś, {self.addressStyle}? Np. 'Warszawa'.",
-                'parameters': [],
-                'waitingForCategory': False,
-                'waitingForSubcategory': False,
-                'in_conversation': False,
-                'selectedCategory': None
-            }
-
-        if self.city and not self.selected_station:
-            station_result = self.setStation(message)
-            self.chat_history.append(f"AquaBot: {station_result['message']}")
-            return {
-                **station_result,
-                'waitingForCategory': self.waiting_for_category,
-                'waitingForSubcategory': self.waiting_for_subcategory,
-                'in_conversation': False,
-                'selectedCategory': self.selected_category,
-                'city': self.city
-            }
-
-        if self.waiting_for_category:
-            category = self.match_category(message_lower)
-            print(f"[DEBUG] Dopasowana kategoria: {category}")
-            if category:
-                self.selected_category = category
-                self.waiting_for_category = False
-                self.waiting_for_subcategory = True
-                subcats = self.SUBCATEGORIES.get(category, [])
-                message = f"Wybrałeś {category}. Wybierz podkategorię:<br>" + "<br>".join([f"- {subcat}" for subcat in subcats])
-                self.chat_history.append(f"AquaBot: {message}")
-                return {
-                    'message': message,
-                    'parameters': [],
-                    'waitingForCategory': False,
-                    'waitingForSubcategory': True,
-                    'in_conversation': False,
-                    'selectedCategory': category
-                }
-            message = f"Wpisz np. 'zdrowie', 'uroda', 'codzienne użycie'."
-            self.chat_history.append(f"AquaBot: {message}")
-            return {
-                'message': message,
-                'parameters': [],
-                'waitingForCategory': True,
-                'waitingForSubcategory': False,
-                'in_conversation': False,
-                'selectedCategory': self.selected_category
-            }
-
-        elif self.waiting_for_subcategory:
-            subcategory = self.match_subcategory(self.selected_category, message_lower)
-            print(f"[DEBUG] Dopasowana podkategoria: {subcategory}")
-            if subcategory:
-                advice = []
-                for param in self.last_parameters:
-                    raw_value = self.selected_station['data'].get(param, None)
-                    print(f"[DEBUG] Param: {param}, Raw value: {raw_value}, Type: {type(raw_value)}")
-                    value = parseFloat(raw_value)
-                    print(f"[DEBUG] Parsed value: {value}, Type: {type(value)}")
-                    if value is not None:
-                        status = self.get_parameter_status(param, value)
-                        print(f"[DEBUG] Status: {status}")
-                        category_data = self.advice_templates.get(self.selected_category, {})
-                        subcategory_data = category_data.get(subcategory, {})
-                        param_data = subcategory_data.get(param, {})
-                        advice_text = param_data.get(status)
-                        if advice_text:
-                            advice.append(advice_text.format(value=value))
-                if advice:
-                    reply = "<br>".join(advice) + "<br>Chcesz wiedzieć więcej? Dopytaj Wpisz uroda, zdrowie lub codzienne użytkowanie!"
-                else:
-                    reply = "Brak dostępnych porad dla wybranych parametrów."
-                self.waiting_for_subcategory = False
-                self.waiting_for_category = True  # Wracamy do wyboru kategorii
-                self.chat_history.append(f"AquaBot: {reply}")
-                return {
-                    'message': reply,
-                    'parameters': [],
-                    'waitingForCategory': True,
-                    'waitingForSubcategory': False,
-                    'in_conversation': False,
-                    'selectedCategory': self.selected_category,
-                    'city': self.city
-                }
-            subcats = self.SUBCATEGORIES.get(self.selected_category, [])
-            message = f"Wybierz podkategorię:<br>" + "<br>".join([f"- {subcat}" for subcat in subcats])
-            self.chat_history.append(f"AquaBot: {message}")
-            return {
-                'message': message,
-                'parameters': [],
-                'waitingForCategory': False,
-                'waitingForSubcategory': True,
-                'in_conversation': False,
-                'selectedCategory': self.selected_category
-            }
-
-        # Jeśli użytkownik wpisuje coś w trakcie, gdy nie oczekujemy kategorii ani podkategorii
-        message = f"Wpisz kategorię, np. 'zdrowie', 'uroda', 'codzienne użycie'."
-        self.chat_history.append(f"AquaBot: {message}")
+    def _anonymize_context(self):
+        """
+        Anonimizuje dane użytkownika przed wysłaniem do Gemini API.
+        RODO Art. 25 (Privacy by Design) - minimalizacja danych.
+        """
+        # Pobierz IP (obsługa proxy Nginx)
+        user_ip = request.environ.get('HTTP_X_REAL_IP', 
+                  request.environ.get('HTTP_X_FORWARDED_FOR', 
+                  request.remote_addr))
+        
+        # Pobierz session_id (generowany w app.py)
+        session_id = session.get('session_id', 'anonymous')
+        
+        # SHA256 hash - nieodwracalny (zgodność RODO)
+        ip_hash = hashlib.sha256(user_ip.encode()).hexdigest()[:16]
+        session_hash = hashlib.sha256(str(session_id).encode()).hexdigest()[:16]
+        
         return {
-            'message': message,
-            'parameters': [],
-            'waitingForCategory': True,
-            'waitingForSubcategory': False,
-            'in_conversation': False,
-            'selectedCategory': self.selected_category,
-            'city': self.city
+            'ip_hash': ip_hash,
+            'session_hash': session_hash,
+            'timestamp': int(time.time())
         }
 
-    def remindWater(self):
-        """Przypomina o piciu wody."""
-        responses = [
-            f"Hej, {self.addressStyle}! Czas na łyk wody! 💧",
-            f"{self.addressStyle}, nie zapomnij się nawodnić! 😊",
-            f"Pij wodę, {self.addressStyle}! Twoje ciało Ci podziękuje! 💦"
-        ]
-        return random.choice(responses)
+    def _get_color(self, parameter, value):
+        """Determines the color dot based on the parameter value."""
+        param_lower = parameter.lower()
+        if value is None or value == "Brak danych" or value == "":
+            return 'grey-dot'
+        num_value = parseFloat(value)
+        if num_value is None:
+            return 'grey-dot'
+        
+        if num_value == 0:
+            user_context = session.get('user_context', {})
+            city_name = user_context.get('city', '')
+            if city_name.lower() == 'poznań' and param_lower in ['olow', 'rtec']:
+                return 'green-dot'
+            return 'grey-dot'
+        
+        rules = self.thresholds.get(param_lower)
+        if rules:
+            if param_lower == 'ph':
+                if num_value < rules['red_low'] or num_value > rules['red_high']: return 'red-dot'
+                if num_value < rules['orange_low'] or num_value > rules['orange_high']: return 'orange-dot'
+            else:
+                if 'red' in rules and num_value > rules['red']: return 'red-dot'
+                if 'orange' in rules and num_value > rules['orange']: return 'orange-dot'
+        return 'green-dot'
+
+    def _post_process_response(self, text):
+        """Replaces AI tags with HTML code with colored dots."""
+        def replacer(match):
+            param_name = match.group(1).lower()
+            value = match.group(2)
+            color = self._get_color(param_name, value)
+            return f'<span class="dot {color}"></span> {value}'
+
+        pattern = re.compile(r'<param:(\w+):([^>]+)>')
+        return pattern.sub(replacer, text)
+
+    def set_station_context(self, context):
+        """Sets the user context in the server-side session."""
+        city_name = context.get('city')
+        if city_name and self.full_water_data.get(city_name):
+            session['user_context'] = context
+            session['chat_history'] = []
+            session.modified = True
+            print(f"[DEBUG] Context set for city: {city_name}.")
+        else:
+            print(f"[ERROR] Data not found for city: {city_name}")
+
+    def get_initial_greeting(self):
+        """Generates the initial greeting message."""
+        if 'user_context' not in session:
+            return {'text_message': 'Error: Station context not set.'}
+
+        all_params = self.get_colored_params()
+        params_with_issues = [p for p in all_params if p['color'] in ['red-dot', 'orange-dot']]
+        param_summary = ", ".join([f"{p['name']} ({p['value']})" for p in params_with_issues])
+        if not param_summary:
+            param_summary = "Wszystkie kluczowe parametry są w normie."
+
+        city = session['user_context']['city']
+        
+        # ✅ ANONIMIZACJA PRZED API
+        anon_context = self._anonymize_context()
+        
+        system_prompt = f"""Jesteś AquaBotem. Przywitaj użytkownika z miasta {city}. Zwięźle poinformuj go o podwyższonych parametrach: {param_summary}. ZAWSZE zakończ pytaniem: "Chcesz porozmawiać o tym, jak te wartości mogą wpływać na Twoje zdrowie, urodę, czy codzienne życie?"
+
+[METADATA: Session={anon_context['session_hash']}, Time={anon_context['timestamp']}]
+"""
+        
+        # Retry logic dla greeting
+        max_retries = 3
+        retry_delay = 1
+        
+        for attempt in range(max_retries):
+            try:
+                response = model.generate_content(system_prompt)
+                bot_message = response.text
+                session.setdefault('chat_history', []).append({'role': 'model', 'parts': [bot_message]})
+                session.modified = True
+                
+                print(f"[AUDIT] AquaBot greeting sent | IP Hash: {anon_context['ip_hash']} | Session: {anon_context['session_hash']}")
+                
+                return {'text_message': bot_message, "parameters": params_with_issues}
+            
+            except Exception as e:
+                error_str = str(e)
+                print(f"[ERROR] Greeting API error (attempt {attempt + 1}/{max_retries}): {e}")
+                
+                if '429' in error_str or 'quota' in error_str.lower() or 'rate' in error_str.lower():
+                    if attempt < max_retries - 1:
+                        wait_time = retry_delay * (2 ** attempt)
+                        print(f"[RETRY] Rate limit hit. Waiting {wait_time}s...")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        return {'text_message': f"Witaj w {city}! Podwyższone parametry: {param_summary}. Poczekaj chwilę i odśwież stronę.", "parameters": params_with_issues}
+                else:
+                    return {'text_message': f"Witaj w {city}! Podwyższone parametry: {param_summary}. Pytaj śmiało!", "parameters": params_with_issues}
+        
+    def get_colored_params(self):
+        """Gets a list of all parameters with their colors for the current station."""
+        station_data = session.get('user_context', {}).get('station', {}).get('data', {})
+        params_with_colors = []
+        for param, value in station_data.items():
+            color = self._get_color(param, value)
+            params_with_colors.append({'name': param.capitalize(), 'value': str(value), 'color': color})
+        return params_with_colors
+
+    def get_bot_response(self, user_message):
+        """Generates the bot's response to a user message."""
+        if not model:
+            return {'text_message': "Critical Error: API Model not loaded."}
+        if 'user_context' not in session:
+            return {'text_message': 'Proszę, najpierw wybierz stację na mapie.'}
+
+        session.setdefault('chat_history', []).append({'role': 'user', 'parts': [user_message]})
+        
+        city_data_for_prompt = self.full_water_data.get(session['user_context']['city'], {})
+        averages_for_prompt = self.city_averages
+        station_full_data = session['user_context']['station']['data']
+
+        # ✅ ANONIMIZACJA PRZED API
+        anon_context = self._anonymize_context()
+
+        system_prompt = f"""
+        Jesteś AquaBotem, ekspertem od jakości wody i przedstawicielem misji Skankran.pl.
+
+        --- DYREKTYWY NADRZĘDNE ---
+        1.  **"Reguła Zera"**: Wartość '0' przy parametrze prawie zawsze oznacza 'Brak Danych'. Wyjątkiem jest ołów i rtęć w Poznaniu.
+        2.  **"Adwokat Norm"**: Nasze progi są surowsze niż oficjalne, bo dbamy o osoby wrażliwe.
+        3.  **"Zwięzłość"**: Mów krótko i na temat.
+        4.  **"Precyzja Kontekstu"**: ZAWSZE jasno określaj, o jakich danych mówisz: używaj nazwy stacji (np. "Na stacji SUW Piłsudskiego...") lub słowa "średnia" (np. "Średnia twardość w Gorzowie to...").
+        5.  **"Formatowanie Wartości"**: Gdy w odpowiedzi podajesz wartość liczbową parametru, MUSISZ umieścić ją w znacznikach <param:nazwa_parametru:wartość>. Przykłady: "Twardość wynosi <param:twardosc:294>.", "Stężenie azotanów to <param:azotany:1.1>.".
+        6. **"BEZPIECZNIK MEDYCZNY" (BARDZO WAŻNE):**
+           - NIE WOLNO Ci stawiać diagnoz medycznych ani straszyć użytkownika bez twardych dowodów.
+           - Jeśli użytkownik pyta o choroby (Crohn, rak, AZS), używaj języka przypuszczeń: "Niektóre badania sugerują...", "Osoby wrażliwe mogą odczuwać...".
+           - NIGDY nie pisz: "To pogarsza chorobę Crohna". Pisz: "Może być czynnikiem drażniącym dla wrażliwych jelit".
+           - Przy parametrach w normie prawnej, ale powyżej "naszej" normy (pomarańczowa kropka), podkreślaj, że woda JEST BEZPIECZNA wg prawa, ale my zalecamy ostrożność dla komfortu/smaku.
+
+        --- KONTEKST STRATEGICZNY ---
+        A.  **Lokalizacja Użytkownika**: Stacja {session['user_context']['station']['name']} w mieście {session['user_context']['city']}.
+        B.  **Szczegółowa Mapa Miasta Użytkownika**: {json.dumps(city_data_for_prompt, indent=2, ensure_ascii=False)}
+        C.  **PEŁNE DANE TWOJEJ STACJI**: {json.dumps(station_full_data, indent=2, ensure_ascii=False)}
+        D.  **Globalny Skrót Wywiadowczy (ŚREDNIE)**: {json.dumps(averages_for_prompt, indent=2, ensure_ascii=False)}
+
+        --- METADATA (Anonimizowane) ---
+        [Session: {anon_context['session_hash']} | Time: {anon_context['timestamp']}]
+
+        --- HISTORIA ROZMOWY ---
+        {json.dumps(session.get('chat_history', []), indent=2, ensure_ascii=False)}
+        --- KONIEC HISTORII ---
+
+        NAJNOWSZA WIADOMOŚCI OD UŻYTKOWNIKA: "{user_message}"
+
+        TWOJE ZADANIE: Odpowiedz precyzyjnie na pytanie, bazując na CAŁYM powyższym kontekście i stosując się do Dyrektyw.
+        """
+        
+        # Retry logic z exponential backoff dla błędów 429
+        max_retries = 3
+        retry_delay = 1  # sekunda
+        
+        for attempt in range(max_retries):
+            try:
+                chat = model.start_chat(history=session['chat_history'][:-1])
+                response = chat.send_message(system_prompt)
+                bot_response_text = response.text
+                
+                session['chat_history'].append({'role': 'model', 'parts': [bot_response_text]})
+                session.modified = True
+                
+                processed_text = self._post_process_response(bot_response_text)
+                
+                print(f"[AUDIT] AquaBot response sent | IP Hash: {anon_context['ip_hash']} | Query: {user_message[:50]}...")
+                
+                return {'text_message': processed_text}
+
+            except Exception as e:
+                error_str = str(e)
+                print(f"[ERROR] Gemini API error (attempt {attempt + 1}/{max_retries}): {e}")
+                
+                # Sprawdź czy to błąd 429 (rate limit)
+                if '429' in error_str or 'quota' in error_str.lower() or 'rate' in error_str.lower():
+                    if attempt < max_retries - 1:
+                        wait_time = retry_delay * (2 ** attempt)  # Exponential backoff: 1s, 2s, 4s
+                        print(f"[RETRY] Rate limit hit. Waiting {wait_time}s before retry...")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        print(f"[ERROR] Max retries reached. Rate limit still active.")
+                        session.get('chat_history', []).pop()
+                        session.modified = True
+                        return {'text_message': "Przepraszam, zbyt wiele zapytań w krótkim czasie. Poczekaj chwilę (ok. 1 minutę) i spróbuj ponownie. 🕒"}
+                else:
+                    # Inny błąd - nie retry
+                    session.get('chat_history', []).pop()
+                    session.modified = True
+                    return {'text_message': "Chwilowa awaria połączenia z moją inteligencją. Spróbuj zadać pytanie jeszcze raz!"}

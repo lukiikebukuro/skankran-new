@@ -1,6 +1,77 @@
-node_modules/
-venv/
-__pycache__/
+# ============================================
+# SKANKRAN.PL - GITIGNORE
+# ============================================
+
+# ⚠️ KRYTYCZNE - NIGDY NIE COMMITUJ TYCH PLIKÓW
 .env
-cache.json
-*.pyc
+.env.local
+.env.production
+*.pem
+*.key
+*.crt
+config.py
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Flask
+instance/
+.webassets-cache
+flask_session/
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+skankran.log
+skankran.log.*
+
+# Backups
+backup/
+*.backup
+
+# SSL Certificates (lokalne testy)
+cert.pem
+key.pem
+selfsigned.*
+
+# Sensitive Data
+users.db
+waterAnalysis.json.backup
+averages.json.backup

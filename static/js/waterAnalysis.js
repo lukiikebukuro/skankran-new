@@ -1,4 +1,5 @@
 import { getParameterDescription, getColor, suggestWaterFilter, getSelectedParameters, getPremiumParameters } from './utils.js';
+import { trackCitySearch, trackStationSearch } from './analytics.js';
 export let map = null;
 export function getDistance(lat1, lon1, lat2, lon2) {
     try {
@@ -5414,6 +5415,10 @@ export function checkWater(inputId) {
                 resultDiv.innerHTML = "Proszę wpisać miasto!";
                 return;
             }
+            
+            // 🛰️ SATELITA: Track city search
+            trackCitySearch(city);
+            
             const data = waterStations[city]?.average;
             if (!data) {
                 resultDiv.innerHTML = "Brak danych dla tego miasta.";
@@ -5463,48 +5468,31 @@ export function checkWater(inputId) {
     }
 }
 export async function findWaterStation() {
+    let closestStation = null;
+    let city = '';
+    const waterInfo = document.getElementById('waterInfo');
+
     try {
         const streetInput = document.getElementById('street');
         const cityInput = document.getElementById('city-premium');
-        const waterInfo = document.getElementById('waterInfo');
-        if (!streetInput || !cityInput || !waterInfo) {
-            console.error('Brak wymaganych elementów HTML: street, city-premium, waterInfo');
-            return;
-        }
+        if (!streetInput || !cityInput || !waterInfo) return;
 
         const street = streetInput.value.trim();
-        const city = cityInput.value.trim();
+        city = cityInput.value.trim();
 
-        if (!city) {
-            waterInfo.innerHTML = "Proszę wpisać miasto!";
+        if (!city || !street) {
+            waterInfo.innerHTML = !city ? "Proszę wpisać miasto!" : "Proszę wpisać ulicę!";
             return;
         }
-        if (!street) {
-            waterInfo.innerHTML = "Proszę wpisać ulicę!";
-            return;
-        }
-
-        const stations = waterStations[city]?.stations || [];
-        const measurementPoints = waterStations[city]?.measurementPoints || [];
-        if (stations.length === 0 && measurementPoints.length === 0) {
-            if (city.toLowerCase() === 'wałbrzych' || city.toLowerCase() === 'walbrzych') {
-                waterInfo.innerHTML = "Odmowa podania danych przez Wałbrzyskie Przedsiębiorstwo Wodociągów i Kanalizacji Sp. z o.o.";
-                return;
-            }
-            if (waterStations[city]?.info) {
-                waterInfo.innerHTML = waterStations[city].info;
-            } else {
-                waterInfo.innerHTML = "Brak danych dla tego miasta.";
-            }
+        
+        const cityData = waterStations[city];
+        if (!cityData || (!cityData.stations && !cityData.stations.length && !cityData.measurementPoints && !cityData.measurementPoints.length)) {
+            waterInfo.innerHTML = cityData?.info || "Brak danych dla tego miasta.";
             return;
         }
 
         const mapElement = document.getElementById('map');
-        if (!mapElement || !window.map) {
-            console.error('Problem z mapą: brak elementu #map lub obiektu window.map');
-            waterInfo.innerHTML += '<p>Problem z załadowaniem mapy – sprawdź konsolę (F12).</p>';
-            return;
-        }
+        if (!mapElement || !window.map) return;
 
         mapElement.style.display = 'block';
         let userLat = 52.7325, userLon = 15.2369;
@@ -5513,9 +5501,6 @@ export async function findWaterStation() {
         if (data.length > 0) {
             userLat = parseFloat(data[0].lat);
             userLon = parseFloat(data[0].lon);
-            console.log(`Geokodowanie udane: ${street}, ${city} -> [${userLat}, ${userLon}]`);
-        } else {
-            console.warn(`Geokodowanie nieudane dla: ${street}, ${city}. Używam domyślnych współrzędnych.`);
         }
 
         window.map.setView([userLat, userLon], 14);
@@ -5525,24 +5510,18 @@ export async function findWaterStation() {
         });
         L.marker([userLat, userLon]).addTo(window.map).bindPopup(`Lokalizacja: ${street}, ${city}`).openPopup();
 
-        let closestStation = null;
         let minStationDistance = Infinity;
-        stations.forEach(station => {
-            if (station.address.toLowerCase().includes(street.toLowerCase())) {
+        (cityData.stations || []).forEach(station => {
+            const distance = parseFloat(getDistance(userLat, userLon, station.coords[0], station.coords[1]));
+            if (distance < minStationDistance) {
+                minStationDistance = distance;
                 closestStation = station;
-                minStationDistance = 0;
-            } else {
-                const distance = parseFloat(getDistance(userLat, userLon, station.coords[0], station.coords[1]));
-                if (distance < minStationDistance) {
-                    minStationDistance = distance;
-                    closestStation = station;
-                }
             }
         });
-
+        
         let closestPoint = null;
         let minPointDistance = Infinity;
-        measurementPoints.forEach(point => {
+        (cityData.measurementPoints || []).forEach(point => {
             const distance = parseFloat(getDistance(userLat, userLon, point.coords[0], point.coords[1]));
             if (distance < minPointDistance) {
                 minPointDistance = distance;
@@ -5550,66 +5529,92 @@ export async function findWaterStation() {
             }
         });
 
-        let waterInfoHTML = `<h3>Wyniki dla adresu: ${street}, ${city}</h3>`;
-        waterInfoHTML += `<div style="display: flex; flex-wrap: wrap; gap: 20px;">`;
+        let waterInfoHTML = `<h3 style="text-align: center; font-family: 'Poppins', sans-serif; color: #0277bd; margin-bottom: 24px;">Wyniki dla adresu: ${street}, ${city}</h3>`;
 
         if (closestStation) {
-            window.map.setView(closestStation.coords, 14);
             L.marker(closestStation.coords).addTo(window.map).bindPopup(`${closestStation.name} (${closestStation.address})`).openPopup();
-
             const params = closestStation.data;
-            const basicParams = getSelectedParameters(params);
-            const premiumParams = getPremiumParameters(params);
-            const allParams = [...basicParams, ...premiumParams];
+            const allParams = [...getSelectedParameters(params), ...getPremiumParameters(params)];
             const parameters = allParams.map(param => {
                 const color = getColor(param.name, param.value);
                 const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
                 const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm;
-                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${normWithUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
-            });
-
-            waterInfoHTML += `
-                <div style="flex: 1; min-width: 300px;">
-                    <h4>Najbliższa stacja SUW: ${closestStation.name} (${closestStation.address})</h4>
-                    <p>Odległość: ${minStationDistance.toFixed(2)} km</p>
-                    <p class="note">To najbliższa stacja uzdatniania wody na podstawie Twojej lokalizacji.</p>
-                    Jakość wody:<br>${parameters.join('')}
-                    <p><strong>Rekomendacja:</strong> ${suggestWaterFilter(params).summary}</p>
+                const desc = getParameterDescription(param.name, param.value, color);
+                return `<div class="parameter-item">
+                    <span class="dot ${color}"></span>
+                    <div>
+                        <div><strong>${param.name.charAt(0).toUpperCase() + param.name.slice(1)}:</strong> <span class="param-value">${displayValue}</span> <span class="param-norm">(norma: ${normWithUnit})</span></div>
+                        <div class="param-desc">${desc}</div>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            // 🛰️ SATELITA: Track station search
+            trackStationSearch(city, street, closestStation.name);
+            
+            waterInfoHTML += `<div class="station-feature-card">
+                <div class="station-card-header">
+                    <h4>Najbliższa stacja SUW: ${closestStation.name}</h4>
+                    <p class="station-address">${closestStation.address}</p>
+                    <p class="station-distance">📍 Odległość: ${minStationDistance.toFixed(2)} km</p>
                 </div>
-            `;
-        } else {
-            waterInfoHTML += `<div style="flex: 1; min-width: 300px;"><p>Brak stacji SUW dla tego miasta.</p></div>`;
+                <p class="note" style="margin-bottom: 16px; color: #666; font-style: italic;">To najbliższa stacja uzdatniania wody na podstawie Twojej lokalizacji.</p>
+                <div class="parameters-grid">${parameters}</div>
+                <div class="station-recommendation">
+                    <strong>💡 Rekomendacja:</strong>
+                    <p>${suggestWaterFilter(params).summary}</p>
+                </div>
+            </div>`;
         }
 
         if (closestPoint) {
-            const pointParams = closestPoint.data;
-            const pointBasicParams = getSelectedParameters(pointParams);
-            const pointPremiumParams = getPremiumParameters(pointParams);
-            const pointAllParams = [...pointBasicParams, ...pointPremiumParams];
-            const pointParameters = pointAllParams.map(param => {
-                const color = getColor(param.name, param.value);
-                const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
-                const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm;
-                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${normWithUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
-            });
-
-            waterInfoHTML += `
-                <div style="flex: 1; min-width: 300px;">
-                    <h4>Najbliższy punkt pomiarowy: ${closestPoint.name} (${closestPoint.address})</h4>
-                    <p>Odległość: ${minPointDistance.toFixed(2)} km</p>
-                    <p class="note">Dane z punktów pomiarowych mogą być bardziej precyzyjne dla Twojej lokalizacji.</p>
-                    Jakość wody:<br>${pointParameters.join('')}
-                    <p><strong>Rekomendacja:</strong> ${suggestWaterFilter(pointParams).summary}</p>
-                </div>
-            `;
             L.marker(closestPoint.coords).addTo(window.map).bindPopup(`${closestPoint.name} (${closestPoint.address})`);
+            const pointParams = closestPoint.data;
+            const allPointParams = [...getSelectedParameters(pointParams), ...getPremiumParameters(pointParams)];
+            const pointParameters = allPointParams.map(param => {
+                 const color = getColor(param.name, param.value);
+                 const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
+                 const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm;
+                 const desc = getParameterDescription(param.name, param.value, color);
+                 return `<div class="parameter-item">
+                    <span class="dot ${color}"></span>
+                    <div>
+                        <div><strong>${param.name.charAt(0).toUpperCase() + param.name.slice(1)}:</strong> <span class="param-value">${displayValue}</span> <span class="param-norm">(norma: ${normWithUnit})</span></div>
+                        <div class="param-desc">${desc}</div>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            waterInfoHTML += `<div class="station-feature-card">
+                <div class="station-card-header">
+                    <h4>Najbliższy punkt pomiarowy: ${closestPoint.name}</h4>
+                    <p class="station-address">${closestPoint.address}</p>
+                    <p class="station-distance">📍 Odległość: ${minPointDistance.toFixed(2)} km</p>
+                </div>
+                <p class="note" style="margin-bottom: 16px; color: #666; font-style: italic;">Dane z punktów pomiarowych mogą być bardziej precyzyjne dla Twojej lokalizacji.</p>
+                <div class="parameters-grid">${pointParameters}</div>
+                <div class="station-recommendation">
+                    <strong>💡 Rekomendacja:</strong>
+                    <p>${suggestWaterFilter(pointParams).summary}</p>
+                </div>
+            </div>`;
         }
 
-        waterInfoHTML += `</div>`;
         waterInfo.innerHTML = waterInfoHTML;
+        
+        // Smooth scroll do wyników
+        setTimeout(() => {
+            waterInfo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
     } catch (error) {
         console.error('Błąd w findWaterStation:', error);
-        document.getElementById('waterInfo').innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
+        if(waterInfo) waterInfo.innerHTML = "Wystąpił błąd – sprawdź konsolę (F12).";
+    }
+
+    if (closestStation && city) {
+        const lastChecked = { city: city, station: closestStation };
+        localStorage.setItem('lastCheckedStation', JSON.stringify(lastChecked));
+        console.log('ZAPISANO W LOCALSTORAGE:', lastChecked);
     }
 }
 
@@ -5812,11 +5817,13 @@ export function showAllSUW() {
             window.map.invalidateSize();
         }
 
-        let result = `<h3>Wyniki dla miasta: ${city}</h3>`;
+        let result = `<h3 style="text-align: center; font-family: 'Poppins', sans-serif; color: #0277bd; margin-bottom: 24px;">Wszystkie stacje SUW w mieście: ${city}</h3>`;
         if (stations.length === 1) {
-            result += `<p>To miasto ma tylko jeden SUW – dane poniżej.</p>`;
+            result += `<p style="text-align: center; color: #666;">To miasto ma tylko jeden SUW – dane poniżej.</p>`;
         }
 
+        result += `<div class="stations-grid">`;
+        
         stations.forEach(station => {
             const params = station.data;
             const basicParams = getSelectedParameters(params);
@@ -5826,14 +5833,26 @@ export function showAllSUW() {
                 const normUnit = param.name === 'mangan' ? ' µg/l' : param.name === 'metnosc' ? ' NTU' : param.name === 'barwa' ? ' mgPt/dm³' : ' mg/l';
                 const color = getColor(param.name, param.value);
                 const displayValue = param.displayValue === 'Brak danych' || param.value === undefined ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
-                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${param.norm}${normUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+                return `<div class="parameter-item">
+                    <span class="dot ${color}"></span>
+                    <div><strong>${param.name.charAt(0).toUpperCase() + param.name.slice(1)}:</strong> <span class="param-value">${displayValue}</span> <span class="param-norm">(${param.norm}${normUnit})</span></div>
+                </div>`;
             });
 
-            result += `<h4>Stacja SUW: ${station.name} (${station.address})</h4>Jakość wody:<br>${parameters.join('')}`;
             const filterRec = suggestWaterFilter(params);
-            result += `<p><strong>Rekomendacja:</strong> ${filterRec.summary}</p>`;
+            
+            result += `<div class="station-grid-card">
+                <h4>${station.name}</h4>
+                <p class="station-address">${station.address}</p>
+                <div style="margin-bottom: 12px;">${parameters.join('')}</div>
+                <div class="station-recommendation">
+                    <strong>💡 Rekomendacja:</strong>
+                    <p style="margin: 0; font-size: 13px;">${filterRec.summary}</p>
+                </div>
+            </div>`;
         });
-
+        
+        result += `</div>`;
         waterInfo.innerHTML = result;
     } catch (error) {
         console.error('Błąd w showAllSUW:', error);

@@ -1,21 +1,24 @@
-import { fetchPosts } from './community.js';
-
-export const cities = ["Katowice","Gdynia","Kielce","Dąbrowa Górnicza","Szczecin","Piła","Jelenia Góra","Konin","Głogów","Białystok","Tarnów","Siedlce","Łódź", "Mordy", "Rzeszów", "Sosnowiec", "Wrocław","Lublin", "Częstochowa", "Płock","Poznań", "Olsztyn", "Tychy","Gorzów Wielkopolski", "Warszawa", "Kraków", "Gdańsk", "Kalisz", "Koszalin", "Grudziądz", "Wałbrzych", "Bydgoszcz", "Toruń", "Zielona Góra", "Legnica", "Radom",];
-export const bottles = ["Nałęczowianka", "Muszynianka", "Cisowianka", "Staropolanka", "Żywiec Zdrój", "Polaris"];
+// USUNIĘTO statyczną listę miast. Będziemy używać dynamicznej z waterAnalysis.js.
 
 export function suggestCities(val, inputId = 'city') {
     try {
-        console.log(`suggestCities: Wpisano "${val}", inputId: ${inputId}`);
+        // --- KLUCZOWA POPRAWKA ---
+        // Pobieramy pełną, dynamiczną listę miast z obiektu `window.waterStations`,
+        // który jest ładowany przez waterAnalysis.js.
+        const cityNames = Object.keys(window.waterStations || {});
+
         const suggestionsElement = document.getElementById(inputId + '-suggestions');
         if (!suggestionsElement) return;
+
         suggestionsElement.innerHTML = "";
         if (val.length > 0) {
-            const filteredCities = cities.filter(city => city.toLowerCase().startsWith(val.toLowerCase()));
+            const filteredCities = cityNames.filter(city =>
+                city.toLowerCase().startsWith(val.toLowerCase())
+            ).slice(0, 5); // Pokaż maksymalnie 5 sugestii
+
             filteredCities.forEach(city => {
                 const div = document.createElement('div');
-                div.className = 'suggestion-item';
-                div.style.padding = '5px';
-                div.style.cursor = 'pointer';
+                div.className = 'suggestion-item'; // Użyj tej klasy do stylizacji w CSS
                 div.textContent = city;
                 div.addEventListener('click', () => selectCity(city, inputId));
                 suggestionsElement.appendChild(div);
@@ -33,18 +36,14 @@ export function selectCity(city, inputId = 'city') {
         if (cityInput && suggestionsElement) {
             cityInput.value = city;
             suggestionsElement.innerHTML = "";
-            if (inputId === 'city-premium') {
-                // Zakładamy, że findWaterStation jest importowane w main.js
-                document.dispatchEvent(new Event('findWaterStation'));
-            } else if (inputId === 'alert-city') {
-                // Zakładamy, że alertCity jest w main.js
-                document.dispatchEvent(new CustomEvent('updateAlertCity', { detail: city }));
-            }
         }
     } catch (error) {
         console.error('Błąd w selectCity:', error);
     }
 }
+
+
+
 
 export function suggestBottles(val) {
     try {
@@ -254,7 +253,7 @@ export function getSelectedParameters(data) {
         };
     });
 }
-  
+
   // Funkcja pomocnicza: Wybiera 6 parametrów z danych
 export function getPremiumParameters(data) {
     const premiumParams = [
@@ -301,53 +300,62 @@ export function suggestWaterFilter(params) {
   try {
       let issues = [];
       let summary = '';
-      let filterType = null;
 
-      if (getColor('twardosc', params.twardosc) !== 'green-dot') {
+      // Check dla 15 paramów (tylko jeśli value > 0 i !== green-dot)
+      if (params.twardosc > 0 && getColor('twardosc', params.twardosc) !== 'green-dot') {
           issues.push({ param: 'twardość', reason: 'może wysuszać cerę i zostawiać kamień', filter: 'zmiękczający' });
       }
-      issues.push({ param: 'azotany', reason: 'mogą szkodzić dzieciom, opcjonalnie rozważ filtr eko dla większego bezpieczeństwa', filter: 'eko' });
-      if (getColor('metnosc', params.metnosc) !== 'green-dot') {
+      if (params.azotany > 0 && getColor('azotany', params.azotany) !== 'green-dot') {
+          issues.push({ param: 'azotany', reason: 'mogą szkodzić dzieciom, opcjonalnie rozważ filtr eko dla większego bezpieczeństwa', filter: 'eko' });
+      }
+      if (params.metnosc > 0 && getColor('metnosc', params.metnosc) !== 'green-dot') {
           issues.push({ param: 'mętność', reason: 'pogarsza wygląd wody', filter: 'poprawiający smak' });
       }
-      if (params.chlor >= 0.1) {
+      if (params.chlor > 0 && params.chlor >= 0.1) {
           issues.push({ param: 'chlor', reason: 'może podrażniać skórę i zmieniać smak', filter: 'poprawiający smak' });
       }
-      if (params.zelazo && getColor('zelazo', params.zelazo) !== 'green-dot') {
+      if (params.zelazo > 0 && getColor('zelazo', params.zelazo) !== 'green-dot') {
           issues.push({ param: 'żelazo', reason: 'może zmieniać smak i powodować osad', filter: 'poprawiający smak' });
       }
-      if (params.mangan && getColor('mangan', params.mangan) !== 'green-dot') {
+      if (params.mangan > 0 && getColor('mangan', params.mangan) !== 'green-dot') {
           issues.push({ param: 'mangan', reason: 'może zmieniać smak i powodować osad', filter: 'poprawiający smak' });
       }
-      if (params.fluorki && getColor('fluorki', params.fluorki) !== 'green-dot') {
+      if (params.fluorki > 0 && getColor('fluorki', params.fluorki) !== 'green-dot') {
           issues.push({ param: 'fluorki', reason: 'mogą wpływać na zdrowie zębów', filter: 'poprawiający smak' });
+      }
+      if (params.chlorki > 0 && getColor('chlorki', params.chlorki) !== 'green-dot') {
+          issues.push({ param: 'chlorki', reason: 'mogą korodować rury i wpływać na smak', filter: 'poprawiający smak' });
+      }
+      if (params.siarczany > 0 && getColor('siarczany', params.siarczany) !== 'green-dot') {
+          issues.push({ param: 'siarczany', reason: 'mogą powodować problemy trawienne', filter: 'poprawiający smak' });
+      }
+      if (params.barwa > 0 && getColor('barwa', params.barwa) !== 'green-dot') {
+          issues.push({ param: 'barwa', reason: 'wpływa na estetykę wody', filter: 'poprawiający smak' });
+      }
+      if (params.magnez > 0 && getColor('magnez', params.magnez) !== 'green-dot') {
+          issues.push({ param: 'magnez', reason: 'może zmieniać smak', filter: 'poprawiający smak' });
+      }
+      if (params.potas > 0 && getColor('potas', params.potas) !== 'green-dot') {
+          issues.push({ param: 'potas', reason: 'może wpływać na smak', filter: 'poprawiający smak' });
+      }
+      if (params.olow > 0 && getColor('olow', params.olow) !== 'green-dot') {
+          issues.push({ param: 'ołów', reason: 'toksyczny dla zdrowia', filter: 'eko' });
+      }
+      if (params.rtec > 0 && getColor('rtec', params.rtec) !== 'green-dot') {
+          issues.push({ param: 'rtęć', reason: 'toksyczna dla nerwów', filter: 'eko' });
       }
 
       if (issues.length === 0) {
-          summary = '<strong>Woda w normie, ale azotany mogą szkodzić dzieciom.</strong> Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa. <a href="/dropshipping/eko" target="_blank">Sprawdź filtr</a>.';
-          return { filter: 'eko', summary };
-      } else if (issues.length === 1 && issues[0].param === 'azotany') {
-          summary = '<strong>Woda w normie, ale azotany mogą szkodzić dzieciom.</strong> Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa. <a href="/dropshipping/eko" target="_blank">Sprawdź filtr</a>.';
-          return { filter: 'eko', summary };
+          summary = 'Woda w normie, ale azotany mogą szkodzić dzieciom – rozważ filtr dla bezpieczeństwa.';
+          return { summary };
       } else {
-          const nonAzotanyIssues = issues.filter(i => i.param !== 'azotany');
-          if (nonAzotanyIssues.length >= 2) {
-              filterType = 'premium';
-              const reasons = nonAzotanyIssues.map(issue => issue.param).join(' i ');
-              summary = `<strong>Polecamy filtr premium, ponieważ podwyższone są ${reasons}.</strong> Azotany mogą szkodzić dzieciom, opcjonalnie rozważ filtr eko dla większego bezpieczeństwa. <a href="/dropshipping/premium" target="_blank">Sprawdź filtr</a>.`;
-          } else {
-              const issue = nonAzotanyIssues[0];
-              filterType = issue.filter;
-              summary = `<strong>Polecamy filtr ${filterType}, ponieważ ${issue.param} ${issue.reason}.</strong> Azotany mogą szkodzić dzieciom, opcjonalnie rozważ filtr eko dla większego bezpieczeństwa. <a href="/dropshipping/${filterType.replace(' ', '-')}" target="_blank">Sprawdź filtr</a>.`;
-          }
-          return { filter: filterType, summary };
+          const reasons = issues.map(issue => issue.param).join(', ');
+          summary = `Rozważ filtr, ponieważ podwyższone są ${reasons}. Azotany mogą szkodzić dzieciom – rozważ filtr dla bezpieczeństwa.`;
+          return { summary };
       }
   } catch (error) {
       console.error('Błąd w suggestWaterFilter:', error);
-      return {
-          filter: 'eko',
-          summary: '<strong>Azotany mogą szkodzić dzieciom.</strong> Opcjonalnie rozważ filtr eko dla większego bezpieczeństwa. <a href="/dropshipping/eko" target="_blank">Sprawdź filtr</a>.'
-      };
+      return { summary: 'Opcjonalnie rozważ filtr na Azotany, ponieważ mogą szkodzić dzieciom – rozważ filtr dla bezpieczeństwa.' };
   }
 }
 

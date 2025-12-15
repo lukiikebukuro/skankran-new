@@ -1,422 +1,878 @@
-from flask import Flask, render_template, send_from_directory, request, jsonify
-import sqlite3
-from datetime import datetime
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+from datetime import timedelta, datetime
 from aquabotBackend import AquaBot
-from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_session import Session
+from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
+from flask_socketio import SocketIO, emit
+import logging
+from logging.handlers import RotatingFileHandler
+import re
+import json
+from sqlalchemy import desc
+
+# ============================================
+# INICJALIZACJA APLIKACJI
+# ============================================
 
 app = Flask(__name__)
-CORS(app)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
-# Inicjalizacja bazy danych
-def init_db():
-    print("[DEBUG] Inicjalizuję bazę danych")
-    conn = sqlite3.connect('community.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        post_count INTEGER DEFAULT 0,
-        is_premium INTEGER DEFAULT 0
-    )''')
-    c.execute('''CREATE TABLE IF NOT EXISTS posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER,
-        content TEXT NOT NULL,
-        timestamp TEXT NOT NULL,
-        is_premium_only INTEGER DEFAULT 0,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    )''')
-    c.execute('''CREATE TABLE IF NOT EXISTS comments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        post_id INTEGER,
-        user_id INTEGER,
-        content TEXT NOT NULL,
-        timestamp TEXT NOT NULL,
-        FOREIGN KEY (post_id) REFERENCES posts(id),
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    )''')
-    conn.commit()
-    conn.close()
-    print("[DEBUG] Baza danych zainicjalizowana")
+# KONFIGURACJA
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_key_change_in_production')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///skankran.db'  # 🔥 JEDNA BAZA DLA WSZYSTKIEGO
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JSON_AS_ASCII'] = False  # 🔥 Polskie znaki w JSON
 
-init_db()
+# SESSION
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_COOKIE_SECURE"] = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_NAME"] = "skankran_session"
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
+app.config['PREFERRED_URL_SCHEME'] = os.getenv('PREFERRED_URL_SCHEME', 'http')
 
-# Endpointy główne
+Session(app)
+csrf = CSRFProtect(app)
+
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
+# 🛰️ SATELITA: Socket.IO
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+
+# LOGGING
+if not app.debug:
+    handler = RotatingFileHandler('skankran.log', maxBytes=10000000, backupCount=3)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s')
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.INFO)
+
+# ============================================
+# DATABASE MODELS (SQLite)
+# ============================================
+
+db = SQLAlchemy(app)
+
+# USER MODEL (istniejący)
+class User(db.Model, UserMixin):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+    is_premium = db.Column(db.Boolean, default=False)
+
+
+# 🛰️ SATELITA: VISITOR EVENTS MODEL
+class VisitorEvent(db.Model):
+    __tablename__ = 'visitor_events'
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(64), nullable=False, index=True)
+    event_type = db.Column(db.String(50), nullable=False)  # session_start, page_visible, scroll_depth
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    
+    # Location data (RODO compliant)
+    city = db.Column(db.String(100))
+    country = db.Column(db.String(100))
+    organization = db.Column(db.String(200))  # ISP/Company name
+    
+    # Device info (minimal)
+    device_type = db.Column(db.String(20))  # Desktop/Mobile/Tablet
+    os = db.Column(db.String(20))
+    browser = db.Column(db.String(20))
+    
+    # IP hash (SHA-256, not reversible)
+    ip_hash = db.Column(db.String(64))
+    
+    # Anonymous mode
+    anonymous_mode = db.Column(db.Boolean, default=False)
+    
+    # Extra data (JSON)
+    extra_data = db.Column(db.Text)  # JSON string
+
+
+# 🛰️ SATELITA: AQUABOT QUERIES MODEL
+class AquaBotQuery(db.Model):
+    __tablename__ = 'aquabot_queries'
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(64), nullable=False, index=True)
+    query = db.Column(db.Text, nullable=False)  # Sanitized query
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    
+    # Location
+    city = db.Column(db.String(100))
+    country = db.Column(db.String(100))
+    organization = db.Column(db.String(200))
+    
+    # Query metadata
+    query_count = db.Column(db.Integer, default=1)  # Nth query in session
+    time_since_entry = db.Column(db.Integer)  # Seconds since session start
+    
+    # Classification (opcjonalne - do Lost Demand)
+    bot_confidence = db.Column(db.Float)  # 0.0 - 1.0
+    bot_response_summary = db.Column(db.Text)  # Krótkie streszczenie odpowiedzi
+
+
+# 🛰️ SATELITA: B2B LEADS MODEL
+class B2BLead(db.Model):
+    __tablename__ = 'b2b_leads'
+    id = db.Column(db.Integer, primary_key=True)
+    organization = db.Column(db.String(200), unique=True, nullable=False, index=True)
+    city = db.Column(db.String(100))
+    country = db.Column(db.String(100))
+    
+    # Engagement metrics
+    first_visit = db.Column(db.DateTime, default=datetime.utcnow)
+    last_visit = db.Column(db.DateTime, default=datetime.utcnow)
+    total_queries = db.Column(db.Integer, default=0)
+    total_sessions = db.Column(db.Integer, default=0)
+    
+    # Lead scoring
+    engagement_score = db.Column(db.Integer, default=0)  # 0-100
+    is_b2b = db.Column(db.Boolean, default=False)  # True jeśli firma, False jeśli ISP domowy
+    
+    # Last query
+    last_query = db.Column(db.Text)
+
+
+# 🛰️ SATELITA: EVENT LOGS MODEL (dla trackingu akcji użytkownika)
+class EventLog(db.Model):
+    __tablename__ = 'event_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(64), nullable=False, index=True)
+    action_type = db.Column(db.String(50), nullable=False, index=True)  # 'search_city', 'find_station', 'generate_ranking'
+    query_data = db.Column(db.Text, nullable=False)  # JSON string: {city, street, parameter, ranking_type, etc}
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    
+    # Location (optional)
+    city = db.Column(db.String(100))
+    organization = db.Column(db.String(200))
+
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# 🔒 ADMIN DECORATOR - HARDCODED FOR lukipuki ONLY
+def admin_required(f):
+    """Decorator to require admin privileges - ONLY lukipuki"""
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for('login'))
+        if current_user.username != 'lukipuki':
+            return render_template('unauthorized.html'), 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.before_request
+def ensure_session_id():
+    if 'session_id' not in session:
+        session['session_id'] = os.urandom(16).hex()
+
+# ============================================
+# HELPER FUNCTIONS
+# ============================================
+
+def is_b2b_organization(org_name):
+    """Sprawdź czy to firma czy domowy ISP"""
+    if not org_name or org_name == 'Unknown':
+        return False
+    
+    # Blacklist domowych ISP (rozszerz według potrzeb)
+    home_isps = [
+        'UPC', 'Vectra', 'Netia', 'Orange Polska', 'T-Mobile', 
+        'Play', 'Plus', 'Multimedia Polska', 'Inea', 'Toya'
+    ]
+    
+    org_lower = org_name.lower()
+    for isp in home_isps:
+        if isp.lower() in org_lower:
+            return False
+    
+    return True
+
+
+def update_or_create_lead(data):
+    """Aktualizuj lub stwórz lead B2B"""
+    org = data.get('organization', 'Unknown')
+    if org == 'Unknown':
+        return
+    
+    lead = B2BLead.query.filter_by(organization=org).first()
+    
+    if lead:
+        # Update existing
+        lead.last_visit = datetime.utcnow()
+        lead.total_queries += 1
+        lead.last_query = data.get('query')
+        lead.engagement_score = min(100, lead.total_queries * 5)  # Prosta formuła
+    else:
+        # Create new
+        lead = B2BLead(
+            organization=org,
+            city=data.get('city'),
+            country=data.get('country'),
+            total_queries=1,
+            total_sessions=1,
+            is_b2b=is_b2b_organization(org),
+            last_query=data.get('query'),
+            engagement_score=5
+        )
+        db.session.add(lead)
+    
+    db.session.commit()
+
+
+# ============================================
+# ROUTES - GŁÓWNE STRONY
+# ============================================
+
 @app.route('/')
-def home():
-    print("[DEBUG] Wyświetlam stronę główną")
+def index():
     return render_template('index.html')
 
-@app.route('/manifest.json')
-def manifest():
-    print("[DEBUG] Serwuję manifest.json")
-    return send_from_directory('.', 'manifest.json')
+@app.route('/feedback')
+def feedback():
+    return render_template('feedback.html')
 
-@app.route('/static/icon.png')
-def serve_icon():
-    print("[DEBUG] Serwuję ikonę")
-    return send_from_directory('static', 'icon.png')
+@app.route('/mission')
+def mission():
+    return render_template('mission.html')
 
-@app.route('/static/js/<path:path>')
-def serve_js(path):
-    print(f"[DEBUG] Serwuję plik JS: {path}")
-    return send_from_directory('static/js', path)
+@app.route('/updates')
+def updates():
+    return render_template('updates.html')
 
-# Endpointy społecznościowe
-@app.route('/posts', methods=['GET'])
-def get_posts():
-    print("[DEBUG] Pobieram posty")
-    conn = sqlite3.connect('community.db')
-    c = conn.cursor()
-    c.execute('''SELECT p.id, p.content, p.timestamp, u.username, u.post_count, u.is_premium, p.is_premium_only
-                 FROM posts p LEFT JOIN users u ON p.user_id = u.id
-                 ORDER BY u.is_premium DESC, p.timestamp DESC''')
-    posts = c.fetchall()
-    posts_data = []
-    for post in posts:
-        post_id, content, timestamp, username, post_count, is_premium, is_premium_only = post
-        print(f"[DEBUG] Przetwarzam post ID: {post_id}, użytkownik: {username}")
-        if is_premium:
-            if post_count >= 200:
-                rank = "Król H2O"
-            elif post_count >= 50:
-                rank = "Wodny Ambasador"
-            else:
-                rank = "Wodny Nowicjusz"
-        else:
-            if post_count >= 100:
-                rank = "Mistrz H2O"
-            else:
-                rank = "Wodny Nowicjusz"
-        c.execute('''SELECT c.id, c.content, c.timestamp, u.username, u.is_premium
-                     FROM comments c JOIN users u ON c.user_id = u.id
-                     WHERE c.post_id = ?''', (post_id,))
-        comments = c.fetchall()
-        comments_data = []
-        for comment in comments:
-            comment_id, comment_content, comment_timestamp, comment_username, comment_is_premium = comment
-            comments_data.append({
-                'id': comment_id,
-                'content': comment_content,
-                'timestamp': comment_timestamp,
-                'username': comment_username,
-                'is_premium': bool(comment_is_premium)
-            })
-        posts_data.append({
-            'id': post_id,
-            'content': content,
-            'timestamp': timestamp,
-            'username': username,
-            'rank': rank,
-            'is_premium': bool(is_premium),
-            'is_premium_only': bool(is_premium_only),
-            'comments': comments_data
-        })
-    conn.close()
-    print(f"[DEBUG] Zwrócono {len(posts_data)} postów")
-    return jsonify(posts_data)
+@app.route('/regulamin')
+def regulamin():
+    return render_template('regulamin.html')
 
-@app.route('/add_post', methods=['POST'])
-def add_post():
-    data = request.get_json()
-    print(f"[DEBUG] Dodaję post, dane: {data}")
-    username = data.get('username')
-    content = data.get('content')
-    is_premium_only = data.get('is_premium_only', 0)
-    if not username or not content:
-        print("[DEBUG] Brak username lub content")
-        return jsonify({'error': 'Brak nazwy użytkownika lub treści'}), 400
-    conn = sqlite3.connect('community.db')
-    c = conn.cursor()
-    c.execute('SELECT id, post_count, is_premium FROM users WHERE username = ?', (username,))
-    user = c.fetchone()
-    if not user:
-        print(f"[DEBUG] Nowy użytkownik: {username}")
-        c.execute('INSERT INTO users (username, post_count) VALUES (?, 0)', (username,))
-        c.execute('SELECT id FROM users WHERE username = ?', (username,))
-        user_id = c.fetchone()[0]
-    else:
-        user_id, post_count, is_premium = user
-        print(f"[DEBUG] Istniejący użytkownik: {username}, premium: {is_premium}")
-        c.execute('UPDATE users SET post_count = post_count + 1 WHERE id = ?', (user_id,))
-        if is_premium_only and not is_premium:
-            conn.close()
-            print("[DEBUG] Próba premium-only bez premium")
-            return jsonify({'error': 'Tylko użytkownicy premium mogą tworzyć tematy premium-only'}), 403
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    c.execute('INSERT INTO posts (user_id, content, timestamp, is_premium_only) VALUES (?, ?, ?, ?)', 
-              (user_id, content, timestamp, is_premium_only))
-    conn.commit()
-    conn.close()
-    print("[DEBUG] Post dodany pomyślnie")
-    return jsonify({'message': 'Post dodany'}), 200
+@app.route('/support')
+def support():
+    return render_template('support.html')
 
-@app.route('/add_comment', methods=['POST'])
-def add_comment():
-    data = request.get_json()
-    print(f"[DEBUG] Dodaję komentarz, dane: {data}")
-    username = data.get('username')
-    post_id = data.get('post_id')
-    content = data.get('content')
-    if not username or not post_id or not content:
-        print("[DEBUG] Brak wymaganych danych komentarza")
-        return jsonify({'error': 'Brak wymaganych danych'}), 400
-    conn = sqlite3.connect('community.db')
-    c = conn.cursor()
-    c.execute('SELECT id, is_premium FROM users WHERE username = ?', (username,))
-    user = c.fetchone()
-    if not user:
-        print(f"[DEBUG] Nowy użytkownik dla komentarza: {username}")
-        c.execute('INSERT INTO users (username, post_count) VALUES (?, 0)', (username,))
-        c.execute('SELECT id FROM users WHERE username = ?', (username,))
-        user_id = c.fetchone()[0]
-    else:
-        user_id, is_premium = user
-        print(f"[DEBUG] Użytkownik komentarza: {username}, premium: {is_premium}")
-        c.execute('SELECT is_premium_only FROM posts WHERE id = ?', (post_id,))
-        post = c.fetchone()
-        if post and post[0] and not is_premium:
-            conn.close()
-            print("[DEBUG] Próba komentarza premium-only bez premium")
-            return jsonify({'error': 'Tylko użytkownicy premium mogą komentować w tematach premium-only'}), 403
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    c.execute('INSERT INTO comments (post_id, user_id, content, timestamp) VALUES (?, ?, ?, ?)',
-              (post_id, user_id, content, timestamp))
-    conn.commit()
-    conn.close()
-    print("[DEBUG] Komentarz dodany pomyślnie")
-    return jsonify({'message': 'Komentarz dodany'}), 200
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy_policy.html')
 
-@app.route('/user_stats/<username>', methods=['GET'])
-def user_stats(username):
-    print(f"[DEBUG] Pobieram statystyki użytkownika: {username}")
-    conn = sqlite3.connect('community.db')
-    c = conn.cursor()
-    c.execute('SELECT post_count, is_premium FROM users WHERE username = ?', (username,))
-    user = c.fetchone()
-    if not user:
-        conn.close()
-        print("[DEBUG] Użytkownik nie istnieje")
-        return jsonify({'error': 'Użytkownik nie istnieje'}), 404
-    post_count, is_premium = user
-    if is_premium:
-        if post_count >= 200:
-            rank = "Król H2O"
-        elif post_count >= 50:
-            rank = "Wodny Ambasador"
-        else:
-            rank = "Wodny Nowicjusz"
-    else:
-        if post_count >= 100:
-            rank = "Mistrz H2O"
-        else:
-            rank = "Wodny Nowicjusz"
-    conn.close()
-    print(f"[DEBUG] Statystyki: post_count={post_count}, rank={rank}")
-    return jsonify({
-        'username': username,
-        'post_count': post_count,
-        'rank': rank,
-        'is_premium': bool(is_premium)
-    })
+@app.route('/disclaimer')
+def disclaimer():
+    return render_template('disclaimer.html')
 
-@app.route('/toggle_premium', methods=['POST'])
-def toggle_premium():
-    data = request.get_json()
-    print(f"[DEBUG] Przełączam premium, dane: {data}")
-    username = data.get('username')
-    if not username:
-        print("[DEBUG] Brak username")
-        return jsonify({'error': 'Brak nazwy użytkownika'}), 400
-    conn = sqlite3.connect('community.db')
-    c = conn.cursor()
-    c.execute('SELECT id, is_premium FROM users WHERE username = ?', (username,))
-    user = c.fetchone()
-    if not user:
-        conn.close()
-        print("[DEBUG] Użytkownik nie istnieje")
-        return jsonify({'error': 'Użytkownik nie istnieje'}), 404
-    user_id, is_premium = user
-    new_status = 0 if is_premium else 1
-    c.execute('UPDATE users SET is_premium = ? WHERE id = ?', (new_status, user_id))
-    conn.commit()
-    conn.close()
-    print(f"[DEBUG] Premium zmienione na: {new_status}")
-    return jsonify({'message': f'Status premium {"włączony" if new_status else "wyłączony"}'}), 200
+@app.route('/test-tracking')
+def test_tracking():
+    return render_template('test_tracking.html')
 
-@app.route('/edit_post', methods=['POST'])
-def edit_post():
-    data = request.get_json()
-    print(f"[DEBUG] Edytuję post, dane: {data}")
-    post_id = data.get('post_id')
-    content = data.get('content')
-    username = data.get('username')
-    if not post_id or not content or not username:
-        print("[DEBUG] Brak wymaganych danych")
-        return jsonify({'error': 'Brak wymaganych danych'}), 400
-    conn = sqlite3.connect('community.db')
-    c = conn.cursor()
-    c.execute('''SELECT p.user_id, p.timestamp, u.is_premium
-                 FROM posts p JOIN users u ON p.user_id = u.id
-                 WHERE p.id = ? AND u.username = ?''', (post_id, username))
-    post = c.fetchone()
-    if not post:
-        conn.close()
-        print("[DEBUG] Post nie istnieje lub nie należy do użytkownika")
-        return jsonify({'error': 'Post nie istnieje lub nie należy do Ciebie'}), 404
-    user_id, timestamp, is_premium = post
-    if not is_premium:
-        conn.close()
-        print("[DEBUG] Brak premium do edycji")
-        return jsonify({'error': 'Tylko użytkownicy premium mogą edytować posty'}), 403
+@app.route('/send_feedback', methods=['POST'])
+@limiter.limit("5 per hour")
+def send_feedback():
     try:
-        post_date = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
-        now = datetime.now()
-        diff_hours = (now - post_date).total_seconds() / 3600
-        if diff_hours < 0 or diff_hours >= 24:
-            conn.close()
-            print("[DEBUG] Minął czas na edycję")
-            return jsonify({'error': 'Minął czas na edycję (24h)'}), 403
-    except ValueError as e:
-        conn.close()
-        print(f"[DEBUG] Błąd daty: {e}")
-        return jsonify({'error': 'Błąd formatu daty'}), 400
-    c.execute('UPDATE posts SET content = ? WHERE id = ?', (content, post_id))
-    conn.commit()
-    conn.close()
-    print("[DEBUG] Post zaktualizowany")
-    return jsonify({'message': 'Post zaktualizowany'}), 200
+        data = request.get_json()
+        message = data.get('message', '').strip()
+        if not message or len(message) > 2000:
+            return jsonify({'error': 'Invalid message'}), 400
+        app.logger.info(f"Feedback: {message[:200]}")
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-@app.route('/edit_comment', methods=['POST'])
-def edit_comment():
+# ============================================
+# ROUTES - AUTHENTICATION
+# ============================================
+
+@app.route('/register', methods=['GET', 'POST'])
+@limiter.limit("3 per hour")
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        if len(username) < 3 or len(password) < 8:
+            flash('Username min 3, password min 8 chars')
+            return render_template('register.html')
+        hashed = generate_password_hash(password)
+        new_user = User(username=username, password=hashed)
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Account created!')
+            return redirect(url_for('login'))
+        except:
+            flash('Username taken')
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("10 per hour")
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            return redirect(url_for('index'))
+        flash('Login failed')
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    session.clear()
+    return redirect(url_for('index'))
+
+# ============================================
+# ROUTES - AQUABOT
+# ============================================
+
+@app.route('/aquabot/start', methods=['POST'])
+@limiter.limit("20 per hour")
+@csrf.exempt
+def aquabot_start():
+    bot = AquaBot()
     data = request.get_json()
-    print(f"[DEBUG] Edytuję komentarz, dane: {data}")
-    comment_id = data.get('comment_id')
-    content = data.get('content')
-    username = data.get('username')
-    if not comment_id or not content or not username:
-        print("[DEBUG] Brak wymaganych danych")
-        return jsonify({'error': 'Brak wymaganych danych'}), 400
-    conn = sqlite3.connect('community.db')
-    c = conn.cursor()
-    c.execute('''SELECT c.user_id, c.timestamp, u.is_premium
-                 FROM comments c JOIN users u ON c.user_id = u.id
-                 WHERE c.id = ? AND u.username = ?''', (comment_id, username))
-    comment = c.fetchone()
-    if not comment:
-        conn.close()
-        print("[DEBUG] Komentarz nie istnieje lub nie należy do użytkownika")
-        return jsonify({'error': 'Komentarz nie istnieje lub nie należy do Ciebie'}), 404
-    user_id, timestamp, is_premium = comment
-    if not is_premium:
-        conn.close()
-        print("[DEBUG] Brak premium do edycji")
-        return jsonify({'error': 'Tylko użytkownicy premium mogą edytować komentarze'}), 403
+    context = data.get('context')
+    if not context:
+        return jsonify({'error': 'No context'}), 400
     try:
-        comment_date = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
-        now = datetime.now()
-        diff_hours = (now - comment_date).total_seconds() / 3600
-        if diff_hours < 0 or diff_hours >= 24:
-            conn.close()
-            print("[DEBUG] Minął czas na edycję")
-            return jsonify({'error': 'Minął czas na edycję (24h)'}), 403
-    except ValueError as e:
-        conn.close()
-        print(f"[DEBUG] Błąd daty: {e}")
-        return jsonify({'error': 'Błąd formatu daty'}), 400
-    c.execute('UPDATE comments SET content = ? WHERE id = ?', (content, comment_id))
-    conn.commit()
-    conn.close()
-    print("[DEBUG] Komentarz zaktualizowany")
-    return jsonify({'message': 'Komentarz zaktualizowany'}), 200
+        bot.set_station_context(context)
+        response = bot.get_initial_greeting()
+        return jsonify({'reply': response})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
-# Endpointy AquaBota
-@app.route('/verify_city', methods=['POST'])
-def verify_city():
-    print("[DEBUG] Rozpoczynam weryfikację miasta w /verify_city")
+@app.route('/aquabot/send', methods=['POST'])
+@limiter.limit("10 per minute")
+@csrf.exempt
+def aquabot_send():
+    bot = AquaBot()
     data = request.get_json()
-    print(f"[DEBUG] Otrzymane dane: {data}")
-    city = data.get('city')
-    print(f"[DEBUG] Weryfikuję miasto: {city}")
-    if not city:
-        print("[DEBUG] Brak miasta w danych, zwracam błąd")
-        return jsonify({'valid': False})
-    bot = AquaBot("Temp", "temp", "przyjacielu")
-    print("[DEBUG] Utworzono instancję AquaBot dla weryfikacji")
-    matched_city = bot.match_city(city)
-    print(f"[DEBUG] Dopasowane miasto: {matched_city}")
-    if matched_city:
-        print(f"[DEBUG] Miasto poprawne, zwracam: {matched_city}")
-        return jsonify({'valid': True, 'city': matched_city})
-    print(f"[DEBUG] Miasto niepoprawne: {city}")
-    return jsonify({'valid': False})
-
-@app.route('/aquabot', methods=['POST'])
-def aquabot():
-    print("[DEBUG] Wywołuję endpoint /aquabot")
-    data = request.get_json()
-    print(f"[DEBUG] Aquabot - Odebrane dane z frontendu: {data}")
-    
-    # Pobierz dane z żądania
-    message = data.get('message', '')
-    address_style = data.get('addressStyle', 'przyjacielu')
-    city = data.get('city', None)
-    selected_station = data.get('selectedStation', None)
-    waiting_for_category = data.get('waitingForCategory', False)
-    waiting_for_subcategory = data.get('waitingForSubcategory', False)
-    selected_category = data.get('selectedCategory', None)
-    last_parameters = data.get('lastParameters', [])
-    in_conversation = data.get('in_conversation', False)
-
+    message = data.get('message', '').strip()
+    if not message or len(message) > 500:
+        return jsonify({'error': 'Invalid message'}), 400
     try:
-        print("[DEBUG] Tworzę instancję AquaBot")
-        bot = AquaBot(
-            userName=address_style,
-            city=city,
-            addressStyle=address_style,
-            selectedStation=selected_station,
-            waitingForCategory=waiting_for_category,
-            lastParameters=last_parameters,
-            selectedCategory=selected_category,
-            waitingForSubcategory=waiting_for_subcategory,
-            in_conversation=in_conversation
+        reply = bot.get_bot_response(message)
+        return jsonify({'reply': reply})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ============================================
+# 🛰️ SATELITA - VISITOR TRACKING ENDPOINTS
+# ============================================
+
+@app.route('/api/visitor-tracking', methods=['POST'])
+@csrf.exempt
+def visitor_tracking():
+    """Endpoint do zbierania danych o wizytach"""
+    try:
+        data = request.get_json()
+        if not data or 'session_id' not in data:
+            return jsonify({'error': 'Invalid'}), 400
+        
+        # Zapisz do SQLite
+        event = VisitorEvent(
+            session_id=data.get('session_id'),
+            event_type=data.get('event_type'),
+            city=data.get('city'),
+            country=data.get('country'),
+            organization=data.get('organization'),
+            device_type=data.get('device_type'),
+            os=data.get('os'),
+            browser=data.get('browser'),
+            ip_hash=data.get('ip_hash'),
+            anonymous_mode=data.get('anonymous_mode', False),
+            extra_data=json.dumps(data.get('extra_data', {}))
         )
-        print("[DEBUG] Wywołuję getHealthAdvice")
-        reply = bot.getHealthAdvice(message)
+        db.session.add(event)
+        db.session.commit()
         
-        response = {
-            'reply': reply,
-            'waitingForCategory': bot.waiting_for_category,
-            'waitingForSubcategory': bot.waiting_for_subcategory,
-            'in_conversation': bot.in_conversation,
-            'selectedCategory': bot.selected_category,
-            'lastParameters': bot.last_parameters,
-            'city': bot.city
-        }
-        if bot.selected_station:
-            response['selectedStation'] = bot.selected_station['name']
-            print(f"[DEBUG] Wybrana stacja w odpowiedzi: {bot.selected_station['name']}")
+        app.logger.info(f"[SATELITA] {data.get('event_type')} | {data.get('city')}")
+        return jsonify({'status': 'success'}), 200
         
-        print(f"[DEBUG] Zwracam odpowiedź: {response}")
-        return jsonify(response)
     except Exception as e:
-        print(f"[DEBUG] Błąd w aquabot: {str(e)}")
-        return jsonify({'reply': 'Oj, coś poszło nie tak! Spróbuj jeszcze raz. 😅'}), 500
+        app.logger.error(f"[SATELITA ERROR] {e}")
+        return jsonify({'error': str(e)}), 500
 
-@app.route('/remindWater', methods=['GET'])
-def remind_water():
-    print("[DEBUG] Wywołuję endpoint /remindWater")
+
+# ============================================
+# 🛰️ SATELITA - ANALYTICS ENDPOINTS (dla dashboardu)
+# ============================================
+
+@app.route('/api/analytics/stats', methods=['GET'])
+@login_required
+def analytics_stats():
+    """Statystyki główne (Moduł A)"""
     try:
-        print("[DEBUG] Tworzę instancję AquaBot dla remindWater")
-        bot = AquaBot('Użytkownik', 'Grudziądz', 'przyjacielu')
-        print("[DEBUG] Wywołuję remindWater")
-        message = bot.remindWater()
-        print(f"[DEBUG] Zwracam przypomnienie: {message}")
-        return jsonify({'message': message})
+        # Użytkownicy online (ostatnie 15 min)
+        fifteen_min_ago = datetime.utcnow() - timedelta(minutes=15)
+        active_sessions = db.session.query(VisitorEvent.session_id).filter(
+            VisitorEvent.timestamp >= fifteen_min_ago,
+            VisitorEvent.event_type == 'session_start'
+        ).distinct().count()
+        
+        # Sesje dziś
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        sessions_today = db.session.query(VisitorEvent.session_id).filter(
+            VisitorEvent.timestamp >= today_start,
+            VisitorEvent.event_type == 'session_start'
+        ).distinct().count()
+        
+        # Total queries
+        total_queries = db.session.query(AquaBotQuery).count()
+        
+        # Zagrożenia dnia (przykład: users checking high hardness)
+        # TODO: Implement threat detection based on query patterns
+        threats_today = 0
+        
+        return jsonify({
+            'active_now': active_sessions,
+            'sessions_today': sessions_today,
+            'total_queries': total_queries,
+            'threats_today': threats_today
+        })
+        
     except Exception as e:
-        print(f"[DEBUG] Błąd w remindWater: {str(e)}")
-        return jsonify({'message': 'Oj, coś poszło nie tak z przypomnieniem!'}), 500
+        app.logger.error(f"[ANALYTICS ERROR] {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/analytics/heatmap', methods=['GET'])
+@login_required
+def analytics_heatmap():
+    """Mapa Skażeń - Top Locations (Moduł B)"""
+    try:
+        # Grupuj zapytania po miastach
+        results = db.session.query(
+            AquaBotQuery.city,
+            AquaBotQuery.country,
+            db.func.count(AquaBotQuery.id).label('query_count')
+        ).filter(
+            AquaBotQuery.city.isnot(None)
+        ).group_by(
+            AquaBotQuery.city,
+            AquaBotQuery.country
+        ).order_by(
+            desc('query_count')
+        ).limit(10).all()
+        
+        heatmap = []
+        for r in results:
+            # Znajdź najczęstszy temat zapytań dla tego miasta
+            queries = db.session.query(AquaBotQuery.query).filter(
+                AquaBotQuery.city == r.city
+            ).all()
+            
+            topics = analyze_query_topics([q.query for q in queries])
+            
+            heatmap.append({
+                'city': r.city,
+                'country': r.country,
+                'queries': r.query_count,
+                'most_searched': topics['summary'],
+                'all_topics': topics['full']
+            })
+        
+        return jsonify({'heatmap': heatmap})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/analytics/b2b-leads', methods=['GET'])
+@login_required
+def analytics_b2b_leads():
+    """Wywiad B2B - Lead Detector (Moduł C)"""
+    try:
+        # Pobierz tylko firmy (nie domowe ISP)
+        leads = db.session.query(B2BLead).filter_by(is_b2b=True).order_by(
+            desc(B2BLead.engagement_score)
+        ).limit(20).all()
+        
+        leads_data = [
+            {
+                'company': lead.organization,
+                'city': lead.city,
+                'country': lead.country,
+                'total_queries': lead.total_queries,
+                'last_query': lead.last_query,
+                'engagement_score': lead.engagement_score,
+                'last_visit': lead.last_visit.strftime('%Y-%m-%d %H:%M') if lead.last_visit else 'N/A'
+            }
+            for lead in leads
+        ]
+        
+        return jsonify({'leads': leads_data})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/analytics/lost-demand', methods=['GET'])
+@login_required
+def analytics_lost_demand():
+    """Lost Demand - Niezaspokojony Popyt (Moduł D)"""
+    try:
+        # Queries z niską pewnością bota (TODO: implement confidence scoring)
+        queries = db.session.query(AquaBotQuery).order_by(
+            desc(AquaBotQuery.timestamp)
+        ).limit(20).all()
+        
+        lost_demand = [
+            {
+                'query': q.query,
+                'city': q.city,
+                'organization': q.organization,
+                'timestamp': q.timestamp.strftime('%Y-%m-%d %H:%M'),
+                'confidence': q.bot_confidence if q.bot_confidence else 'N/A',
+                'response': q.bot_response_summary if q.bot_response_summary else 'No response'  # PEŁNA ODPOWIEDŹ
+            }
+            for q in queries
+        ]
+        
+        return jsonify({'lost_demand': lost_demand})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/analytics/city-searches', methods=['GET'])
+@login_required
+def analytics_city_searches():
+    """Analityka wyszukiwań miast (Sprawdź Kranówkę)"""
+    try:
+        # Pobierz wszystkie eventy search_city
+        events = db.session.query(EventLog).filter(
+            EventLog.action_type == 'search_city'
+        ).order_by(desc(EventLog.timestamp)).limit(100).all()
+        
+        # Zlicz top miasta
+        city_counts = {}
+        history = []
+        
+        for event in events:
+            data = json.loads(event.query_data)
+            city_name = data.get('city_name', 'Unknown')
+            city_counts[city_name] = city_counts.get(city_name, 0) + 1
+            history.append({
+                'timestamp': event.timestamp.strftime('%Y-%m-%d %H:%M'),
+                'city': city_name
+            })
+        
+        # Top 3 miasta
+        top_cities = sorted(city_counts.items(), key=lambda x: x[1], reverse=True)[:3]
+        top_cities_data = [{'city': city, 'count': count} for city, count in top_cities]
+        
+        return jsonify({
+            'top_cities': top_cities_data,
+            'history': history[:50]  # Ostatnie 50 wyszukiwań
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/analytics/station-searches', methods=['GET'])
+@login_required
+def analytics_station_searches():
+    """Analityka wyszukiwań stacji (Znajdź Stacje)"""
+    try:
+        events = db.session.query(EventLog).filter(
+            EventLog.action_type == 'search_station'
+        ).order_by(desc(EventLog.timestamp)).limit(100).all()
+        
+        # Zlicz top lokalizacje (miasta)
+        location_counts = {}
+        history = []
+        
+        for event in events:
+            data = json.loads(event.query_data)
+            city_name = data.get('city_name', 'Unknown')
+            street_name = data.get('street_name', '')
+            
+            location_counts[city_name] = location_counts.get(city_name, 0) + 1
+            history.append({
+                'timestamp': event.timestamp.strftime('%Y-%m-%d %H:%M'),
+                'city': city_name,
+                'street': street_name
+            })
+        
+        # Top 3 lokalizacje
+        top_locations = sorted(location_counts.items(), key=lambda x: x[1], reverse=True)[:3]
+        top_locations_data = [{'city': city, 'count': count} for city, count in top_locations]
+        
+        return jsonify({
+            'top_locations': top_locations_data,
+            'history': history[:50]
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/analytics/rankings', methods=['GET'])
+@login_required
+def analytics_rankings():
+    """Analityka generowanych rankingów"""
+    try:
+        events = db.session.query(EventLog).filter(
+            EventLog.action_type == 'generate_ranking'
+        ).order_by(desc(EventLog.timestamp)).limit(100).all()
+        
+        # Zlicz top parametry
+        parameter_counts = {}
+        history = []
+        
+        for event in events:
+            data = json.loads(event.query_data)
+            parameter = data.get('ranking_parameter', 'Unknown')
+            ranking_type = data.get('ranking_type', 'city')
+            
+            parameter_counts[parameter] = parameter_counts.get(parameter, 0) + 1
+            history.append({
+                'timestamp': event.timestamp.strftime('%Y-%m-%d %H:%M'),
+                'parameter': parameter,
+                'type': ranking_type
+            })
+        
+        # Top 3 parametry
+        top_parameters = sorted(parameter_counts.items(), key=lambda x: x[1], reverse=True)[:3]
+        top_parameters_data = [{'parameter': param, 'count': count} for param, count in top_parameters]
+        
+        return jsonify({
+            'top_parameters': top_parameters_data,
+            'history': history[:50]
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# Endpoint do logowania eventów z frontendu
+@app.route('/api/log-event', methods=['POST'])
+@csrf.exempt
+@limiter.limit("100 per minute")
+def log_event():
+    """Endpoint do logowania eventów użytkownika"""
+    try:
+        print(f"\n[LOG-EVENT] 🎯 Otrzymano request!")
+        data = request.get_json()
+        print(f"[LOG-EVENT] Data: {data}")
+        
+        action_type = data.get('action_type')
+        query_data = data.get('query_data', {})
+        
+        print(f"[LOG-EVENT] action_type: {action_type}")
+        print(f"[LOG-EVENT] query_data: {query_data}")
+        
+        if not action_type:
+            print(f"[LOG-EVENT] ❌ Brak action_type!")
+            return jsonify({'error': 'action_type required'}), 400
+        
+        # Pobierz session_id
+        session_id = session.get('session_id', 'unknown')
+        print(f"[LOG-EVENT] session_id: {session_id}")
+        
+        # Stwórz event log (ensure_ascii=False dla polskich znaków)
+        event = EventLog(
+            session_id=session_id,
+            action_type=action_type,
+            query_data=json.dumps(query_data, ensure_ascii=False),
+            city=query_data.get('city_name') or query_data.get('city'),
+            organization=data.get('organization')
+        )
+        
+        print(f"[LOG-EVENT] 💾 Zapisuję do bazy...")
+        db.session.add(event)
+        db.session.commit()
+        print(f"[LOG-EVENT] ✅ Zapisano! ID: {event.id}")
+        
+        return jsonify({'status': 'logged', 'event_id': event.id}), 200
+        
+    except Exception as e:
+        print(f"[LOG-EVENT] ❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+# ============================================
+# 🛰️ SATELITA - HELPER FUNCTIONS
+# ============================================
+
+def analyze_query_topics(queries):
+    """Analizuje zapytania i zwraca tematy z liczbą wystąpień"""
+    keywords = {
+        'Twardość': ['twardość', 'twardośc', 'twarda', 'tward', 'kamień', 'wapień', 'mg/l', 'mięk'],
+        'Azotany': ['azot', 'NO3', 'nawóz'],
+        'Chlor': ['chlor', 'Cl', 'dezynfekcja', 'odkażanie'],
+        'Fluorki': ['fluor', 'F', 'fluork'],
+        'pH': ['pH', 'kwas', 'zasad'],
+        'Żelazo': ['żelaz', 'Fe', 'rdza'],
+        'Metale': ['ołów', 'miedź', 'cynk', 'metal', 'Pb', 'Cu', 'Zn'],
+        'Bakterie': ['bakterie', 'bakter', 'e.coli', 'paciorko', 'zaraz', 'mikrob'],
+        'Smak': ['smak', 'zapach', 'cuchn', 'śmierd', 'brzyd']
+    }
+    
+    topic_counts = {topic: 0 for topic in keywords}
+    
+    for query in queries:
+        if not query:
+            continue
+        query_lower = query.lower()
+        for topic, words in keywords.items():
+            # Sprawdź czy KTÓREKOLWIEK słowo kluczowe jest ZAWARTE w zapytaniu
+            if any(word.lower() in query_lower for word in words):
+                topic_counts[topic] += 1
+    
+    # Zwróć wszystkie tematy z ich liczbą (posortowane malejąco)
+    topics_with_counts = [(topic, count) for topic, count in topic_counts.items() if count > 0]
+    
+    if not topics_with_counts:
+        return {
+            'summary': 'Ogólne pytania',
+            'full': 'Brak wykrytych tematów'
+        }
+    
+    # Sortuj malejąco
+    topics_with_counts.sort(key=lambda x: x[1], reverse=True)
+    
+    # Top 3 do pokazania (summary)
+    top_3 = topics_with_counts[:3]
+    summary = ', '.join([f'{topic} ({count})' for topic, count in top_3])
+    
+    # Pełna lista (full)
+    full = ', '.join([f'{topic} ({count})' for topic, count in topics_with_counts])
+    
+    return {
+        'summary': summary,
+        'full': full
+    }
+
+
+@app.route('/admin/analytics')
+@login_required
+@admin_required
+def admin_analytics():
+    """Dashboard analityczny - główny widok (ADMIN ONLY - lukipuki)"""
+    return render_template('admin-analytics.html')
+
+
+# ============================================
+# 🛰️ SOCKET.IO EVENTS (Real-time updates)
+# ============================================
+
+@socketio.on('visitor_connected')
+def handle_visitor_connected(data):
+    """Nowy visitor podłączył się"""
+    app.logger.info(f"[SATELITA] Visitor connected: {data.get('session_id')}")
+    
+    # Broadcast do wszystkich adminów
+    emit('new_visitor', {
+        'session_id': data.get('session_id'),
+        'city': data.get('city'),
+        'organization': data.get('organization'),
+        'timestamp': datetime.utcnow().strftime('%H:%M:%S')
+    }, broadcast=True)
+
+
+@socketio.on('aquabot_query')
+def handle_aquabot_query(data):
+    """Nowe zapytanie do AquaBota"""
+    try:
+        # Zapisz zapytanie Z odpowiedzią bota
+        bot_response_full = data.get('bot_response', '')
+        bot_response_summary = bot_response_full[:500] if bot_response_full else None
+        
+        query = AquaBotQuery(
+            session_id=data.get('session_id'),
+            query=data.get('query'),
+            city=data.get('city'),
+            country=data.get('country'),
+            organization=data.get('organization'),
+            query_count=data.get('query_count', 1),
+            time_since_entry=data.get('time_since_entry'),
+            bot_response_summary=bot_response_summary
+        )
+        db.session.add(query)
+        db.session.commit()
+        
+        # Update/Create B2B Lead
+        update_or_create_lead(data)
+        
+        # Broadcast do dashboardu
+        emit('new_query', {
+            'query': data.get('query'),
+            'city': data.get('city'),
+            'organization': data.get('organization'),
+            'bot_response': bot_response_summary or 'No response',
+            'timestamp': datetime.utcnow().strftime('%H:%M:%S')
+        }, broadcast=True)
+        
+        app.logger.info(f"[SATELITA] Query saved: {data.get('query')[:50]}")
+        
+    except Exception as e:
+        app.logger.error(f"[SATELITA QUERY ERROR] {e}")
+
+
+@socketio.on('visitor_disconnected')
+def handle_visitor_disconnected(data):
+    """Visitor opuścił stronę"""
+    emit('visitor_left', {'session_id': data.get('session_id')}, broadcast=True)
+
+
+# ============================================
+# ERROR HANDLERS
+# ============================================
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({'error': 'Too many requests'}), 429
+
+@app.errorhandler(404)
+def not_found(e):
+    return "404 Not Found", 404
+
+@app.errorhandler(500)
+def internal_error(e):
+    app.logger.error(f'500 error: {e}')
+    return "500 Internal Server Error", 500
+
+
+# ============================================
+# STARTUP - AUTO-CREATE TABLES
+# ============================================
 
 if __name__ == '__main__':
-    print("[DEBUG] Uruchamiam aplikację Flask")
-    app.run(debug=True, host='0.0.0.0', port=3000)
+    with app.app_context():
+        # KLUCZOWE: Automatycznie twórz wszystkie tabele
+        db.create_all()
+        print("[STARTUP] Database tables created successfully!")
+    
+    debug_mode = os.getenv('FLASK_ENV') == 'development'
+    
+    if debug_mode:
+        print('[STARTUP] Running in DEBUG mode')
+    
+    # ✅ Socket.IO run (zamiast app.run)
+    socketio.run(app, debug=debug_mode, port=5000, host='127.0.0.1')

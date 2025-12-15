@@ -1,8 +1,14 @@
 import { waterStations, bottleData } from './waterAnalysis.js';
-import { getColor } from './utils.js';
+import { getColor } from './utils2.js';
+// Na samej górze pliku, obok innych importów:
+import { trackRankingGeneration } from './analytics.js';
 
 export function generateRanking(parameter = "twardosc") {
     try {
+        // --- NOWY MELDUNEK WYWIADOWCZY ---
+        trackRankingGeneration('city', parameter);
+        // ------------------------------------
+
         const rankingsDiv = document.getElementById('city-ranking');
         if (!rankingsDiv) {
             console.error('Brak elementu #city-ranking');
@@ -37,7 +43,10 @@ export function generateRanking(parameter = "twardosc") {
             return a.value - b.value;
         });
 
-        let result = `<h3>Ranking miast (${parameter})</h3>`;
+        let result = `<div class="ranking-header">
+            <img src="/static/assets/icons/ranking_icon.svg" alt="Ranking">
+            <h3>Ranking miast (${parameter})</h3>
+        </div>`;
         result += `<p>Ranking dla ${citiesWithData}/${totalCities} miast – brak danych dla ${citiesWithoutData} miast.</p>`;
         result += `<h4>5 najlepszych (najniższe wartości):</h4><ol>`;
         ranking.slice(0, 5).forEach((item, index) => {
@@ -51,13 +60,29 @@ export function generateRanking(parameter = "twardosc") {
             } else if (index === 2) {
                 drop = `<img src="/static/assets/icons/bronzedrop.svg" class="ranking-drop">`;
             }
-            result += `<li>${item.city}: ${item.value.toFixed(2)} ${unit} <span class="dot ${color}"></span> ${drop}</li>`;
+            result += `<li>
+                <span class="ranking-number">${index + 1}.</span>
+                <span class="ranking-item-name">${item.city}</span>
+                <span class="ranking-item-value">${item.value.toFixed(2)} ${unit}</span>
+                <span class="ranking-item-status">
+                    <span class="dot ${color}"></span>
+                    ${drop}
+                </span>
+            </li>`;
         });
         result += "</ol><h4>5 najgorszych (najwyższe wartości):</h4><ol>";
-        ranking.slice(-5).reverse().forEach((item) => {
+        ranking.slice(-5).reverse().forEach((item, index) => {
             const unit = parameter === 'twardosc' ? 'mg CaCO₃/L' : (parameter === 'mangan' ? 'µg/l' : (['azotany', 'zelazo', 'fluorki', 'chlor'].includes(parameter) ? 'mg/l' : ''));
             const color = getColor(parameter, item.value);
-            result += `<li>${item.city}: ${item.value.toFixed(2)} ${unit} <span class="dot ${color}"></span></li>`;
+            const displayIndex = ranking.length - 4 + index;
+            result += `<li>
+                <span class="ranking-number">${displayIndex}.</span>
+                <span class="ranking-item-name">${item.city}</span>
+                <span class="ranking-item-value">${item.value.toFixed(2)} ${unit}</span>
+                <span class="ranking-item-status">
+                    <span class="dot ${color}"></span>
+                </span>
+            </li>`;
         });
         result += "</ol>";
 
@@ -69,10 +94,12 @@ export function generateRanking(parameter = "twardosc") {
     }
 }
 
-// Pozostałe funkcje (generateSUWRanking, generateDistrictRanking, generateBottleRanking) zostawiam bez zmian, bo ich nie edytujemy w tym momencie.
-
 export function generateSUWRanking(city, parameter) {
     try {
+        // --- NOWY MELDUNEK WYWIADOWCZY ---
+        trackRankingGeneration('suw', parameter);
+        // ------------------------------------
+
         function parseValue(value) {
             if (typeof value === 'string') {
                 if (value.startsWith('<')) {
@@ -134,7 +161,10 @@ export function generateSUWRanking(city, parameter) {
             return a.value - b.value;
         });
 
-        let result = `<h3>Ranking SUW-ów w ${city} (${parameter})</h3>`;
+        let result = `<div class="ranking-header">
+            <img src="/static/assets/icons/ranking_icon.svg" alt="Ranking">
+            <h3>Ranking SUW-ów w ${city} (${parameter})</h3>
+        </div>`;
         result += `<p style="font-size: 0.9em; color: #666;">Uwaga: Ranking oparty na danych z SUW-ów. Skontaktuj się z wodociągami dla dokładniejszych informacji.</p>`;
         result += `<ol>`;
         ranking.forEach((item, index) => {
@@ -142,13 +172,24 @@ export function generateSUWRanking(city, parameter) {
             const color = getColor(parameter, item.value);
             let warning = '';
             if (index === ranking.length - 1 && color === 'red') {
-                warning = '<span style="color: #f44336;"> – Za wysoka wartość!</span>';
+                warning = '<span style="color: #f44336; font-size: 0.85em;"> – Za wysoka wartość!</span>';
             } else if (index === 1 && color === 'orange') {
-                warning = '<span style="color: #ff9800;"> – Rozważ filtr!</span>';
+                warning = '<span style="color: #ff9800; font-size: 0.85em;"> – Rozważ filtr!</span>';
             }
             const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
             const displayValue = (item.value === 0 || item.note) ? item.note : `${item.value.toFixed(2)} ${unit}`;
-            result += `<li>${item.name} (${item.address}): ${displayValue} <span class="dot ${color}"></span> ${warning} ${medal}</li>`;
+            result += `<li>
+                <span class="ranking-number">${index + 1}.</span>
+                <div style="flex: 1;">
+                    <span class="ranking-item-name">${item.name}</span>
+                    <div class="ranking-item-value">${item.address}</div>
+                </div>
+                <span class="ranking-item-value">${displayValue}${warning}</span>
+                <span class="ranking-item-status">
+                    <span class="dot ${color}"></span>
+                    <span style="font-size: 24px;">${medal}</span>
+                </span>
+            </li>`;
         });
         result += `</ol>`;
         result += `<p class="note">Dane zależą od wodociągów. Skontaktuj się z nimi dla dokładniejszych informacji.</p>`;
@@ -162,6 +203,10 @@ export function generateSUWRanking(city, parameter) {
 
 export function generateDistrictRanking(city, parameter) {
     try {
+        // --- NOWY MELDUNEK WYWIADOWCZY ---
+        trackRankingGeneration('district', parameter);
+        // ------------------------------------
+
         function parseValue(value) {
             if (typeof value === 'string') {
                 if (value.startsWith('<')) {
@@ -245,7 +290,10 @@ export function generateDistrictRanking(city, parameter) {
             return a.value - b.value;
         });
 
-        let result = `<h3>Ranking dzielnic w ${city} (${parameter})</h3>`;
+        let result = `<div class="ranking-header">
+            <img src="/static/assets/icons/ranking_icon.svg" alt="Ranking">
+            <h3>Ranking dzielnic w ${city} (${parameter})</h3>
+        </div>`;
         result += `<p style="font-size: 0.9em; color: #666;">Uwaga: Ranking oparty na danych z głównych SUW-ów przypisanych do dzielnic. Woda może pochodzić z kilku SUW-ów – wartości są przybliżone.</p>`;
         result += `<ol>`;
         ranking.forEach((item, index) => {
@@ -253,13 +301,21 @@ export function generateDistrictRanking(city, parameter) {
             const color = getColor(parameter, item.value);
             let warning = '';
             if (index === ranking.length - 1 && color === 'red') {
-                warning = '<span style="color: #f44336;"> – Za wysoka wartość!</span>';
+                warning = '<span style="color: #f44336; font-size: 0.85em;"> – Za wysoka wartość!</span>';
             } else if (index === 1 && color === 'orange') {
-                warning = '<span style="color: #ff9800;"> – Rozważ filtr!</span>';
+                warning = '<span style="color: #ff9800; font-size: 0.85em;"> – Rozważ filtr!</span>';
             }
             const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
             const displayValue = (item.value === 0 || item.note) ? item.note : `${item.value.toFixed(2)} ${unit}`;
-            result += `<li>${item.district}: ${displayValue} <span class="dot ${color}"></span> ${warning} ${medal}</li>`;
+            result += `<li>
+                <span class="ranking-number">${index + 1}.</span>
+                <span class="ranking-item-name">${item.district}</span>
+                <span class="ranking-item-value">${displayValue}${warning}</span>
+                <span class="ranking-item-status">
+                    <span class="dot ${color}"></span>
+                    <span style="font-size: 24px;">${medal}</span>
+                </span>
+            </li>`;
         });
         result += `</ol>`;
         result += `<p class="note">Dane zależą od wodociągów. Skontaktuj się z nimi dla dokładniejszych informacji.</p>`;
@@ -293,7 +349,10 @@ export function generateBottleRanking(parameter = "wapn") {
             return b.value - a.value;
         });
 
-        let result = `<h3>Ranking wód butelkowanych (${parameter})</h3>`;
+        let result = `<div class="ranking-header">
+            <img src="/static/assets/icons/ranking_icon.svg" alt="Ranking">
+            <h3>Ranking wód butelkowanych (${parameter})</h3>
+        </div>`;
         result += `<h4>Top wód:</h4><ol>`;
         ranking.forEach((item, index) => {
             let medal = '';
@@ -304,7 +363,16 @@ export function generateBottleRanking(parameter = "wapn") {
             } else if (index === 2) {
                 medal = '🥉';
             }
-            result += `<li>${item.bottle}: ${item.value} ${parameter === "wapn" || parameter === "magnez" || parameter === "sod" || parameter === "potas" || parameter === "fluorki" ? "mg/l" : ""} <span class="dot ${bottleData[item.bottle][parameter].color}"></span> ${medal}</li>`;
+            const unit = parameter === "wapn" || parameter === "magnez" || parameter === "sod" || parameter === "potas" || parameter === "fluorki" ? "mg/l" : "";
+            result += `<li>
+                <span class="ranking-number">${index + 1}.</span>
+                <span class="ranking-item-name">${item.bottle}</span>
+                <span class="ranking-item-value">${item.value} ${unit}</span>
+                <span class="ranking-item-status">
+                    <span class="dot ${bottleData[item.bottle][parameter].color}"></span>
+                    <span style="font-size: 24px;">${medal}</span>
+                </span>
+            </li>`;
         });
         result += `</ol>`;
 
