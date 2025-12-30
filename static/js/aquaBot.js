@@ -140,7 +140,21 @@ function appendBotMessage(reply, container) {
     let replyHtml = '';
 
     if (reply.text_message) {
-        replyHtml += `${reply.text_message.replace(/\n/g, '<br>')}`;
+        // Bezpieczna konwersja Markdown -> HTML
+        let processedText = reply.text_message;
+        
+        // Escape potencjalnie niebezpiecznych znaków HTML (ale zachowaj <span> i <param:> tagi z backendu)
+        processedText = processedText.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/&lt;span class="dot (red-dot|orange-dot|green-dot|grey-dot)"&gt;&lt;\/span&gt;/g, '<span class="dot $1"></span>')
+            .replace(/&lt;param:(\w+):([^&]+)&gt;/g, '<param:$1:$2>');
+        
+        // Markdown rendering (po escape!)
+        processedText = processedText
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  // **bold**
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')              // *italic*
+            .replace(/\n/g, '<br>');                           // newlines
+        
+        replyHtml += processedText;
     }
 
     if (reply.parameters && reply.parameters.length > 0) {
