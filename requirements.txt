@@ -75,5 +75,6 @@ gunicorn==21.2.0              # WSGI server dla produkcji
 # ============================================
 # WEBSOCKET SUPPORT (RENDER.COM PRODUCTION)
 # ============================================
+Flask-SocketIO==5.3.6         # Flask-SocketIO integration (REQUIRED!)
 eventlet==0.35.2              # Async worker dla WebSocketów
-python-socketio==5.11.0       # Socket.IO support
+python-socketio==5.11.0       # Socket.IO backend support
