@@ -274,6 +274,11 @@ def update_or_create_lead(data):
 def index():
     return render_template('index.html')
 
+@app.route('/sitemap.xml')
+def sitemap():
+    """Sitemap dla Google Search Console"""
+    return app.send_static_file('sitemap.xml')
+
 @app.route('/feedback')
 def feedback():
     return render_template('feedback.html')
