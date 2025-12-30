@@ -593,26 +593,12 @@ class VisitorTrackerSkankran {
             console.warn('🛰️ SATELITA: PII detected and scrubbed from query');
         }
         
+        // 🔥 NAPRAWA: Zapisz query tymczasowo, nie wysyłaj jeszcze
+        this.lastQuery = sanitizedQuery;
+        
         const sessionInfo = this.getVisitorSummary();
         
-        // Send via WebSocket
-        if (this.socket && this.socket.connected) {
-            const eventData = {
-                query: sanitizedQuery,
-                timestamp: new Date().toISOString(),
-                city: sessionInfo.city || 'Unknown',
-                country: sessionInfo.country || 'Unknown',
-                organization: sessionInfo.organization || 'Unknown',
-                session_id: this.sessionId,
-                anonymous: this.anonymousMode,
-                query_count: this.queryCount
-            };
-            
-            this.socket.emit('aquabot_query', eventData);
-            console.log('🛰️ SATELITA: aquabot_query sent', eventData);
-        }
-        
-        // Send to tracking endpoint
+        // Send to tracking endpoint (bez odpowiedzi)
         await this.sendVisitorEvent('aquabot_query', {
             query: sanitizedQuery,
             query_count: this.queryCount,
@@ -629,10 +615,10 @@ class VisitorTrackerSkankran {
     async handleAquaBotResponse(query, botResponse) {
         const sessionInfo = this.getVisitorSummary();
         
-        // Send via WebSocket Z ODPOWIEDZIĄ
+        // Send via WebSocket Z ODPOWIEDZIĄ (użyj this.lastQuery jeśli query jest undefined)
         if (this.socket && this.socket.connected) {
             const eventData = {
-                query: query,
+                query: this.lastQuery || query,
                 bot_response: botResponse,
                 timestamp: new Date().toISOString(),
                 city: sessionInfo.city || 'Unknown',
@@ -646,6 +632,9 @@ class VisitorTrackerSkankran {
             
             this.socket.emit('aquabot_query', eventData);
             console.log('🛰️ SATELITA: aquabot_response sent', eventData);
+            
+            // Wyczyść tymczasowe query
+            this.lastQuery = null;
         }
     }
     

@@ -71,29 +71,27 @@
         <div class="legend" id="legend" style="display: none;">
             <div class="legend-item">
                 <img src="/static/assets/icons/search_icon.svg" alt="Sprawdź kranówkę" class="icon">
-                <p>Sprawdź kranówkę: Wpisz miasto i zobacz podstawowe uśrednione statystyki.</p>
+                <p>Sprawdź kranówkę: Średnia jakość wody w mieście.</p>
             </div>
             <div class="legend-item">
-                <img src="/static/assets/icons/search_icon.svg" alt="Znajdź stacje" class="icon">
-                <p>Znajdź stacje: Wpisz swoją ulicę i miasto, a SkanKran pokaże Ci najbliższą geograficznie stację z której dostajesz wodę z bardziej precyzyjnymi danymi.</p>
+                <span class="icon">📍</span>
+                <p>Twoja Stacja: Precyzyjne dane dla Twojej ulicy.</p>
             </div>
             <div class="legend-item">
-                <img src="/static/assets/icons/ranking_icon.svg" alt="Rankingi" class="icon">
-                <p>Rankingi: Sprawdź które miasta mają najgorszą wodę a które najlepszą i nie tylko.</p>
+                <span class="icon">🏅</span>
+                <p>Rankingi: Zestawienie miast (najlepsza vs najgorsza).</p>
             </div>
             <div class="legend-item">
-                <p>Woda butelkowana: W budowie, dostępne od następnej aktualizacji.</p>
+                <span class="icon">💬</span>
+                <p>Społeczność: Dołącz do nas na Discordzie.</p>
             </div>
             <div class="legend-item">
-                <p>O nas: Dowiedz się więcej o projekcie i naszej misji.</p>
-            </div>
-            <div class="legend-item">
-                <img src="/static/assets/icons/comunity_icon.svg" alt="Społeczność" class="icon">
-                <p>Społeczność: Dołącz do dyskusji na Discordzie.</p>
+                <span class="icon">ℹ️</span>
+                <p>O nas: Poznaj naszą misję (normy vs zdrowie).</p>
             </div>
             <div class="legend-item">
                 <img src="/static/assets/icons/aqua_bot.svg" alt="AquaBot" class="icon">
-                <p>AquaBot: Inteligentny asystent oparty na AI. Automatycznie analizuje dane z Twojej stacji i odpowiada na pytania dotyczące parametrów wody w oparciu o zweryfikowaną wiedzę medyczną.</p>
+                <p>AquaBot: Twój asystent AI i analiza składu. Odpowiada na kontekstowe pytania w oparciu o zweryfikowaną wiedzę medyczną.</p>
             </div>
         </div>
 
@@ -138,7 +136,9 @@
                 <a href="/regulamin">Regulamin</a>
                 {% if current_user.is_authenticated %}
                     <p>Witaj, {{ current_user.username }}!</p>
-                    <a href="/admin/analytics" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-align: center; display: block; margin: 8px 0;">🛰️ Kokpit Admina</a>
+                    {% if current_user.username == 'lukipuki' %}
+                        <a href="/admin/analytics" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-align: center; display: block; margin: 8px 0;">🛰️ Kokpit Admina</a>
+                    {% endif %}
                     {% if current_user.is_premium %}
                         <a href="#" id="comparer-btn">Porównywarka miast (Premium)</a>
                     {% endif %}
@@ -330,6 +330,14 @@
                     <h3>Prawda o wodzie, którą pijesz</h3>
                     <p>Cześć, jestem Łukasz, założyciel Skankran.pl. Choroba Leśniowskiego-Crohna zmusiła mnie do głębokiego zrozumienia tego, co konsumujemy – zwłaszcza wody z kranu.</p>
                     <p>Odkryłem, że to, co jest "zgodne z normą", nie zawsze jest normalne dla zdrowia. Dlatego powstał Skankran.pl – aby przekuć chaos danych w jasną informację o tym, co płynie w Twoim kranie.</p>
+                    <p>Prawo dopuszcza wiele rzeczy, które są legalne, ale niekoniecznie bezpieczne:</p>
+                    <ul class="list-unstyled" style="margin-bottom: 1rem; line-height: 2;">
+                        <li>🍺 <strong>Alkohol</strong> – legalny, a niszczy wątrobę.</li>
+                        <li>🚬 <strong>Papierosy</strong> – legalne, a powodują raka.</li>
+                        <li>🍬 <strong>Cukier</strong> – legalny, a prowadzi do otyłości czy cukrzycy.</li>
+                    </ul>
+                    <p><strong>Czy fakt, że są "zgodne z normą", oznacza, że są bezpieczne? Odpowiedź jest zbędna.</strong></p>
+                    <hr>
                     <p>Wierzę, że dostęp do zrozumiałych danych to prawo każdego z nas. To pierwszy krok do prawdziwej świadomości i lepszego życia.</p>
                 </div>
                 
@@ -338,7 +346,7 @@
                     <!-- Fact Box 1 -->
                     <div class="fact-box">
                         <h4>💧 Twardość wody</h4>
-                        <p>Norma dopuszcza >300 mg/l, ale już przy 220 mg/l może niszczyć skórę, włosy i zaostrzać AZS czy łuszczycę.</p>
+                        <p>Norma dopuszcza max 500 mg/l, ale już przy 220 mg/l może niszczyć skórę, włosy i zaostrzać AZS czy łuszczycę.</p>
                     </div>
                     
                     <!-- Fact Box 2 -->

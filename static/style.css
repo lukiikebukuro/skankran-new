@@ -1513,8 +1513,8 @@ header > a:hover {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: 650px;
-    max-height: 80vh;
+    min-height: 650px;
+    max-height: 90vh;
 }
 
 /* Nagłówek czatu */

@@ -71,3 +71,9 @@ gunicorn==21.2.0              # WSGI server dla produkcji
 #
 # NIE USUWAJ żadnego pakietu bez konsultacji!
 # ============================================
+
+# ============================================
+# WEBSOCKET SUPPORT (RENDER.COM PRODUCTION)
+# ============================================
+eventlet==0.35.2              # Async worker dla WebSocketów
+python-socketio==5.11.0       # Socket.IO support

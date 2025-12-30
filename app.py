@@ -29,7 +29,12 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
 # KONFIGURACJA
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_key_change_in_production')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///skankran.db'  # 🔥 JEDNA BAZA DLA WSZYSTKIEGO
+
+# 🔥 DATABASE: SQLite lokalnie, PostgreSQL na Render (opcjonalnie)
+database_url = os.getenv('DATABASE_URL', 'sqlite:///skankran.db')
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_AS_ASCII'] = False  # 🔥 Polskie znaki w JSON
 
@@ -47,14 +52,21 @@ Session(app)
 csrf = CSRFProtect(app)
 
 limiter = Limiter(
-    app=app,
     key_func=get_remote_address,
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://"
 )
+limiter.init_app(app)
+
+# Wyłącz limity dla admina i analytics - zwiększ limity zamiast wyłączać
+@app.before_request
+def exempt_admin_routes():
+    if request.path.startswith('/api/analytics/') or request.path.startswith('/admin/'):
+        from flask import g
+        g._limiter_exempt = True  # Całkowicie wyłącz rate limiting dla admin routes
 
 # 🛰️ SATELITA: Socket.IO
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet', logger=True, engineio_logger=True)
 
 # LOGGING
 if not app.debug:
@@ -383,6 +395,7 @@ def aquabot_send():
 
 @app.route('/api/visitor-tracking', methods=['POST'])
 @csrf.exempt
+@limiter.exempt
 def visitor_tracking():
     """Endpoint do zbierania danych o wizytach"""
     try:
@@ -421,6 +434,7 @@ def visitor_tracking():
 
 @app.route('/api/analytics/stats', methods=['GET'])
 @login_required
+@limiter.exempt
 def analytics_stats():
     """Statystyki główne (Moduł A)"""
     try:
@@ -459,6 +473,7 @@ def analytics_stats():
 
 @app.route('/api/analytics/heatmap', methods=['GET'])
 @login_required
+@limiter.exempt
 def analytics_heatmap():
     """Mapa Skażeń - Top Locations (Moduł B)"""
     try:
@@ -501,6 +516,7 @@ def analytics_heatmap():
 
 @app.route('/api/analytics/b2b-leads', methods=['GET'])
 @login_required
+@limiter.exempt
 def analytics_b2b_leads():
     """Wywiad B2B - Lead Detector (Moduł C)"""
     try:
@@ -530,6 +546,7 @@ def analytics_b2b_leads():
 
 @app.route('/api/analytics/lost-demand', methods=['GET'])
 @login_required
+@limiter.exempt
 def analytics_lost_demand():
     """Lost Demand - Niezaspokojony Popyt (Moduł D)"""
     try:
@@ -558,6 +575,7 @@ def analytics_lost_demand():
 
 @app.route('/api/analytics/city-searches', methods=['GET'])
 @login_required
+@limiter.exempt
 def analytics_city_searches():
     """Analityka wyszukiwań miast (Sprawdź Kranówkę)"""
     try:
@@ -594,6 +612,7 @@ def analytics_city_searches():
 
 @app.route('/api/analytics/station-searches', methods=['GET'])
 @login_required
+@limiter.exempt
 def analytics_station_searches():
     """Analityka wyszukiwań stacji (Znajdź Stacje)"""
     try:
@@ -632,6 +651,7 @@ def analytics_station_searches():
 
 @app.route('/api/analytics/rankings', methods=['GET'])
 @login_required
+@limiter.exempt
 def analytics_rankings():
     """Analityka generowanych rankingów"""
     try:
@@ -773,6 +793,7 @@ def analyze_query_topics(queries):
 @app.route('/admin/analytics')
 @login_required
 @admin_required
+@limiter.exempt
 def admin_analytics():
     """Dashboard analityczny - główny widok (ADMIN ONLY - lukipuki)"""
     return render_template('admin-analytics.html')
@@ -802,23 +823,38 @@ def handle_aquabot_query(data):
     try:
         # Zapisz zapytanie Z odpowiedzią bota
         bot_response_full = data.get('bot_response', '')
-        bot_response_summary = bot_response_full[:500] if bot_response_full else None
+        bot_response_summary = bot_response_full if bot_response_full else None  # PEŁNA odpowiedź bez limitu
         
-        query = AquaBotQuery(
+        # Sprawdź czy istnieje już rekord dla tego session_id i query
+        existing_query = db.session.query(AquaBotQuery).filter_by(
             session_id=data.get('session_id'),
-            query=data.get('query'),
-            city=data.get('city'),
-            country=data.get('country'),
-            organization=data.get('organization'),
-            query_count=data.get('query_count', 1),
-            time_since_entry=data.get('time_since_entry'),
-            bot_response_summary=bot_response_summary
-        )
-        db.session.add(query)
-        db.session.commit()
+            query=data.get('query')
+        ).first()
         
-        # Update/Create B2B Lead
-        update_or_create_lead(data)
+        if existing_query:
+            # Aktualizuj istniejący rekord odpowiedzią bota
+            existing_query.bot_response_summary = bot_response_summary
+            db.session.commit()
+            app.logger.info(f"[SATELITA] Query updated: {data.get('query')[:50]}")
+        else:
+            # Dodaj nowy rekord
+            query = AquaBotQuery(
+                session_id=data.get('session_id'),
+                query=data.get('query'),
+                city=data.get('city'),
+                country=data.get('country'),
+                organization=data.get('organization'),
+                query_count=data.get('query_count', 1),
+                time_since_entry=data.get('time_since_entry'),
+                bot_response_summary=bot_response_summary
+            )
+            db.session.add(query)
+            db.session.commit()
+            app.logger.info(f"[SATELITA] Query saved: {data.get('query')[:50]}")
+        
+        # Update/Create B2B Lead tylko jeśli to nowy rekord lub aktualizacja z odpowiedzią
+        if bot_response_summary:
+            update_or_create_lead(data)
         
         # Broadcast do dashboardu
         emit('new_query', {
@@ -828,8 +864,6 @@ def handle_aquabot_query(data):
             'bot_response': bot_response_summary or 'No response',
             'timestamp': datetime.utcnow().strftime('%H:%M:%S')
         }, broadcast=True)
-        
-        app.logger.info(f"[SATELITA] Query saved: {data.get('query')[:50]}")
         
     except Exception as e:
         app.logger.error(f"[SATELITA QUERY ERROR] {e}")
@@ -870,9 +904,13 @@ if __name__ == '__main__':
         print("[STARTUP] Database tables created successfully!")
     
     debug_mode = os.getenv('FLASK_ENV') == 'development'
+    port = int(os.getenv('PORT', 5000))  # 🔥 RENDER.COM wymaga PORT z env
+    host = '0.0.0.0'  # 🔥 RENDER.COM wymaga 0.0.0.0 (nie 127.0.0.1)
     
     if debug_mode:
-        print('[STARTUP] Running in DEBUG mode')
+        print(f'[STARTUP] Running in DEBUG mode on {host}:{port}')
+    else:
+        print(f'[STARTUP] Running in PRODUCTION mode on {host}:{port}')
     
     # ✅ Socket.IO run (zamiast app.run)
-    socketio.run(app, debug=debug_mode, port=5000, host='127.0.0.1')
+    socketio.run(app, debug=debug_mode, port=port, host=host)
