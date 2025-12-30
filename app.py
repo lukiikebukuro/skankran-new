@@ -1,3 +1,7 @@
+# 🔥 EVENTLET MONKEY PATCH - MUSI BYĆ NA SAMYM POCZĄTKU!
+import eventlet
+eventlet.monkey_patch()
+
 from dotenv import load_dotenv
 import os
 load_dotenv()
@@ -36,6 +40,10 @@ if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,
+    'pool_recycle': 300,
+}
 app.config['JSON_AS_ASCII'] = False  # 🔥 Polskie znaki w JSON
 
 # SESSION - Cookie-based (działa na Render.com)

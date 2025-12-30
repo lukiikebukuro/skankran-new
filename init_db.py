@@ -2,6 +2,10 @@
 🔥 RENDER.COM - Database Initialization Script
 Uruchamiane przez Gunicorn przed startem aplikacji
 """
+# 🔥 EVENTLET MONKEY PATCH - MUSI BYĆ NA POCZĄTKU!
+import eventlet
+eventlet.monkey_patch()
+
 from app import app, db, User
 from werkzeug.security import generate_password_hash
 
