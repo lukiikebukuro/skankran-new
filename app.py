@@ -38,9 +38,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JSON_AS_ASCII'] = False  # 🔥 Polskie znaki w JSON
 
-# SESSION
+# SESSION - Cookie-based (działa na Render.com)
 app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_TYPE"] = "null"  # 🔥 RENDER: null = Flask default cookie sessions (nie filesystem!)
 app.config["SESSION_COOKIE_SECURE"] = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
@@ -48,7 +48,8 @@ app.config["SESSION_COOKIE_NAME"] = "skankran_session"
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
 app.config['PREFERRED_URL_SCHEME'] = os.getenv('PREFERRED_URL_SCHEME', 'http')
 
-Session(app)
+# 🔥 RENDER: Nie używamy Flask-Session, tylko built-in Flask sessions
+# Session(app)  # <-- WYŁĄCZONE dla Render.com
 csrf = CSRFProtect(app)
 
 limiter = Limiter(
