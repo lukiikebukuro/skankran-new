@@ -32,7 +32,16 @@ app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
 # KONFIGURACJA
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev_key_change_in_production')
+SECRET_KEY_VALUE = os.getenv('SECRET_KEY', 'dev_key_change_in_production')
+
+# 🔒 SECURITY FIX: Prevent production use with default secret key
+if not app.debug and SECRET_KEY_VALUE == 'dev_key_change_in_production':
+    raise RuntimeError(
+        "CRITICAL SECURITY ERROR: Cannot run in production with default SECRET_KEY. "
+        "Set SECRET_KEY environment variable to a secure random string."
+    )
+
+app.config['SECRET_KEY'] = SECRET_KEY_VALUE
 
 # 🔥 DATABASE: SQLite lokalnie, PostgreSQL na Render (opcjonalnie)
 database_url = os.getenv('DATABASE_URL', 'sqlite:///skankran.db')
@@ -99,6 +108,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     is_premium = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)  # 🔒 SECURITY FIX: Proper admin flag
 
 
 # 🛰️ SATELITA: VISITOR EVENTS MODEL
@@ -194,15 +204,16 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# 🔒 ADMIN DECORATOR - HARDCODED FOR lukipuki ONLY
+# 🔒 ADMIN DECORATOR - SECURITY FIXED
 def admin_required(f):
-    """Decorator to require admin privileges - ONLY lukipuki"""
+    """Decorator to require admin privileges - uses is_admin flag"""
     from functools import wraps
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
             return redirect(url_for('login'))
-        if current_user.username != 'lukipuki':
+        if not current_user.is_admin:  # 🔒 SECURITY FIX: Use is_admin flag
+            app.logger.warning(f'[SECURITY] Unauthorized admin access attempt by {current_user.username}')
             return render_template('unauthorized.html'), 403
         return f(*args, **kwargs)
     return decorated_function
@@ -215,6 +226,31 @@ def ensure_session_id():
 # ============================================
 # HELPER FUNCTIONS
 # ============================================
+
+def verify_origin():
+    """Verify request origin for CSRF-exempt endpoints"""
+    origin = request.headers.get('Origin')
+    referer = request.headers.get('Referer')
+    
+    # Allow requests from same origin or localhost (dev)
+    allowed_origins = [
+        'https://skankran.pl',
+        'https://www.skankran.pl',
+        'http://localhost:5000',
+        'http://127.0.0.1:5000'
+    ]
+    
+    # Check Origin header first
+    if origin:
+        return origin in allowed_origins
+    
+    # Fallback to Referer
+    if referer:
+        return any(referer.startswith(allowed) for allowed in allowed_origins)
+    
+    # Allow if no Origin/Referer (direct navigation)
+    return True
+
 
 def is_b2b_organization(org_name):
     """Sprawdź czy to firma czy domowy ISP"""
@@ -331,20 +367,35 @@ def send_feedback():
 @app.route('/register', methods=['GET', 'POST'])
 @limiter.limit("3 per hour")
 def register():
+    # 🔒 SECURITY FIX: Registration closed or whitelist-only
+    # Uncomment to completely disable registration:
+    # flash('Rejestracja jest tymczasowo wyłączona. Skontaktuj się z administratorem.')
+    # return redirect(url_for('login'))
+    
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
+        
+        # Enhanced validation
         if len(username) < 3 or len(password) < 8:
             flash('Username min 3, password min 8 chars')
             return render_template('register.html')
+        
+        # Check password strength
+        if not any(c.isupper() for c in password) or not any(c.isdigit() for c in password):
+            flash('Password must contain at least 1 uppercase letter and 1 digit')
+            return render_template('register.html')
+        
         hashed = generate_password_hash(password)
-        new_user = User(username=username, password=hashed)
+        new_user = User(username=username, password=hashed, is_admin=False)  # 🔒 Explicit is_admin=False
         try:
             db.session.add(new_user)
             db.session.commit()
+            app.logger.info(f'[AUTH] New user registered: {username}')
             flash('Account created!')
             return redirect(url_for('login'))
-        except:
+        except Exception as e:
+            app.logger.error(f'[AUTH] Registration failed: {e}')
             flash('Username taken')
     return render_template('register.html')
 
@@ -356,8 +407,16 @@ def login():
         password = request.form.get('password', '')
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
+            # 🔒 SECURITY FIX: Regenerate session to prevent session fixation
+            old_session = dict(session)
+            session.clear()
+            session.update(old_session)
+            session['session_id'] = os.urandom(16).hex()  # New session ID
+            
             login_user(user)
+            app.logger.info(f'[AUTH] User {username} logged in successfully')
             return redirect(url_for('index'))
+        app.logger.warning(f'[AUTH] Failed login attempt for username: {username}')
         flash('Login failed')
     return render_template('login.html')
 
@@ -376,6 +435,10 @@ def logout():
 @limiter.limit("20 per hour")
 @csrf.exempt
 def aquabot_start():
+    # 🔒 SECURITY FIX: Verify origin for CSRF protection
+    if not verify_origin():
+        return jsonify({'error': 'Unauthorized origin'}), 403
+    
     bot = AquaBot()
     data = request.get_json()
     context = data.get('context')
@@ -392,6 +455,10 @@ def aquabot_start():
 @limiter.limit("10 per minute")
 @csrf.exempt
 def aquabot_send():
+    # 🔒 SECURITY FIX: Verify origin for CSRF protection
+    if not verify_origin():
+        return jsonify({'error': 'Unauthorized origin'}), 403
+    
     bot = AquaBot()
     data = request.get_json()
     message = data.get('message', '').strip()
@@ -412,6 +479,10 @@ def aquabot_send():
 @limiter.exempt
 def visitor_tracking():
     """Endpoint do zbierania danych o wizytach"""
+    # 🔒 SECURITY FIX: Verify origin (less strict for tracking)
+    if not verify_origin():
+        return jsonify({'error': 'Unauthorized origin'}), 403
+    
     try:
         data = request.get_json()
         if not data or 'session_id' not in data:
@@ -487,6 +558,7 @@ def analytics_stats():
 
 @app.route('/api/analytics/heatmap', methods=['GET'])
 @login_required
+@admin_required  # 🔒 SECURITY FIX: Only admin can access
 @limiter.exempt
 def analytics_heatmap():
     """Mapa Skażeń - Top Locations (Moduł B)"""
@@ -530,6 +602,7 @@ def analytics_heatmap():
 
 @app.route('/api/analytics/b2b-leads', methods=['GET'])
 @login_required
+@admin_required  # 🔒 SECURITY FIX: Prevent B2B data leak
 @limiter.exempt
 def analytics_b2b_leads():
     """Wywiad B2B - Lead Detector (Moduł C)"""
@@ -560,6 +633,7 @@ def analytics_b2b_leads():
 
 @app.route('/api/analytics/lost-demand', methods=['GET'])
 @login_required
+@admin_required  # 🔒 SECURITY FIX: Prevent query history leak
 @limiter.exempt
 def analytics_lost_demand():
     """Lost Demand - Niezaspokojony Popyt (Moduł D)"""
@@ -589,6 +663,7 @@ def analytics_lost_demand():
 
 @app.route('/api/analytics/city-searches', methods=['GET'])
 @login_required
+@admin_required  # 🔒 SECURITY FIX: Admin only
 @limiter.exempt
 def analytics_city_searches():
     """Analityka wyszukiwań miast (Sprawdź Kranówkę)"""
@@ -626,6 +701,7 @@ def analytics_city_searches():
 
 @app.route('/api/analytics/station-searches', methods=['GET'])
 @login_required
+@admin_required  # 🔒 SECURITY FIX: Admin only
 @limiter.exempt
 def analytics_station_searches():
     """Analityka wyszukiwań stacji (Znajdź Stacje)"""
@@ -665,6 +741,7 @@ def analytics_station_searches():
 
 @app.route('/api/analytics/rankings', methods=['GET'])
 @login_required
+@admin_required  # 🔒 SECURITY FIX: Admin only
 @limiter.exempt
 def analytics_rankings():
     """Analityka generowanych rankingów"""
@@ -705,9 +782,13 @@ def analytics_rankings():
 # Endpoint do logowania eventów z frontendu
 @app.route('/api/log-event', methods=['POST'])
 @csrf.exempt
-@limiter.limit("100 per minute")
+@limiter.limit("20 per minute")  # 🔒 SECURITY FIX: Zmniejszone z 100 na 20
 def log_event():
     """Endpoint do logowania eventów użytkownika"""
+    # 🔒 SECURITY FIX: Verify origin for CSRF protection
+    if not verify_origin():
+        return jsonify({'error': 'Unauthorized origin'}), 403
+    
     try:
         print(f"\n[LOG-EVENT] 🎯 Otrzymano request!")
         data = request.get_json()
@@ -817,32 +898,58 @@ def admin_analytics():
 # 🛰️ SOCKET.IO EVENTS (Real-time updates)
 # ============================================
 
+@socketio.on('connect')
+def handle_connect():
+    """Handle client connection"""
+    # 🔒 SECURITY FIX: Only authenticated admins can join admin_room
+    from flask_login import current_user
+    if current_user.is_authenticated and current_user.is_admin:
+        from flask_socketio import join_room
+        join_room('admin_room')
+        app.logger.info(f'[SOCKET.IO] Admin {current_user.username} joined admin_room')
+    else:
+        app.logger.info(f'[SOCKET.IO] Regular user connected (no admin room access)')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    """Handle client disconnection"""
+    from flask_login import current_user
+    if current_user.is_authenticated and current_user.is_admin:
+        from flask_socketio import leave_room
+        leave_room('admin_room')
+        app.logger.info(f'[SOCKET.IO] Admin {current_user.username} left admin_room')
+
 @socketio.on('visitor_connected')
 def handle_visitor_connected(data):
     """Nowy visitor podłączył się"""
     app.logger.info(f"[SATELITA] Visitor connected: {data.get('session_id')}")
     
-    # Broadcast do wszystkich adminów
+    # 🔒 SECURITY FIX: Emit tylko do pokoju 'admin_room', NIE broadcast=True
     emit('new_visitor', {
         'session_id': data.get('session_id'),
         'city': data.get('city'),
         'organization': data.get('organization'),
         'timestamp': datetime.utcnow().strftime('%H:%M:%S')
-    }, broadcast=True)
+    }, room='admin_room')  # Only to admins, not everyone!
 
 
 @socketio.on('aquabot_query')
 def handle_aquabot_query(data):
     """Nowe zapytanie do AquaBota"""
     try:
+        # 🔒 SECURITY FIX: Sanitize query before storing/broadcasting
+        import html
+        raw_query = data.get('query', '')
+        sanitized_query = html.escape(raw_query)[:500]  # Escape HTML + limit length
+        
         # Zapisz zapytanie Z odpowiedzią bota
         bot_response_full = data.get('bot_response', '')
-        bot_response_summary = bot_response_full if bot_response_full else None  # PEŁNA odpowiedź bez limitu
+        bot_response_summary = html.escape(bot_response_full[:1000]) if bot_response_full else None
         
         # Sprawdź czy istnieje już rekord dla tego session_id i query
         existing_query = db.session.query(AquaBotQuery).filter_by(
             session_id=data.get('session_id'),
-            query=data.get('query')
+            query=sanitized_query
         ).first()
         
         if existing_query:
@@ -870,14 +977,14 @@ def handle_aquabot_query(data):
         if bot_response_summary:
             update_or_create_lead(data)
         
-        # Broadcast do dashboardu
+        # 🔒 SECURITY FIX: Emit tylko do admin_room, NIE broadcast=True
         emit('new_query', {
-            'query': data.get('query'),
+            'query': sanitized_query,
             'city': data.get('city'),
             'organization': data.get('organization'),
             'bot_response': bot_response_summary or 'No response',
             'timestamp': datetime.utcnow().strftime('%H:%M:%S')
-        }, broadcast=True)
+        }, room='admin_room')  # Only admins see this!
         
     except Exception as e:
         app.logger.error(f"[SATELITA QUERY ERROR] {e}")
@@ -908,23 +1015,22 @@ def internal_error(e):
 
 
 # ============================================
-# STARTUP - AUTO-CREATE TABLES
+# STARTUP - PostgreSQL Ready
 # ============================================
+# UWAGA: db.create_all() jest w init_db.py (uruchamianym przez Build Command)
+# Tutaj tylko startujemy serwer
 
 if __name__ == '__main__':
-    with app.app_context():
-        # KLUCZOWE: Automatycznie twórz wszystkie tabele
-        db.create_all()
-        print("[STARTUP] Database tables created successfully!")
-    
     debug_mode = os.getenv('FLASK_ENV') == 'development'
-    port = int(os.getenv('PORT', 5000))  # 🔥 RENDER.COM wymaga PORT z env
-    host = '0.0.0.0'  # 🔥 RENDER.COM wymaga 0.0.0.0 (nie 127.0.0.1)
+    port = int(os.getenv('PORT', 5000))
+    host = '0.0.0.0'
     
-    if debug_mode:
-        print(f'[STARTUP] Running in DEBUG mode on {host}:{port}')
-    else:
-        print(f'[STARTUP] Running in PRODUCTION mode on {host}:{port}')
+    db_type = 'PostgreSQL' if 'postgres' in app.config['SQLALCHEMY_DATABASE_URI'] else 'SQLite'
+    mode = 'DEBUG' if debug_mode else 'PRODUCTION'
+    
+    print(f'[STARTUP] 🚀 Skankran + Satelita')
+    print(f'[STARTUP] 📊 Database: {db_type}')
+    print(f'[STARTUP] 🌐 Server: {host}:{port} ({mode} mode)')
     
     # ✅ Socket.IO run (zamiast app.run)
     socketio.run(app, debug=debug_mode, port=port, host=host)

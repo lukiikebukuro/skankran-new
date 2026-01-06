@@ -12,6 +12,7 @@ Werkzeug==3.0.1
 
 # Database
 Flask-SQLAlchemy==3.1.1
+psycopg2-binary==2.9.9        # PostgreSQL adapter (Render.com)
 
 # Authentication & Sessions
 Flask-Login==0.6.3

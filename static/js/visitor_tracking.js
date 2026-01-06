@@ -22,7 +22,7 @@ class VisitorTrackerSkankran {
         this.visitorData = null;
         this.isTracking = false;
         this.socket = null;
-        this.lastQuery = null;  // 🔥 NAPRAWA: Tymczasowe przechowywanie query przed response
+        this.pendingQueries = new Map();  // 🔒 SECURITY FIX: Map prevents race conditions
         
         // RODO: Sprawdź czy user opt-out
         if (this.checkOptOut()) {
@@ -208,6 +208,15 @@ class VisitorTrackerSkankran {
     }
     
     /**
+     * 🔒 SECURITY: HTML Escape to prevent XSS
+     */
+    escapeHTML(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+    
+    /**
      * RODO: Maskowanie IP
      */
     maskIP(ip) {
@@ -230,11 +239,15 @@ class VisitorTrackerSkankran {
     
     /**
      * RODO: Sanityzacja PII (PESEL, Email, Telefon, Karty)
+     * SECURITY: HTML escaping to prevent XSS
      */
     scrubPII(text) {
         if (!text || typeof text !== 'string') return text;
         
-        let scrubbed = text;
+        // 🔒 SECURITY FIX: HTML escape first to prevent XSS
+        let scrubbed = this.escapeHTML(text);
+        
+        // Now replace PII with placeholders
         
         // Email
         scrubbed = scrubbed.replace(
@@ -506,6 +519,9 @@ class VisitorTrackerSkankran {
         
         // Track page unload
         window.addEventListener('beforeunload', () => {
+            // 🔒 SECURITY FIX: Check if tracking is still active (respect opt-out)
+            if (!this.isTracking) return;
+            
             const sessionDuration = Date.now() - this.entryTime.getTime();
             
             // Send via WebSocket
@@ -593,8 +609,12 @@ class VisitorTrackerSkankran {
             console.warn('🛰️ SATELITA: PII detected and scrubbed from query');
         }
         
-        // 🔥 NAPRAWA: Zapisz query tymczasowo, nie wysyłaj jeszcze
-        this.lastQuery = sanitizedQuery;
+        // � SECURITY FIX: Generate unique query ID to prevent race conditions
+        const queryId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        this.pendingQueries.set(queryId, sanitizedQuery);
+        
+        // Store queryId on query element for later matching (optional)
+        window.lastQueryId = queryId;
         
         const sessionInfo = this.getVisitorSummary();
         
@@ -612,13 +632,23 @@ class VisitorTrackerSkankran {
     /**
      * Handle AquaBot Response (wywoływana PO otrzymaniu odpowiedzi)
      */
-    async handleAquaBotResponse(query, botResponse) {
+    async handleAquaBotResponse(query, botResponse, queryId = null) {
         const sessionInfo = this.getVisitorSummary();
         
-        // Send via WebSocket Z ODPOWIEDZIĄ (użyj this.lastQuery jeśli query jest undefined)
+        // 🔒 SECURITY FIX: Retrieve query from Map or use provided query
+        const actualQuery = queryId && this.pendingQueries.has(queryId) 
+            ? this.pendingQueries.get(queryId) 
+            : query;
+        
+        // Clean up Map
+        if (queryId) {
+            this.pendingQueries.delete(queryId);
+        }
+        
+        // Send via WebSocket Z ODPOWIEDZIĄ
         if (this.socket && this.socket.connected) {
             const eventData = {
-                query: this.lastQuery || query,
+                query: actualQuery,
                 bot_response: botResponse,
                 timestamp: new Date().toISOString(),
                 city: sessionInfo.city || 'Unknown',
@@ -632,9 +662,6 @@ class VisitorTrackerSkankran {
             
             this.socket.emit('aquabot_query', eventData);
             console.log('🛰️ SATELITA: aquabot_response sent', eventData);
-            
-            // Wyczyść tymczasowe query
-            this.lastQuery = null;
         }
     }
     

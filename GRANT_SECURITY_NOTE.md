@@ -1,8 +1,8 @@
 # 🔐 NOTATKA O BEZPIECZEŃSTWIE SYSTEMU SKANKRAN.PL
 ## Dokument techniczny dla komisji oceniającej grant unijny
 
-**Data sporządzenia:** 3 grudnia 2025  
-**Wersja:** 1.0 (Pre-production Security Audit)  
+**Data sporządzenia:** 4 stycznia 2026  
+**Wersja:** 1.1 (Updated Security Audit)  
 **Status:** Audyt przeprowadzony przed wdrożeniem produkcyjnym  
 **Przeznaczenie:** Wniosek o dofinansowanie UE (MVP)
 
@@ -56,10 +56,10 @@ System został zaprojektowany z myślą o **minimalizacji ryzyka dla danych osob
 
 | Warstwa | Zabezpieczenie | Technologia | Status |
 |---------|----------------|-------------|--------|
-| **Transport** | Szyfrowanie TLS 1.3 | Nginx + Certbot | ✅ Wdrożone |
+| **Transport** | Szyfrowanie TLS 1.2/1.3 | Nginx + Certbot | ✅ Wdrożone |
 | **Aplikacja** | CSRF tokens | Flask-WTF | ✅ Wdrożone |
-| **Aplikacja** | XSS protection | DOMPurify + CSP | ✅ Wdrożone |
-| **Dane** | Hashowanie haseł | Werkzeug (SHA256) | ✅ Wdrożone |
+| **Aplikacja** | XSS protection | Backend sanitization + CSP | ✅ Wdrożone |
+| **Dane** | Hashowanie haseł | Werkzeug scrypt (32768:8:1) | ✅ Wdrożone |
 | **Dane** | Anonimizacja IP | SHA256 (przed API) | ✅ Wdrożone |
 | **Sesje** | Secure cookies | HttpOnly, Secure, SameSite | ✅ Wdrożone |
 | **Rate Limiting** | DDoS protection | Flask-Limiter | ✅ Wdrożone |
@@ -75,7 +75,7 @@ System został zaprojektowany z myślą o **minimalizacji ryzyka dla danych osob
 **Zasada minimalizacji danych:**
 - System **NIE przechowuje** historii rozmów z AquaBotem po zakończeniu sesji
 - Adresy IP są **zanonimizowane** (SHA256 hash) przed wysłaniem do API Gemini
-- Hasła użytkowników przechowywane jako **hash bcrypt** (nieodwracalny)
+- Hasła użytkowników przechowywane jako **hash scrypt** (GPU-resistant, nieodwracalny)
 - Cookies analityczne (Google Analytics) ładowane **TYLKO PO ZGODZIE** użytkownika
 
 **Pseudonimizacja identyfikatorów:**
@@ -115,8 +115,8 @@ def _anonymize_context(self):
    - Certyfikat A+ w SSL Labs
 
 2. **Szyfrowanie w spoczynku:**
-   - Hasła: bcrypt (work factor 12, salt 16 bytes)
-   - Sesje: AES-256 (Flask-Session + filesystem encryption)
+   - Hasła: Werkzeug scrypt (32768:8:1, salt automatyczny)
+   - Sesje: HMAC-SHA1 signed cookies (Flask built-in, SECRET_KEY)
    - Baza danych: SQLite z prawami dostępu 600 (tylko owner)
 
 3. **Kontrola dostępu:**
@@ -128,7 +128,7 @@ def _anonymize_context(self):
    - **SQL Injection:** SQLAlchemy ORM (parametryzowane zapytania)
    - **XSS:** DOMPurify + Content-Security-Policy headers
    - **CSRF:** Flask-WTF (tokeny w formularzach)
-   - **DDoS:** Rate limiting (10 req/min na endpoint AquaBot)
+   - **DDoS:** Rate limiting (20/h start, 10/min send dla AquaBot, 20/min log events)
    - **Brute-force:** Limity logowania (5 prób/15 min)
 
 **Środki organizacyjne:**
@@ -146,15 +146,16 @@ def _anonymize_context(self):
 **Implementacja:**
 ```javascript
 // Kod cookie banner (templates/cookie_banner.html)
-window.addEventListener('DOMContentLoaded', function() {
-    const consent = localStorage.getItem('cookieConsent');
-    if (!consent) {
-        // Banner widoczny PRZED załadowaniem GA
-        document.getElementById('cookie-consent-banner').style.display = 'block';
-    } else if (consent === 'accepted') {
-        loadGoogleAnalytics();  // Ładowanie DOPIERO PO zgodzie
-    }
-});
+// Sprawdź czy zgoda została już udzielona
+const consent = localStorage.getItem('cookieConsent');
+
+if (!consent) {
+    // Pokaż banner jeśli brak decyzji
+    document.getElementById('cookie-consent-banner').style.display = 'block';
+} else if (consent === 'accepted') {
+    // Załaduj Google Analytics tylko jeśli zgoda
+    loadGoogleAnalytics();
+}
 ```
 
 **Zasady:**
@@ -190,8 +191,8 @@ window.addEventListener('DOMContentLoaded', function() {
 | SQL Injection | SQLMap | ✅ Brak luk (ORM) | PASS |
 | XSS | OWASP ZAP | ✅ Sanityzacja OK | PASS |
 | CSRF | Burp Suite | ✅ Tokeny działają | PASS |
-| SSL/TLS | SSL Labs | 🟡 A (przed wdrożeniem) | PENDING |
-| Rate Limiting | Apache Bench | ✅ 10 req/min enforced | PASS |
+| SSL/TLS | SSL Labs | 🟡 A (przed wdrożeniem, TLS 1.2/1.3) | PENDING |
+| Rate Limiting | Apache Bench | ✅ Rate limits enforced | PASS |
 | Session Hijacking | Manual test | ✅ HttpOnly+Secure | PASS |
 
 **Oczekiwany wynik SSL Labs po wdrożeniu produkcyjnym:** **A+**  
@@ -204,8 +205,9 @@ window.addEventListener('DOMContentLoaded', function() {
 - **Data wdrożenia:** Przed uruchomieniem produkcyjnym
 
 **Luka przed naprawą:** Cookies bez flag Secure
-- **Naprawa:** `SESSION_COOKIE_SECURE=True`, `HTTPONLY=True`, `SAMESITE=Lax`
+- **Naprawa:** `SESSION_COOKIE_SECURE=True` (wymaga ustawienia zmiennej środowiskowej), `HTTPONLY=True`, `SAMESITE=Lax`
 - **Data wdrożenia:** Przed uruchomieniem produkcyjnym
+- **Uwaga:** Domyślnie False w development, wymaga `SESSION_COOKIE_SECURE=True` w .env produkcyjnym
 
 ---
 
@@ -352,10 +354,10 @@ Projekt Skankran.pl został zaprojektowany z pełnym poszanowaniem prawa do pryw
 
 _______________________  
 [Imię i nazwisko]  
-Data: 3 grudnia 2025
+Data: 4 stycznia 2026
 
 ---
 
 **END OF DOCUMENT**  
-Wersja: 1.0  
+Wersja: 1.1 (Updated 2026-01-04)  
 Confidentiality: Internal (dla komisji grantowej)

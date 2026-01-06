@@ -1,35 +1,62 @@
 """
-🔥 RENDER.COM - Database Initialization Script
-Uruchamiane przez Gunicorn przed startem aplikacji
+🔥 DATABASE INITIALIZATION - PostgreSQL Ready
+Uruchamiane przez Build Command na Render.com: python init_db.py
 """
 # 🔥 EVENTLET MONKEY PATCH - MUSI BYĆ NA POCZĄTKU!
 import eventlet
 eventlet.monkey_patch()
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from app import app, db, User
 from werkzeug.security import generate_password_hash
 
 def init_database():
-    """Inicjalizuj bazę danych i utwórz tabele"""
+    """Inicjalizuj bazę PostgreSQL/SQLite i utwórz tabele + admina"""
     with app.app_context():
-        print("[INIT_DB] Creating database tables...")
+        db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+        db_type = 'PostgreSQL' if 'postgres' in db_uri else 'SQLite'
+        
+        print(f"[INIT_DB] 🚀 Skankran Database Initialization")
+        print(f"[INIT_DB] 📊 Database Type: {db_type}")
+        print(f"[INIT_DB] 🔗 URI: {db_uri[:50]}...")
+        print(f"[INIT_DB] 🛠️  Creating tables...")
+        
         db.create_all()
-        print("[INIT_DB] Database tables created!")
+        print("[INIT_DB] ✅ Tables created: users, visitor_events, aquabot_queries, b2b_leads, event_logs")
         
         # Sprawdź czy admin istnieje
         admin = User.query.filter_by(username='lukipuki').first()
         if not admin:
-            print("[INIT_DB] Creating admin user 'lukipuki'...")
+            print("[INIT_DB] 👤 Creating admin user 'lukipuki'...")
+            
+            # 🔒 SECURITY: Password z zmiennej środowiskowej
+            admin_password = os.getenv('ADMIN_PASSWORD')
+            if not admin_password:
+                print("[INIT_DB] ❌ ERROR: ADMIN_PASSWORD not set in environment!")
+                print("[INIT_DB] ⚠️  Set ADMIN_PASSWORD in Render Dashboard → Environment")
+                return
+            
             admin = User(
                 username='lukipuki',
-                password=generate_password_hash('nokia5310'),
-                is_premium=True
+                password=generate_password_hash(admin_password),
+                is_premium=True,
+                is_admin=True
             )
             db.session.add(admin)
             db.session.commit()
-            print("[INIT_DB] Admin user created!")
+            print("[INIT_DB] ✅ Admin user 'lukipuki' created!")
         else:
-            print("[INIT_DB] Admin user 'lukipuki' already exists")
+            # Update existing user to have admin flag
+            if not admin.is_admin:
+                admin.is_admin = True
+                db.session.commit()
+                print("[INIT_DB] ✅ Admin flag updated")
+            print("[INIT_DB] ℹ️  Admin user 'lukipuki' already exists")
+        
+        print("[INIT_DB] 🎉 Database initialization complete!")
 
 if __name__ == '__main__':
     init_database()

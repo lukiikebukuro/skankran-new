@@ -1,8 +1,13 @@
 import google.generativeai as genai
 import os
 
-# WAŻNE: Wklej tu ten sam klucz API, którego używasz w projekcie (ten z configu)
-api_key = "AIzaSyAtlxvm1L9cma4Q79mbLfKyOvbjQUthGxQ" 
+# 🔒 SECURITY FIX: Use environment variable instead of hardcoded key
+api_key = os.getenv("GOOGLE_API_KEY")
+
+if not api_key:
+    print("ERROR: GOOGLE_API_KEY environment variable not set!")
+    print("Please set it before running this script.")
+    exit(1)
 
 try:
     genai.configure(api_key=api_key)

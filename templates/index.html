@@ -46,15 +46,11 @@
     }
     </script>
     
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FB097HQ344"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-FB097HQ344');
-    </script>
+    <!-- Google Analytics - ZAŁADOWANE WARUNKOWO (po zgodzie z cookie banner) -->
 </head>
 <body>
+    <!-- Cookie Consent Banner - RODO Compliance -->
+    {% include 'cookie_banner.html' %}
     <header>
         <!-- Hero Section - Dwukolumnowy Layout -->
         <div class="hero-container">
@@ -229,12 +225,12 @@
 
             <!-- CTA do AquaBota -->
             <div class="aquabot-info-clean">
-                <h3>💡 Chcesz głębszą analizę?</h3>
-                <p>Nasz <strong>AquaBot</strong> potrafi nie tylko pokazać Ci parametry wody, ale też wytłumaczyć co oznaczają dla Twojego zdrowia, urody i codziennego użytku. Znajdź swoją stację, a potem uruchom analizę AI!</p>
-                <button class="cta-aquabot-primary" id="goto-aquabot-from-check">
-                    <img src="/static/assets/icons/aqua_bot.svg" alt="AquaBot" class="btn-aquabot-icon" width="32" height="32">
+                <h3 style="margin-bottom: 20px;">💡 Chcesz głębszą analizę?</h3>
+                <button class="cta-aquabot-primary cta-aquabot-large pulse-animation" id="goto-aquabot-from-check">
+                    <img src="/static/assets/icons/aqua_bot.svg" alt="AquaBot" class="btn-aquabot-icon-large">
                     Przejdź do AquaBota
                 </button>
+                <p style="margin-top: 20px; color: #555; line-height: 1.6;">Nasz <strong>AquaBot</strong> potrafi nie tylko pokazać Ci parametry wody, ale też wytłumaczyć co oznaczają dla Twojego zdrowia, urody i codziennego użytku. Znajdź swoją stację, a potem uruchom analizę AI!</p>
             </div>
 
             <p style="text-align: center; margin-top: 30px;">Nie ma Twojego miasta? <a href="/feedback">Napisz do nas</a>, a dodamy je w następnej aktualizacji.</p>
@@ -277,15 +273,6 @@
 
             <!-- Wyniki wyszukiwania -->
             <div id="waterInfo"></div>
-
-            <!-- CTA do AquaBota -->
-            <div id="station-cta" style="display: none;">
-                <button class="cta-aquabot-primary" id="goto-aquabot-from-station">
-                    <img src="/static/assets/icons/aqua_bot.svg" alt="AquaBot" class="btn-aquabot-icon" width="40" height="40">
-                    Uruchom Analizę w AquaBot
-                </button>
-                <p style="margin-top: 10px; color: #666;">Dane Twojej stacji zostały załadowane - AquaBot jest gotowy do analizy!</p>
-            </div>
 
             <span class="coming-soon">Funkcja pokaż historię dostępna od następnej aktualizacji w sierpniu.</span>
             <!-- usunięty tekst informacyjny na prośbę użytkownika -->
@@ -535,6 +522,29 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Event listener dla przycisku "Sprawdź" w sekcji kranówka
+        const checkKranowkaBtn = document.getElementById('check-kranowka-btn');
+        if (checkKranowkaBtn) {
+            checkKranowkaBtn.addEventListener('click', () => {
+                // Import funkcji checkWater z waterAnalysis.js
+                import('/static/js/waterAnalysis.js').then(module => {
+                    module.checkWater('city');
+                    
+                    // Auto-scroll do wyników po 300ms (czas na render)
+                    setTimeout(() => {
+                        const resultDiv = document.getElementById('city-result');
+                        if (resultDiv && resultDiv.innerHTML.trim() !== '') {
+                            resultDiv.scrollIntoView({ 
+                                behavior: 'smooth', 
+                                block: 'start',
+                                inline: 'nearest'
+                            });
+                        }
+                    }, 300);
+                });
+            });
+        }
+        
         const buttons = document.querySelectorAll('#check-tapwater-btn, #find-stacje-btn, #rankings-btn, #about-btn, #community-btn, #aqua-bot-btn');
 
         buttons.forEach(button => {

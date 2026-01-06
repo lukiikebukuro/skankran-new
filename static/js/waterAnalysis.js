@@ -5564,6 +5564,10 @@ export async function findWaterStation() {
                     <strong>💡 Rekomendacja:</strong>
                     <p>${suggestWaterFilter(params).summary}</p>
                 </div>
+                <button class="cta-aquabot-station pulse-animation" onclick="document.getElementById('aqua-bot-btn').click()">
+                    <img src="/static/assets/icons/aqua_bot.svg" alt="AquaBot" class="btn-aquabot-icon-large">
+                    Uruchom analizę w AquaBot
+                </button>
             </div>`;
         }
 
@@ -5597,6 +5601,10 @@ export async function findWaterStation() {
                     <strong>💡 Rekomendacja:</strong>
                     <p>${suggestWaterFilter(pointParams).summary}</p>
                 </div>
+                <button class="cta-aquabot-station pulse-animation" onclick="document.getElementById('aqua-bot-btn').click()">
+                    <img src="/static/assets/icons/aqua_bot.svg" alt="AquaBot" class="btn-aquabot-icon-large">
+                    Uruchom analizę w AquaBot
+                </button>
             </div>`;
         }
 
