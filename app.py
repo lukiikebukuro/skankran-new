@@ -306,6 +306,11 @@ def update_or_create_lead(data):
 # ROUTES - GŁÓWNE STRONY
 # ============================================
 
+@app.route('/health')
+def health():
+    """Health check endpoint for Render.com"""
+    return jsonify({"status": "ok", "database": "connected"}), 200
+
 @app.route('/')
 def index():
     return render_template('index.html')
