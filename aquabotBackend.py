@@ -39,20 +39,55 @@ def parseFloat(value):
 
 class AquaBot:
     def __init__(self):
-        """Initializes the bot, loading data files as class attributes."""
-        try:
-            with open(WATER_ANALYSIS_PATH, 'r', encoding='utf-8') as f:
-                self.full_water_data = json.load(f)
-        except Exception as e:
-            print(f"[ERROR] Could not load waterAnalysis.json: {e}")
-            self.full_water_data = {}
+        """
+        Initializes the bot, loading data with SQL→JSON fallback strategy.
         
+        PRIORITY:
+        1. Try PostgreSQL (primary)
+        2. Fallback to JSON files (backup)
+        """
+        self.use_database = False
+        self.full_water_data = {}
+        self.city_averages = {}
+        
+        # Strategy 1: Try PostgreSQL
         try:
-            with open(AVERAGES_PATH, 'r', encoding='utf-8') as f:
-                self.city_averages = json.load(f)
+            from water_models import define_water_models
+            from app import db
+            
+            models = define_water_models(db)
+            get_water_data_from_db = models['get_water_data_from_db']
+            get_city_averages_from_db = models['get_city_averages_from_db']
+            
+            self.full_water_data = get_water_data_from_db()
+            self.city_averages = get_city_averages_from_db()
+            
+            if self.full_water_data and len(self.full_water_data) > 0:
+                self.use_database = True
+                print(f"[AQUABOT] ✅ Using PostgreSQL: {len(self.full_water_data)} cities loaded")
+            else:
+                raise Exception("Database returned empty data")
+                
         except Exception as e:
-            print(f"[ERROR] Could not load averages.json: {e}")
-            self.city_averages = {}
+            print(f"[AQUABOT] ⚠️ PostgreSQL not available, falling back to JSON: {e}")
+            self.use_database = False
+        
+        # Strategy 2: Fallback to JSON
+        if not self.use_database:
+            try:
+                with open(WATER_ANALYSIS_PATH, 'r', encoding='utf-8') as f:
+                    self.full_water_data = json.load(f)
+                print(f"[AQUABOT] ✅ Fallback: Loaded {len(self.full_water_data)} cities from JSON")
+            except Exception as e:
+                print(f"[AQUABOT] ❌ ERROR: Could not load waterAnalysis.json: {e}")
+                self.full_water_data = {}
+            
+            try:
+                with open(AVERAGES_PATH, 'r', encoding='utf-8') as f:
+                    self.city_averages = json.load(f)
+            except Exception as e:
+                print(f"[AQUABOT] ❌ ERROR: Could not load averages.json: {e}")
+                self.city_averages = {}
 
         # MAPOWANIE NAZW
         self.param_map = {

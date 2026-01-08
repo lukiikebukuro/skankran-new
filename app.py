@@ -96,10 +96,24 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
 
 # ============================================
-# DATABASE MODELS (SQLite)
+# DATABASE MODELS
 # ============================================
 
 db = SQLAlchemy(app)
+
+# Import i inicjalizacja modeli wodnych (nowe - dla PostgreSQL)
+from water_models import define_water_models
+water_models = define_water_models(db)
+
+# Rozpakuj modele do namespace
+City = water_models['City']
+Station = water_models['Station']
+MeasurementPoint = water_models['MeasurementPoint']
+WaterMeasurement = water_models['WaterMeasurement']
+CityZone = water_models['CityZone']
+CityAverage = water_models['CityAverage']
+get_water_data_from_db = water_models['get_water_data_from_db']
+get_city_averages_from_db = water_models['get_city_averages_from_db']
 
 # USER MODEL (istniejący)
 class User(db.Model, UserMixin):

@@ -2,8 +2,8 @@
 # SKANKRAN.PL - PYTHON DEPENDENCIES
 # ============================================
 # Instalacja: pip install -r requirements.txt
-# Wersja: 1.0 (Security Hardened - Grant UE)
-# Data: 2025-12-03
+# Wersja: 2.0 (PostgreSQL Migration - Grant UE)
+# Data: 2026-01-08
 # ============================================
 
 # Core Flask Framework
