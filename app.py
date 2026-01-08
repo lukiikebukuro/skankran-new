@@ -120,7 +120,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(255), nullable=False)  # 🔒 FIX: Bcrypt hash needs 255 chars
     is_premium = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)  # 🔒 SECURITY FIX: Proper admin flag
 
