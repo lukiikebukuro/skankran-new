@@ -1,4 +1,4 @@
-# 🔥 EVENTLET MONKEY PATCH - MUSI BYĆ NA SAMYM POCZĄTKU!
+﻿# 🔥 EVENTLET MONKEY PATCH - MUSI BYĆ NA SAMYM POCZĄTKU!
 import eventlet
 eventlet.monkey_patch()
 
@@ -337,6 +337,26 @@ def sitemap():
 @app.route('/feedback')
 def feedback():
     return render_template('feedback.html')
+
+@app.route('/readme')
+def readme():
+    return render_template('readme.html')
+
+@app.route('/compliance')
+def compliance():
+    return render_template('compliance.html')
+
+@app.route('/pentesty')
+def pentesty():
+    return render_template('pentesty.html')
+
+@app.route('/security')
+def security():
+    return render_template('security.html')
+
+@app.route('/dataflow')
+def dataflow():
+    return render_template('dataflow.html')
 
 @app.route('/mission')
 def mission():
@@ -914,8 +934,273 @@ def admin_analytics():
 
 
 # ============================================
-# 🛰️ SOCKET.IO EVENTS (Real-time updates)
+# � WATER DATA API (PostgreSQL to Frontend)
 # ============================================
+
+# Cache (5 minut TTL - redukuje opóźnienie localhost -> Frankfurt)
+_water_data_cache = {'data': None, 'timestamp': 0, 'ttl': 300}
+_city_averages_cache = {'data': None, 'timestamp': 0, 'ttl': 300}
+
+@app.route('/api/water-data', methods=['GET'])
+@limiter.limit("100 per minute")
+def api_water_data():
+    """
+    Endpoint zwracający dane o jakości wody z PostgreSQL.
+    Cache: 5 minut (redukuje opóźnienie localhost -> Frankfurt).
+    Optymalizacja: lazy='selectin' w models (eliminuje N+1 Query Problem).
+    """
+    import time
+    
+    try:
+        # Sprawdź cache
+        now = time.time()
+        if _water_data_cache['data'] and (now - _water_data_cache['timestamp']) < _water_data_cache['ttl']:
+            return jsonify({
+                'success': True,
+                'data': _water_data_cache['data'],
+                'source': 'postgresql-cached',
+                'count': len(_water_data_cache['data']),
+                'cache_age': int(now - _water_data_cache['timestamp'])
+            })
+        
+        # Pobierz świeże dane z bazy (z optymalizacją selectin)
+        water_data = get_water_data_from_db()
+        
+        if not water_data:
+            return jsonify({
+                'error': 'Database unavailable',
+                'data': {}
+            }), 503
+        
+        # Zapisz w cache
+        _water_data_cache['data'] = water_data
+        _water_data_cache['timestamp'] = now
+        
+        return jsonify({
+            'success': True,
+            'data': water_data,
+            'source': 'postgresql',
+            'count': len(water_data)
+        })
+        
+    except Exception as e:
+        app.logger.error(f"[API ERROR] /api/water-data failed: {e}")
+        return jsonify({
+            'error': str(e),
+            'data': {}
+        }), 500
+
+
+@app.route('/api/city-averages', methods=['GET'])
+@limiter.limit("100 per minute")
+def api_city_averages():
+    """
+    Endpoint zwracający średnie wartości parametrów dla miast.
+    Cache: 5 minut.
+    """
+    import time
+    
+    try:
+        # Sprawdź cache
+        now = time.time()
+        if _city_averages_cache['data'] and (now - _city_averages_cache['timestamp']) < _city_averages_cache['ttl']:
+            return jsonify({
+                'success': True,
+                'data': _city_averages_cache['data'],
+                'source': 'postgresql-cached',
+                'count': len(_city_averages_cache['data']),
+                'cache_age': int(now - _city_averages_cache['timestamp'])
+            })
+        
+        # Pobierz świeże dane
+        averages_data = get_city_averages_from_db()
+        
+        if not averages_data:
+            return jsonify({
+                'error': 'Database unavailable',
+                'data': {}
+            }), 503
+        
+        # Zapisz w cache
+        _city_averages_cache['data'] = averages_data
+        _city_averages_cache['timestamp'] = now
+        
+        return jsonify({
+            'success': True,
+            'data': averages_data,
+            'source': 'postgresql',
+            'count': len(averages_data)
+        })
+        
+    except Exception as e:
+        app.logger.error(f"[API ERROR] /api/city-averages failed: {e}")
+        return jsonify({
+            'error': str(e),
+            'data': {}
+        }), 500
+
+
+# ============================================
+
+# 📊 CITY TRENDS API (Historical Comparisons)
+
+# ============================================
+
+
+
+_city_trends_cache = {}
+
+
+
+@app.route('/api/city-trends/<city_name>', methods=['GET'])
+
+@limiter.limit("100 per minute")
+
+def api_city_trends(city_name):
+
+    """
+
+    Endpoint zwracający trendy (porównanie ostatni vs przedostatni pomiar).
+
+    Zwraca trendy per stacja + per punkt pomiarowy w danym mieście.
+
+    Cache: 5 minut per miasto.
+
+    """
+
+    import time
+
+    
+
+    try:
+
+        # Sprawdź cache (per miasto)
+
+        cache_key = city_name
+
+        now = time.time()
+
+        if cache_key in _city_trends_cache:
+
+            cached = _city_trends_cache[cache_key]
+
+            if (now - cached['timestamp']) < 300:  # 5 min cache
+
+                return jsonify({
+
+                    'success': True,
+
+                    'city': city_name,
+
+                    'trends': cached['data'],
+
+                    'source': 'cached',
+
+                    'cache_age': int(now - cached['timestamp'])
+
+                })
+
+        
+
+        # Pobierz miasto z bazy
+
+        city = City.query.filter_by(name=city_name).first()
+
+        
+
+        if not city:
+
+            return jsonify({
+
+                'success': False,
+
+                'error': f'City {city_name} not found',
+
+                'has_history': False
+
+            }), 404
+
+        
+
+        # Agreguj trendy z wszystkich stacji i punktów pomiarowych
+
+        trends_data = {}
+
+        
+
+        # Stacje
+
+        for station in city.stations:
+
+            trends = station.get_trends()
+
+            if trends:
+
+                trends_data[station.name] = trends
+
+        
+
+        # Punkty pomiarowe
+
+        for point in city.measurement_points:
+
+            trends = point.get_trends()
+
+            if trends:
+
+                trends_data[point.name] = trends
+
+        
+
+        # Zapisz w cache
+
+        _city_trends_cache[cache_key] = {
+
+            'data': trends_data,
+
+            'timestamp': now
+
+        }
+
+        
+
+        return jsonify({
+
+            'success': True,
+
+            'city': city_name,
+
+            'trends': trends_data,
+
+            'source': 'postgresql',
+
+            'has_history': len(trends_data) > 0
+
+        })
+
+        
+
+    except Exception as e:
+
+        app.logger.error(f"[API ERROR] /api/city-trends/{city_name} failed: {e}")
+
+        return jsonify({
+
+            'success': False,
+
+            'error': str(e)
+
+        }), 500
+
+
+
+
+# ============================================
+# �🛰️ SOCKET.IO EVENTS (Real-time updates)
+# ============================================
+
+
+
 
 @socketio.on('connect')
 def handle_connect():
@@ -1047,9 +1332,9 @@ if __name__ == '__main__':
     db_type = 'PostgreSQL' if 'postgres' in app.config['SQLALCHEMY_DATABASE_URI'] else 'SQLite'
     mode = 'DEBUG' if debug_mode else 'PRODUCTION'
     
-    print(f'[STARTUP] 🚀 Skankran + Satelita')
-    print(f'[STARTUP] 📊 Database: {db_type}')
-    print(f'[STARTUP] 🌐 Server: {host}:{port} ({mode} mode)')
+    print(f'[STARTUP] Skankran + Satelita')
+    print(f'[STARTUP] Database: {db_type}')
+    print(f'[STARTUP] Server: {host}:{port} ({mode} mode)')
     
     # ✅ Socket.IO run (zamiast app.run)
     socketio.run(app, debug=debug_mode, port=port, host=host)
