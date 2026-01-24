@@ -1,0 +1,646 @@
+{
+  "zdrowie": {
+    "Picie wody": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) zwiększa korozję rur, potencjalnie uwalniając metale do wody.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) powoduje silną korozję, znacząco zwiększając ryzyko metali w wodzie."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) nie wpływa bezpośrednio na zdrowie, ale osady w rurach mogą zwiększać korozję.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) nie wpływa bezpośrednio na zdrowie, ale nasila osady, podnosząc ryzyko metali."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) mogą być ryzykowne dla niemowląt, ale dowody są ograniczone.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) powodują methemoglobinemię u niemowląt."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) nadaje metaliczny smak, bez udokumentowanych skutków zdrowotnych.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) może powodować problemy żołądkowe i sprzyjać bakteriom."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) mogą wpływać na zęby, ale dowody są niejednoznaczne.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) powodują fluoroza zębów i szkieletu."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) zmienia smak i może lekko podrażniać śluzówkę.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) podrażnia śluzówkę i może tworzyć szkodliwe związki."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) może barwić wodę, bez udokumentowanych skutków zdrowotnych.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) uszkadza układ nerwowy, szczególnie u dzieci."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) mogą powodować problemy żołądkowe u osób wrażliwych.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) nasilają problemy żołądkowe i wskazują na zanieczyszczenia."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) nadają gorzki smak, bez udokumentowanych skutków zdrowotnych.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) powodują biegunkę, szczególnie u dzieci."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) sugeruje zanieczyszczenia, bez bezpośredniego wpływu zdrowotnego.",
+        "red": "Barwa {value} 🔴 (≥15) wskazuje poważne zanieczyszczenia, potencjalnie szkodliwe."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) może wpływać na smak, ale jest korzystny dla zdrowia.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) powoduje gorzki smak i biegunkę u wrażliwych."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie stanowi zagrożenia, ale może wpływać na smak.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) zwiększa ryzyko hiperkaliemii u osób z chorobami nerek."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) zwiększa ryzyko neurologiczne u dzieci.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) powoduje poważne uszkodzenia mózgu i nerek."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) może wpływać na nerwy, ale dowody są ograniczone.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) uszkadza układ nerwowy i nerki."
+      }
+    },
+    "Alergie": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) może podrażniać śluzówkę, ale brak bezpośredniego wpływu na alergie.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) nasila podrażnienia śluzówki, potencjalnie pogarszając alergie."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) może nasilać suchość skóry, ale bez bezpośredniego wpływu na alergie.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) nasila suchość, potencjalnie pogarszając reakcje alergiczne."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) nie mają udokumentowanego wpływu na alergie.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą potencjalnie wpływać na reakcje alergiczne, ale dowody są ograniczone."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) może podrażniać skórę, ale bez wpływu na alergie.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) nasila podrażnienia, potencjalnie pogarszając alergie."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) nie mają udokumentowanego wpływu na alergie.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) mogą podrażniać, potencjalnie nasilając alergie."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) może podrażniać drogi oddechowe, ale dowody są ograniczone.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) nasila podrażnienia dróg oddechowych, potencjalnie pogarszając alergie."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) może podrażniać skórę, ale bez wpływu na alergie.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) nasila podrażnienia, potencjalnie pogarszając alergie."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) mogą podrażniać skórę, ale bez wpływu na alergie.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) nasilają podrażnienia, potencjalnie pogarszając alergie."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na alergie.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) mogą podrażniać skórę, potencjalnie nasilając alergie."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) sugeruje zanieczyszczenia, bez wpływu na alergie.",
+        "red": "Barwa {value} 🔴 (≥15) wskazuje poważne zanieczyszczenia, potencjalnie pogarszając alergie."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) nie ma udokumentowanego wpływu na alergie.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) może podrażniać skórę, potencjalnie nasilając alergie."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na alergie.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) może podrażniać, potencjalnie nasilając alergie."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) może osłabiać odporność, ale brak wpływu na alergie.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) osłabia odporność, potencjalnie nasilając alergie."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) może osłabiać odporność, ale brak wpływu na alergie.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) osłabia odporność, potencjalnie nasilając alergie."
+      }
+    },
+    "Dzieci": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) może uwalniać metale, zwiększając ryzyko dla dzieci.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) silnie uwalnia metale, podnosząc ryzyko neurologiczne u dzieci."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) wpływa na smak wody, ale bez bezpośredniego wpływu na dzieci.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) nie wpływa bezpośrednio, ale osady mogą zwiększać ryzyko metali dla dzieci."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) mogą zwiększać ryzyko dla dzieci, ale dowody są ograniczone.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) powodują methemoglobinemię u dzieci."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) barwi skórę, bez wpływu na zdrowie dzieci.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) może powodować problemy żołądkowe u dzieci."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) mogą wpływać na zęby dzieci, ale dowody są niejednoznaczne.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) powodują fluoroza zębów u dzieci."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) może podrażniać skórę dzieci.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) nasila podrażnienia skóry i śluzówki u dzieci."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) może barwić skórę, ale bez wpływu na zdrowie dzieci.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) uszkadza rozwój neurologiczny dzieci."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) mogą wpływać na smak, bez wpływu na dzieci.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) podrażniają żołądek dzieci."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) zmieniają smak, ale bez wpływu na dzieci.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) powodują biegunkę u dzieci."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) sugeruje zanieczyszczenia, bez wpływu na dzieci.",
+        "red": "Barwa {value} 🔴 (≥15) wskazuje poważne zanieczyszczenia, szkodliwe dla dzieci."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) może wpływać na smak, ale jest bezpieczny.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) powoduje biegunkę u dzieci."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie wpływa na dzieci.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) może powodować dyskomfort u dzieci z problemami nerek."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) zwiększa ryzyko neurologiczne u dzieci.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) powoduje poważne uszkodzenia neurologiczne u dzieci."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) zwiększa ryzyko neurologiczne u dzieci.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) poważnie uszkadza rozwój neurologiczny dzieci."
+      }
+    },
+    "Autoimmunologia/Choroby": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) może pośrednio wpływać na zdrowie przez korozję rur i uwalnianie metali.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) nasila korozję rur, zwiększając ryzyko metali i potencjalnie pogarszając choroby."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) nie wpływa bezpośrednio, ale osady w rurach mogą zwiększać ekspozycję na metale.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) nasila osady, potencjalnie zwiększając ryzyko metali i wpływając na choroby."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) mogą potencjalnie wpływać na układ odpornościowy, ale dowody są ograniczone.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą nasilać wpływ na układ odpornościowy, choć dowody są niepewne."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) nie ma udokumentowanego wpływu na autoimmunologię.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) może sprzyjać bakteriom, ale brak dowodów na autoimmunologię."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) mogą wpływać na tarczycę, ale dowody są niejednoznaczne.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) mogą nasilać wpływ na tarczycę, potencjalnie pogarszając choroby."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) może podrażniać, ale brak dowodów na autoimmunologię.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) nasila podrażnienia, ale wpływ na autoimmunologię jest niejasny."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) może wpływać na nerwy, ale brak dowodów na autoimmunologię.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) uszkadza nerwy, ale wpływ na autoimmunologię jest nieznany."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na autoimmunologię.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) mogą podrażniać, ale brak dowodów na autoimmunologię."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na autoimmunologię.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) mogą podrażniać, ale brak dowodów na autoimmunologię."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) sugeruje zanieczyszczenia, bez wpływu na autoimmunologię.",
+        "red": "Barwa {value} 🔴 (≥15) wskazuje poważne zanieczyszczenia, potencjalnie wpływające na choroby."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) może wspierać zdrowie, bez wpływu na autoimmunologię.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) powoduje dyskomfort, ale brak wpływu na autoimmunologię."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na autoimmunologię.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) może obciążać nerki, ale brak wpływu na autoimmunologię."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) może osłabiać odporność, potencjalnie wpływając na autoimmunologię.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) nasila osłabienie odporności, pogarszając choroby autoimmunologiczne."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) może osłabiać odporność, ale dowody są ograniczone.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) nasila osłabienie odporności, potencjalnie pogarszając autoimmunologię."
+      }
+    }
+  },
+  "uroda": {
+    "Skóra": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) może podrażniać skórę, powodując suchość.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) silnie podrażnia skórę, powodując zaczerwienienia."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) wysusza skórę, pogarszając komfort.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) nasila suchość, prowadząc do podrażnień."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) nie mają udokumentowanego wpływu na skórę.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą podrażniać skórę, ale dowody są ograniczone."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) może plamić skórę.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) zostawia brązowe osady na skórze."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) nie mają udokumentowanego wpływu na skórę.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) podrażniają skórę."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) może wysuszać skórę.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) nasila suchość i podrażnienia skóry."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) może barwić skórę.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) podrażnia i barwi skórę."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na skórę.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) mogą wysuszać skórę."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na skórę.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) podrażniają skórę."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) nie ma udokumentowanego wpływu na skórę.",
+        "red": "Barwa {value} 🔴 (≥15) wskazuje zanieczyszczenia, potencjalnie podrażniające skórę."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) może powodować osady, ale bez wpływu na skórę.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) nasila osady, potencjalnie wysuszając skórę."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na skórę.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) może podrażniać skórę."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) nie ma udokumentowanego wpływu na skórę.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) może szarzeć skórę."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) nie ma udokumentowanego wpływu na skórę.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) może szarzeć skórę."
+      }
+    },
+    "Włosy": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) matowi włosy.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) niszczy strukturę włosów."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) może powodować tępotę włosów.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) powoduje łamliwość włosów."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) nie mają udokumentowanego wpływu na włosy.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą podrażniać skórę głowy."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) może barwić włosy.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) zostawia rdzawy osad na włosach."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) nie mają udokumentowanego wpływu na włosy.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) niszczą strukturę włosów."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) może wysuszać włosy.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) niszczy włosy i blaknie kolor."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) może barwić włosy.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) niszczy włosy i skórę głowy."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na włosy.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) mogą podrażniać skórę głowy."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na włosy.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) niszczą strukturę włosów."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) nie ma udokumentowanego wpływu na włosy.",
+        "red": "Barwa {value} 🔴 (≥15) wskazuje zanieczyszczenia, potencjalnie wpływające na włosy."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) może powodować osady na włosach.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) nasila osady, matowiąc włosy."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na włosy.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) może matowić włosy."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) nie ma udokumentowanego wpływu na włosy.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) osłabia włosy."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) nie ma udokumentowanego wpływu na włosy.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) osłabia strukturę włosów."
+      }
+    },
+    "Oczy": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) może podrażniać oczy podczas kąpieli.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) silnie podrażnia oczy podczas kąpieli."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) nie ma udokumentowanego wpływu na oczy.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) może podrażniać oczy podczas mycia."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) nie mają udokumentowanego wpływu na oczy.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą podrażniać oczy, ale dowody są ograniczone."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) nie ma udokumentowanego wpływu na oczy.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) może podrażniać oczy."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) nie mają udokumentowanego wpływu na oczy.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) podrażniają oczy."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) może podrażniać oczy.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) powoduje zaczerwienienie i podrażnienie oczu."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) nie ma udokumentowanego wpływu na oczy.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) może podrażniać oczy."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na oczy.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) mogą podrażniać oczy."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na oczy.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) mogą podrażniać oczy."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) nie ma udokumentowanego wpływu na oczy.",
+        "red": "Barwa {value} 🔴 (≥15) może podrażniać oczy z powodu zanieczyszczeń."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) nie ma udokumentowanego wpływu na oczy.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) może podrażniać oczy."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na oczy.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) może podrażniać oczy."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) nie ma udokumentowanego wpływu na oczy.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) może podrażniać oczy."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) nie ma udokumentowanego wpływu na oczy.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) może podrażniać oczy."
+      }
+    }
+  },
+  "codzienne_uzycie": {
+    "Prysznic i kąpiel": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) zmniejsza skuteczność mydła, podrażniając skórę.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) silnie podrażnia skórę podczas kąpieli."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) zostawia osady na skórze i armaturze.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) wysusza skórę i tworzy silne osady."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) nie mają udokumentowanego wpływu na kąpiel.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą podrażniać skórę podczas kąpieli."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) plami skórę i armaturę.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) zostawia osady na skórze i armaturze."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) nie mają udokumentowanego wpływu na kąpiel.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) podrażniają skórę podczas kąpieli."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) może podrażniać skórę podczas kąpieli.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) wysusza skórę i podrażnia podczas kąpieli."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) barwi skórę i armaturę.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) podrażnia skórę i silnie barwi."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na kąpiel.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) korozyjnie działają na armaturę."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) wpływają na zapach wody.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) pozostawiają osady na armaturze."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) plami armaturę.",
+        "red": "Barwa {value} 🔴 (≥15) zanieczyszcza wodę i plami armaturę."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) zostawia osady na skórze.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) podrażnia skórę i tworzy osady."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na kąpiel.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) może korozyjnie działać na armaturę."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) korozyjnie działa na armaturę.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) uszkadza armaturę i zwiększa ryzyko."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) korozyjnie działa na armaturę.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) uszkadza armaturę i zwiększa ryzyko."
+      }
+    },
+    "Zmywanie naczyń": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) zmniejsza skuteczność detergentów.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) podrażnia ręce i obniża mycie."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) zmniejsza skuteczność mycia naczyń.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) tworzy osady na naczyniach."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) nie mają udokumentowanego wpływu na mycie.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą podrażniać ręce podczas mycia."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) plami naczynia.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) zostawia osady na naczyniach."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) nie mają udokumentowanego wpływu na mycie.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) podrażniają ręce podczas mycia."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) zmienia smak wody.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) korozyjnie działa na naczynia."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) barwi naczynia.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) podrażnia ręce i barwi naczynia."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na mycie.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) korozyjnie działają na naczynia."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) wpływają na smak wody.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) korozyjnie działają na naczynia."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) plami naczynia.",
+        "red": "Barwa {value} 🔴 (≥15) zanieczyszcza wodę i plami naczynia."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) zostawia osady na naczyniach.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) korozyjnie działa na naczynia."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na mycie.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) korozyjnie działa na naczynia."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) korozyjnie działa na naczynia.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) uszkadza naczynia i zwiększa ryzyko."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) korozyjnie działa na naczynia.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) uszkadza naczynia i zwiększa ryzyko."
+      }
+    },
+    "Pranie": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) blaknie kolory ubrań.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) uszkadza tkaniny podczas prania."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) obniża skuteczność proszków.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) tworzy osady na ubraniach."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) nie mają udokumentowanego wpływu na pranie.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą podrażniać skórę podczas prania."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) plami ubrania.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) zostawia osady na ubraniach."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) nie mają udokumentowanego wpływu na pranie.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) podrażniają skórę podczas prania."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) blaknie kolory ubrań.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) niszczy tkaniny podczas prania."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) barwi ubrania.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) podrażnia skórę i barwi ubrania."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na pranie.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) korozyjnie działają na pralki."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na pranie.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) korozyjnie działają na pralki."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) plami ubrania.",
+        "red": "Barwa {value} 🔴 (≥15) zanieczyszcza wodę i plami ubrania."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) zostawia osady na ubraniach.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) korozyjnie działa na pralki."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na pranie.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) korozyjnie działa na pralki."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) korozyjnie działa na pralki.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) uszkadza pralki i zwiększa ryzyko."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) korozyjnie działa na pralki.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) uszkadza pralki i zwiększa ryzyko."
+      }
+    },
+    "Sprzątanie": {
+      "ph": {
+        "orange": "pH {value} 🟠 (6.5–6.9 lub 8.6–9.5) zmniejsza skuteczność środków czyszczących.",
+        "red": "pH {value} 🔴 (<6.5 lub >9.5) podrażnia ręce i obniża czyszczenie."
+      },
+      "twardosc": {
+        "orange": "Twardość {value} mg CaCO₃/L 🟠 (150–219 mg CaCO₃/L) zmniejsza efektywność czyszczenia.",
+        "red": "Twardość {value} mg CaCO₃/L 🔴 (≥220 mg CaCO₃/L) powoduje osady na powierzchniach."
+      },
+      "azotany": {
+        "orange": "Azotany {value} mg/l 🟠 (10–19 mg/l) nie mają udokumentowanego wpływu na sprzątanie.",
+        "red": "Azotany {value} mg/l 🔴 (≥20 mg/l) mogą podrażniać ręce podczas sprzątania."
+      },
+      "zelazo": {
+        "orange": "Żelazo {value} mg/l 🟠 (0.1–0.19 mg/l) plami powierzchnie.",
+        "red": "Żelazo {value} mg/l 🔴 (≥0.2 mg/l) zostawia osady na powierzchniach."
+      },
+      "fluorki": {
+        "orange": "Fluorki {value} mg/l 🟠 (1.2–1.49 mg/l) nie mają udokumentowanego wpływu na sprzątanie.",
+        "red": "Fluorki {value} mg/l 🔴 (≥1.5 mg/l) podrażniają ręce podczas sprzątania."
+      },
+      "chlor": {
+        "orange": "Chlor {value} mg/l 🟠 (0.15–0.26 mg/l) zmienia zapach podczas sprzątania.",
+        "red": "Chlor {value} mg/l 🔴 (≥0.27 mg/l) podrażnia drogi oddechowe."
+      },
+      "mangan": {
+        "orange": "Mangan {value} µg/l 🟠 (20–49 µg/l) barwi powierzchnie.",
+        "red": "Mangan {value} µg/l 🔴 (≥50 µg/l) podrażnia ręce i barwi powierzchnie."
+      },
+      "chlorki": {
+        "orange": "Chlorki {value} mg/l 🟠 (125–249 mg/l) nie mają udokumentowanego wpływu na sprzątanie.",
+        "red": "Chlorki {value} mg/l 🔴 (≥250 mg/l) korozyjnie działają na powierzchnie."
+      },
+      "siarczany": {
+        "orange": "Siarczany {value} mg/l 🟠 (125–249 mg/l) wpływają na zapach.",
+        "red": "Siarczany {value} mg/l 🔴 (≥250 mg/l) korozyjnie działają na powierzchnie."
+      },
+      "barwa": {
+        "orange": "Barwa {value} 🟠 (7.5–14.9) plami powierzchnie.",
+        "red": "Barwa {value} 🔴 (≥15) zanieczyszcza wodę i plami powierzchnie."
+      },
+      "magnez": {
+        "orange": "Magnez {value} mg/l 🟠 (25–49 mg/l) zostawia osady na powierzchniach.",
+        "red": "Magnez {value} mg/l 🔴 (≥50 mg/l) korozyjnie działa na powierzchnie."
+      },
+      "potas": {
+        "orange": "Potas {value} mg/l 🟠 (6–11 mg/l) nie ma udokumentowanego wpływu na sprzątanie.",
+        "red": "Potas {value} mg/l 🔴 (≥12 mg/l) korozyjnie działa na powierzchnie."
+      },
+      "olow": {
+        "orange": "Ołów {value} µg/l 🟠 (5–9 µg/l) korozyjnie działa na powierzchnie.",
+        "red": "Ołów {value} µg/l 🔴 (≥10 µg/l) uszkadza powierzchnie i zwiększa ryzyko."
+      },
+      "rtec": {
+        "orange": "Rtęć {value} µg/l 🟠 (0.5–0.99 µg/l) korozyjnie działa na powierzchnie.",
+        "red": "Rtęć {value} µg/l 🔴 (≥1 µg/l) uszkadza powierzchnie i zwiększa ryzyko."
+      }
+    }
+  }
+}

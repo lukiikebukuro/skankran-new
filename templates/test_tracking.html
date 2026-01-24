@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Analytics Tracking</title>
+</head>
+<body>
+    <h1>Test Tracking System</h1>
+    <button id="testBtn">Kliknij aby przetestować tracking</button>
+    <div id="output" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;"></div>
+
+    <script type="module">
+        import { trackCitySearch } from '/static/js/analytics.js';
+        
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Wysyłam test event...</p>';
+            
+            try {
+                // Test trackCitySearch
+                trackCitySearch('TestowaWarszawa');
+                output.innerHTML += '<p style="color: green;">✅ trackCitySearch() wywołana!</p>';
+                
+                // Test bezpośredni fetch
+                const response = await fetch('/api/log-event', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        action_type: 'search_city',
+                        query_data: {city_name: 'DirectFetchTest'}
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    output.innerHTML += `<p style="color: green;">✅ Fetch do /api/log-event: ${JSON.stringify(data)}</p>`;
+                } else {
+                    output.innerHTML += `<p style="color: red;">❌ Fetch error: ${response.status}</p>`;
+                }
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">❌ Error: ${error.message}</p>`;
+            }
+        });
+        
+        console.log('[Test Page] Loaded successfully!');
+    </script>
+</body>
+</html>

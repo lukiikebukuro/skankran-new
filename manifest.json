@@ -1,0 +1,9 @@
+{
+    "name": "AquaTest",
+    "short_name": "AquaTest",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0288d1",
+    "icons": []
+}

@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKANKRAN - Data Flow Architecture</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+        }
+
+        code,
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Data Pipeline Background */
+        .pipeline-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pipeline-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Sticky Navigation */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Flow Arrow Animation */
+        @keyframes flowDown {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(10px);
+                opacity: 0.5;
+            }
+        }
+
+        .flow-arrow {
+            animation: flowDown 2s ease-in-out infinite;
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'deep-blue': '#0f172a',
+                        'slate-custom': '#1e293b',
+                        'data-cyan': '#06b6d4',
+                        'pipeline-purple': '#8b5cf6'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky-nav shadow-lg border-b-2 border-data-cyan">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-sitemap text-data-cyan text-2xl"></i>
+                    <div>
+                        <h1 class="text-white text-xl font-bold">DATA FLOW ARCHITECTURE</h1>
+                        <p class="text-gray-400 text-sm">From PDF to Frontend • Complete Pipeline</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#overview" class="text-gray-300 hover:text-data-cyan transition">Overview</a>
+                    <a href="#extraction" class="text-gray-300 hover:text-data-cyan transition">Extraction</a>
+                    <a href="#database" class="text-gray-300 hover:text-data-cyan transition">Database</a>
+                    <a href="#tools" class="text-gray-300 hover:text-data-cyan transition">Tools</a>
+                </div>
+                <div class="bg-data-cyan text-deep-blue px-4 py-2 rounded-lg font-bold">
+                    v2.0
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="pipeline-bg text-white py-20 px-6 relative">
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="text-center mb-12">
+                <div class="inline-block bg-data-cyan bg-opacity-20 px-6 py-3 rounded-full mb-6">
+                    <span class="text-data-cyan font-bold text-lg">
+                        <i class="fas fa-database mr-2"></i>
+                        POSTGRESQL MIGRATION COMPLETE
+                    </span>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-black mb-4">
+                    📊 Data Flow Architecture
+                </h1>
+                <p class="text-2xl text-gray-300 max-w-4xl mx-auto">
+                    Kompletny przepływ danych w systemie Skankran: od raportu PDF z wodociągów, przez PostgreSQL, aż po
+                    wyświetlenie na mapie
+                </p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+                <div class="bg-black bg-opacity-50 rounded-lg p-4 text-center border border-slate-700">
+                    <div class="text-3xl font-bold text-data-cyan">35</div>
+                    <div class="text-xs text-gray-400 uppercase mt-1">Miast</div>
+                </div>
+                <div class="bg-black bg-opacity-50 rounded-lg p-4 text-center border border-slate-700">
+                    <div class="text-3xl font-bold text-data-cyan">50+</div>
+                    <div class="text-xs text-gray-400 uppercase mt-1">Stacji SUW</div>
+                </div>
+                <div class="bg-black bg-opacity-50 rounded-lg p-4 text-center border border-slate-700">
+                    <div class="text-3xl font-bold text-data-cyan">14</div>
+                    <div class="text-xs text-gray-400 uppercase mt-1">Parametrów</div>
+                </div>
+                <div class="bg-black bg-opacity-50 rounded-lg p-4 text-center border border-slate-700">
+                    <div class="text-3xl font-bold text-data-cyan">5 min</div>
+                    <div class="text-xs text-gray-400 uppercase mt-1">Cache TTL</div>
+                </div>
+            </div>
+
+            <!-- Target Audience -->
+            <div class="bg-slate-custom bg-opacity-80 backdrop-blur-lg rounded-2xl p-8 border border-slate-700">
+                <h3 class="text-2xl font-bold mb-4">🎯 Cel Dokumentu</h3>
+                <p class="text-gray-300 mb-4">
+                    Ten dokument opisuje kompletny przepływ danych dla zespołów:
+                </p>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-black bg-opacity-40 rounded-lg p-4 border border-slate-800">
+                        <i class="fas fa-code text-data-cyan text-2xl mb-2"></i>
+                        <h4 class="font-bold text-white mb-2">Junior Developers</h4>
+                        <p class="text-sm text-gray-400">Onboarding + struktura projektu</p>
+                    </div>
+                    <div class="bg-black bg-opacity-40 rounded-lg p-4 border border-slate-800">
+                        <i class="fas fa-robot text-pipeline-purple text-2xl mb-2"></i>
+                        <h4 class="font-bold text-white mb-2">AI Assistants</h4>
+                        <p class="text-sm text-gray-400">Copilot, Claude, ChatGPT context</p>
+                    </div>
+                    <div class="bg-black bg-opacity-40 rounded-lg p-4 border border-slate-800">
+                        <i class="fas fa-user-tie text-green-500 text-2xl mb-2"></i>
+                        <h4 class="font-bold text-white mb-2">Grant Auditors</h4>
+                        <p class="text-sm text-gray-400">Transparentność techniczna dla UE</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 1: ARCHITECTURE OVERVIEW -->
+    <section id="overview" class="py-20 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-project-diagram text-data-cyan mr-3"></i>
+                    1. Przegląd Architektury
+                </h2>
+                <p class="text-xl text-gray-700">
+                    5-fazowy pipeline: PDF → JSON → PostgreSQL → Cache → Frontend
+                </p>
+            </div>
+
+            <!-- Pipeline Diagram (Vertical Flow) -->
+            <div class="bg-gray-50 rounded-2xl p-8 md:p-10 border-2 border-gray-200">
+                <div class="space-y-6">
+                    <!-- Phase 1: PDF Source -->
+                    <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-red-500">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <i class="fas fa-file-pdf text-red-500 text-3xl"></i>
+                                    <h3 class="text-2xl font-bold text-deep-blue">RAPORT PDF</h3>
+                                </div>
+                                <p class="text-gray-700 mb-2">Źródło: Wodociągi miejskie (np. SUW Grudziądz)</p>
+                                <code
+                                    class="text-sm bg-gray-100 px-2 py-1 rounded text-gray-800">SPRAWOZDANIE Nr 10507/2025</code>
+                            </div>
+                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold">INPUT</span>
+                        </div>
+                    </div>
+
+                    <!-- Arrow -->
+                    <div class="text-center flow-arrow">
+                        <i class="fas fa-arrow-down text-4xl text-gray-400"></i>
+                        <p class="text-sm text-gray-600 mt-2">RĘCZNA EKSTRAKCJA (Copilot asystuje)</p>
+                    </div>
+
+                    <!-- Phase 2: JSON Object -->
+                    <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-yellow-500">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <i class="fas fa-code text-yellow-600 text-3xl"></i>
+                                    <h3 class="text-2xl font-bold text-deep-blue">JSON Object</h3>
+                                </div>
+                                <p class="text-gray-700 mb-2">Struktura: city, station, measurement_date, parameters{pH,
+                                    twardosc, ...}</p>
+                                <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs mt-3">
+                                    {"city": "Grudziądz", "station": "SUW Hallera", ...}
+                                </div>
+                            </div>
+                            <span
+                                class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-bold">TEMP</span>
+                        </div>
+                    </div>
+
+                    <!-- Arrow -->
+                    <div class="text-center flow-arrow">
+                        <i class="fas fa-arrow-down text-4xl text-gray-400"></i>
+                        <p class="text-sm text-gray-600 mt-2">WERYFIKACJA (check_grudziadz_db.py)</p>
+                    </div>
+
+                    <!-- Phase 3: PostgreSQL -->
+                    <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-green-500">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <i class="fas fa-database text-green-600 text-3xl"></i>
+                                    <h3 class="text-2xl font-bold text-deep-blue">PostgreSQL (UPSERT)</h3>
+                                </div>
+                                <p class="text-gray-700 mb-2">🇩🇪 Frankfurt, Germany (Render.com)</p>
+                                <p class="text-sm text-gray-600">Tabele: cities, stations, water_measurements</p>
+                            </div>
+                            <span
+                                class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">STORAGE</span>
+                        </div>
+                    </div>
+
+                    <!-- Arrow -->
+                    <div class="text-center flow-arrow">
+                        <i class="fas fa-arrow-down text-4xl text-gray-400"></i>
+                        <p class="text-sm text-gray-600 mt-2">CACHE (5 min TTL)</p>
+                    </div>
+
+                    <!-- Phase 4: API Endpoint -->
+                    <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-blue-500">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <i class="fas fa-server text-blue-600 text-3xl"></i>
+                                    <h3 class="text-2xl font-bold text-deep-blue">API Endpoint (Flask)</h3>
+                                </div>
+                                <p class="text-gray-700 mb-2">/api/water-data (JSON Response)</p>
+                                <code
+                                    class="text-sm bg-gray-100 px-2 py-1 rounded text-gray-800">{success: true, source: 'postgresql-cached'}</code>
+                            </div>
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-bold">API</span>
+                        </div>
+                    </div>
+
+                    <!-- Arrow -->
+                    <div class="text-center flow-arrow">
+                        <i class="fas fa-arrow-down text-4xl text-gray-400"></i>
+                        <p class="text-sm text-gray-600 mt-2">FETCH (waterAnalysis.js)</p>
+                    </div>
+
+                    <!-- Phase 5: Frontend -->
+                    <div class="bg-white rounded-xl p-6 shadow-md border-l-4 border-purple-500">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <i class="fas fa-map text-purple-600 text-3xl"></i>
+                                    <h3 class="text-2xl font-bold text-deep-blue">Frontend JS (Leaflet Map)</h3>
+                                </div>
+                                <p class="text-gray-700 mb-2">Dynamic rendering (React-like bez frameworka)</p>
+                                <p class="text-sm text-gray-600">UI: Mapy, rankingi, wyszukiwanie stacji</p>
+                            </div>
+                            <span
+                                class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-bold">OUTPUT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: DATA SOURCES -->
+    <section id="sources" class="py-20 px-6 bg-gradient-to-br from-slate-50 to-gray-100">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-file-import text-red-600 mr-3"></i>
+                    2. Źródła Danych
+                </h2>
+            </div>
+
+            <!-- PDF Format -->
+            <div class="bg-white rounded-2xl p-8 md:p-10 shadow-xl mb-8 border-t-4 border-red-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">2.1. Format Wejściowy: Raporty PDF</h3>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-6">
+                    <div>
+                        <h4 class="font-bold text-lg text-deep-blue mb-3">Źródło:</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li><i class="fas fa-building text-blue-600 mr-2"></i>Wodociągi miejskie (MPWiK)</li>
+                            <li><i class="fas fa-calendar text-green-600 mr-2"></i>Częstotliwość: Miesięczna/kwartalna
+                            </li>
+                            <li><i class="fas fa-envelope text-yellow-600 mr-2"></i>Dostarczane: E-mail, Portal
+                                Otwartych Danych</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-deep-blue mb-3">Przykład:</h4>
+                        <div class="bg-gray-100 rounded-lg p-4 border border-gray-300">
+                            <p class="font-mono text-sm text-gray-800">SPRAWOZDANIE Z POBIERANIA I BADAŃ</p>
+                            <p class="font-mono text-sm text-gray-800">Nr 10507/2025</p>
+                            <p class="text-xs text-gray-600 mt-2">Data: 2025-12-15</p>
+                            <p class="text-xs text-gray-600">Lokalizacja: SUW Hallera 79</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parameters Table -->
+                <div class="bg-slate-50 rounded-lg p-6 mb-6">
+                    <h4 class="font-bold text-lg text-deep-blue mb-4">Zawartość raportu (14 parametrów):</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h5 class="font-semibold text-gray-700 mb-2">Podstawowe:</h5>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• pH (brak jednostki)</li>
+                                <li>• Twardość ogólna (mg CaCO₃/L)</li>
+                                <li>• Mętność (NTU)</li>
+                                <li>• Barwa (mg Pt/l)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-semibold text-gray-700 mb-2">Chemiczne:</h5>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Azotany (mg/l)</li>
+                                <li>• Żelazo (mg/l)</li>
+                                <li>• Mangan, Ołów, Rtęć (µg/l)</li>
+                                <li>• Chlorki, Siarczany, Fluorki (mg/l)</li>
+                                <li>• Chlor wolny (mg/l)</li>
+                                <li>• Magnez, Potas (mg/l)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CRITICAL RULE: Final Units -->
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-6">
+                    <h4 class="font-bold text-lg text-red-800 mb-4 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        ZASADA KRYTYCZNA: Jednostki końcowe w PostgreSQL
+                    </h4>
+                    <p class="text-sm text-gray-700 mb-3">
+                        <strong>UWAGA:</strong> Wodociągi podają dane w różnych formatach (µg/dm³, mg/dm³, µg/l, mg/l).
+                        Niezależnie od formatu źródłowego, <strong>ZAWSZE konwertuj do jednostek końcowych</strong>:
+                    </p>
+                    <div class="bg-white rounded p-4 border border-red-200 font-mono text-xs">
+                        <div class="grid md:grid-cols-2 gap-2">
+                            <div>• pH: <strong>brak jednostki</strong></div>
+                            <div>• twardosc: <strong>mg CaCO₃/L</strong></div>
+                            <div>• azotany: <strong>mg/l</strong></div>
+                            <div>• <span class="text-red-600">zelazo: <strong>mg/l</strong></span> (nie µg/l!)</div>
+                            <div>• fluorki: <strong>mg/l</strong></div>
+                            <div>• chlor: <strong>mg/l</strong></div>
+                            <div>• chlorki: <strong>mg/l</strong></div>
+                            <div>• siarczany: <strong>mg/l</strong></div>
+                            <div>• barwa: <strong>mg Pt/l</strong></div>
+                            <div>• magnez: <strong>mg/l</strong></div>
+                            <div>• potas: <strong>mg/l</strong></div>
+                            <div>• <span class="text-green-600">mangan: <strong>µg/l</strong></span></div>
+                            <div>• <span class="text-green-600">olow: <strong>µg/l</strong></span></div>
+                            <div>• <span class="text-green-600">rtec: <strong>µg/l</strong></span></div>
+                            <div>• metnosc: <strong>NTU</strong></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-3">
+                        <i class="fas fa-info-circle text-red-600 mr-2"></i>
+                        Przykład: jeśli PDF ma "Żelazo: 27 µg/dm³" → zapisz <code
+                            class="bg-gray-100 px-1 rounded">0.027 mg/l</code> (÷1000)
+                    </p>
+                </div>
+
+                <!-- Problems Alert -->
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                    <h4 class="font-bold text-lg text-red-800 mb-3 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        Problemy z PDF:
+                    </h4>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
+                        <div>
+                            <p class="font-semibold mb-1">❌ Niejednorodne formatowanie</p>
+                            <p class="text-xs text-gray-600">Każde miasto ma inny układ tabeli</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold mb-1">❌ Wartości poniżej LOD</p>
+                            <p class="text-xs text-gray-600">&lt;5,0 ± 0,8 (trzeba parsować)</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold mb-1">❌ Różne jednostki w źródle</p>
+                            <p class="text-xs text-gray-600">µg/dm³ vs mg/dm³ vs µg/l (wymaga uwagi!)</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold mb-1">❌ Brak niektórych parametrów</p>
+                            <p class="text-xs text-gray-600">Często brak potasu, magnezu</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PostgreSQL Schema -->
+            <div class="bg-white rounded-2xl p-8 md:p-10 shadow-xl border-t-4 border-green-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">2.2. Baza PostgreSQL</h3>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border border-green-200">
+                        <h4 class="font-bold text-green-800 mb-2">🇩🇪 Frankfurt Datacenter</h4>
+                        <p class="text-sm text-gray-700 mb-1">Hoster: Render.com</p>
+                        <p class="text-sm text-gray-700">Region: Germany (EU GDPR compliance)</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+                        <h4 class="font-bold text-blue-800 mb-2">🔗 Connection</h4>
+                        <code class="text-xs bg-white px-2 py-1 rounded text-gray-800 break-all">DATABASE_URL</code>
+                        <p class="text-xs text-gray-600 mt-2">w pliku .env</p>
+                    </div>
+                </div>
+
+                <!-- SQL Schema -->
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-sm overflow-x-auto">
+                    <pre>-- Tabela miast
+cities (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) UNIQUE,
+    info TEXT,
+    fun_facts TEXT
+)
+
+-- Tabela stacji SUW
+stations (
+    id SERIAL PRIMARY KEY,
+    city_id INTEGER REFERENCES cities(id),
+    name VARCHAR(200),
+    address VARCHAR(300),
+    latitude FLOAT,
+    longitude FLOAT,
+    UNIQUE(city_id, name)
+)
+
+-- Tabela pomiarów (kluczowa!)
+water_measurements (
+    id SERIAL PRIMARY KEY,
+    station_id INTEGER REFERENCES stations(id),
+    parameter VARCHAR(50),        -- 'pH', 'twardosc', 'azotany'
+    value FLOAT,                  -- NULL jeśli brak
+    unit VARCHAR(20),             -- NULL dla pH
+    measurement_date DATE,
+    below_detection_limit BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW()
+)</pre>
+                </div>
+
+                <!-- Indexes Note -->
+                <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-bolt text-yellow-600 mr-2"></i>
+                        <strong>Indexes:</strong> station_id + measurement_date DESC (optymalizacja
+                        get_latest_measurements)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: PDF EXTRACTION -->
+    <section id="extraction" class="py-20 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-file-code text-yellow-600 mr-3"></i>
+                    3. Faza 1: Ekstrakcja z PDF
+                </h2>
+                <p class="text-xl text-gray-700">
+                    Ręczny proces wspomagany przez GitHub Copilot
+                </p>
+            </div>
+
+            <!-- Manual Process -->
+            <div
+                class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-8 md:p-10 shadow-xl mb-8 border-t-4 border-yellow-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">3.1. Proces Importu (Zwalidowany na 3 miastach)</h3>
+
+                <div class="bg-green-50 rounded-lg p-6 mb-6 border-l-4 border-green-500">
+                    <h4 class="font-bold text-green-800 mb-3">✅ Status: Workflow zwalidowany!</h4>
+                    <p class="text-sm text-gray-700 mb-2">Pomyślnie zaimportowano dane dla:</p>
+                    <ul class="text-sm text-gray-700 space-y-1 ml-4">
+                        <li>• <strong>Grudziądz</strong>: 1 SUW, 372 mg/l (2025-12-15)</li>
+                        <li>• <strong>Bydgoszcz</strong>: 2 SUWy, 195/395 mg/l, avg 295 (Q3 2025)</li>
+                        <li>• <strong>Toruń</strong>: 5 SUWów, 250-267 mg/l, avg 260.4 (Q2 2025)</li>
+                    </ul>
+                </div>
+
+                <div class="bg-white rounded-lg p-6 mb-6 border border-yellow-200">
+                    <h4 class="font-bold text-lg text-deep-blue mb-4">Workflow (3 kroki):</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4">
+                            <div
+                                class="bg-yellow-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                                1</div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">Stwórz skrypt importu: <code
+                                        class="bg-gray-100 px-2 py-1 rounded text-sm">import_&lt;city&gt;_&lt;date&gt;.py</code>
+                                </p>
+                                <p class="text-sm text-gray-600 mt-1">Użyj szablonu poniżej, wypełnij danymi z PDF</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div
+                                class="bg-yellow-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                                2</div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">Uruchom import: <code
+                                        class="bg-gray-100 px-2 py-1 rounded text-sm">python import_city.py</code></p>
+                                <p class="text-sm text-gray-600 mt-1">Skrypt automatycznie utworzy WaterMeasurements +
+                                    CityAverage</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div
+                                class="bg-yellow-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                                3</div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800">Weryfikuj frontend (Ctrl+Shift+R)</p>
+                                <p class="text-sm text-gray-600 mt-1">Sprawdź "Sprawdź Kranówkę", "Znajdź Stacje",
+                                    "Rankingi"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Import Script Template -->
+                <div class="bg-white rounded-lg p-6 mb-6 border border-yellow-200">
+                    <h4 class="font-bold text-lg text-deep-blue mb-4">📝 Szablon Skryptu Importu:</h4>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs overflow-x-auto">
+                        <pre>#!/usr/bin/env python3
+from datetime import date
+from app import app, db, City, Station, CityAverage, WaterMeasurement
+
+def import_city_data():
+    with app.app_context():
+        # 1. DATA POMIARU (z PDF lub dzisiaj)
+        measurement_date = date(2025, 6, 30)  # Q2 2025
+        
+        # 2. ZNAJDŹ MIASTO
+        city = City.query.filter_by(name='CityName').first()
+        
+        # 3. DLA KAŻDEJ STACJI SUW:
+        station_data = {
+            'pH': 7.40,
+            'twardosc': 267.0,  # ← WARTOŚĆ SPECYFICZNA DLA STACJI
+            'zelazo': 27.0,     # µg/l (bez konwersji!)
+            'chlor': 0.06,
+        }
+        
+        station = Station.query.filter_by(
+            city_id=city.id, 
+            name='SUW Name'
+        ).first()
+        
+        # Usuń stare pomiary
+        WaterMeasurement.query.filter_by(station_id=station.id).delete()
+        
+        # Dodaj nowe pomiary (PER-STATION!)
+        for param, value in station_data.items():
+            measurement = WaterMeasurement(
+                station_id=station.id,
+                parameter=param,
+                value=value,
+                unit=units.get(param),
+                measurement_date=measurement_date  # ← KRYTYCZNE!
+            )
+            db.session.add(measurement)
+        
+        db.session.commit()
+        
+        # 4. OBLICZ ŚREDNIĄ MIASTA
+        # (mean wszystkich stacji)
+        avg = city.averages
+        avg.twardosc = 260.4  # mean(267, 265, 260, ...)
+        db.session.commit()</pre>
+                    </div>
+                </div>
+
+                <!-- CRITICAL: Per-Station Pattern -->
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6">
+                    <h4 class="font-bold text-lg text-red-800 mb-4 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        KRYTYCZNY PATTERN: Per-Station vs City Average
+                    </h4>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-white rounded p-4 border border-red-200">
+                            <p class="font-semibold text-gray-800 mb-2">✅ WaterMeasurement (per-station)</p>
+                            <p class="text-xs text-gray-600 mb-1">Każda stacja SUW ma własne pomiary</p>
+                            <code class="text-xs bg-gray-100 px-2 py-1 rounded block">Toruń Rubinkowo: 267 mg/l</code>
+                            <code
+                                class="text-xs bg-gray-100 px-2 py-1 rounded block mt-1">Toruń Podgórz: 250 mg/l</code>
+                            <p class="text-xs text-gray-600 mt-2">→ Używane w <strong>"Znajdź Stacje"</strong></p>
+                        </div>
+                        <div class="bg-white rounded p-4 border border-red-200">
+                            <p class="font-semibold text-gray-800 mb-2">✅ CityAverage (uśrednione)</p>
+                            <p class="text-xs text-gray-600 mb-1">Średnia wszystkich stacji w mieście</p>
+                            <code class="text-xs bg-gray-100 px-2 py-1 rounded block">Toruń avg: 260.4 mg/l</code>
+                            <p class="text-xs text-gray-600 mt-2">→ Używane w <strong>"Sprawdź Kranówkę"</strong> i
+                                <strong>"Rankingi"</strong>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-yellow-100 rounded p-3">
+                        <p class="text-xs text-gray-700">
+                            <i class="fas fa-lightbulb text-yellow-600 mr-2"></i>
+                            <strong>Lekcja z Bydgoszczy:</strong> Początkowo zapisywałem tylko średnią (295 mg/l) → obie
+                            stacje pokazywały tę samą wartość.
+                            Poprawka: każda stacja dostaje własne WaterMeasurement records (195 i 395 mg/l).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Automation -->
+            <div class="bg-white rounded-2xl p-8 shadow-xl border-t-4 border-purple-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-4">3.2. Automatyzacja (Future Work)</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-purple-800 mb-3">🔮 Plan:</h4>
+                        <ul class="space-y-2 text-gray-700 text-sm">
+                            <li><i class="fas fa-robot text-purple-600 mr-2"></i>OCR + AI Parser (Tesseract / Google
+                                Document AI)</li>
+                            <li><i class="fas fa-link text-purple-600 mr-2"></i>LangChain + Gemini API do strukturyzacji
+                            </li>
+                            <li><i class="fas fa-code text-purple-600 mr-2"></i>Regex patterns dla różnych formatów PDF
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                        <p class="text-sm text-gray-700 mb-2"><strong>Estimated Effort:</strong></p>
+                        <p class="text-3xl font-bold text-purple-700">2-3 tygodnie</p>
+                        <p class="text-xs text-gray-600 mt-1">(junior developer)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: JSON VERIFICATION -->
+    <section id="verification" class="py-20 px-6 bg-gradient-to-br from-slate-50 to-gray-100">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                    4. Faza 2: Weryfikacja JSON
+                </h2>
+                <p class="text-xl text-gray-700">
+                    Sanity check przed zapisem do bazy
+                </p>
+            </div>
+
+            <!-- Sanity Check Script -->
+            <div class="bg-white rounded-2xl p-8 md:p-10 shadow-xl mb-8 border-t-4 border-green-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">4.1. Sanity Check (check_grudziadz_db.py)</h3>
+
+                <div class="bg-blue-50 rounded-lg p-6 mb-6 border border-blue-200">
+                    <h4 class="font-bold text-blue-800 mb-4">Co sprawdza (4 testy):</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-white rounded p-4 border border-blue-200">
+                            <p class="font-semibold text-gray-800 text-sm mb-1">1. Czy miasto istnieje w bazie</p>
+                            <code class="text-xs text-gray-600">cities.name = 'Grudziądz'</code>
+                        </div>
+                        <div class="bg-white rounded p-4 border border-blue-200">
+                            <p class="font-semibold text-gray-800 text-sm mb-1">2. Czy stacja istnieje</p>
+                            <code class="text-xs text-gray-600">stations.name = 'SUW Hallera'</code>
+                        </div>
+                        <div class="bg-white rounded p-4 border border-blue-200">
+                            <p class="font-semibold text-gray-800 text-sm mb-1">3. Czy data nie jest duplikatem</p>
+                            <code class="text-xs text-gray-600">measurement_date = 2025-12-15</code>
+                        </div>
+                        <div class="bg-white rounded p-4 border border-blue-200">
+                            <p class="font-semibold text-gray-800 text-sm mb-1">4. Czy wartości są sensowne</p>
+                            <code class="text-xs text-gray-600">pH: 6.5-9.5, twardość: 0-500</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Example Output -->
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-sm overflow-x-auto">
+                    <pre>============================================================
+🔍 SANITY CHECK: Dane dla Grudziądza w PostgreSQL
+============================================================
+
+✅ Miasto: Grudziądz (ID: 1)
+✅ Stacja: SUW Hallera (ID: 1)
+
+📅 Daty pomiarów (2):
+   - 2025-12-15: 7 pomiarów
+   - 2024-12-01: 15 pomiarów
+
+📊 Pomiary z daty 2025-12-15:
+   • pH: 7.3
+   • twardosc: 372.0 mg CaCO3/l
+   • azotany: 6.8 mg/l
+   • zelazo: 0.03 mg/l
+
+🎯 FOKUS: Twardość = 372.0 mg CaCO3/l
+   ✅ POPRAWNE - wartość 372 jest w bazie!</pre>
+                </div>
+            </div>
+
+            <!-- Business Rules -->
+            <div class="bg-white rounded-2xl p-8 shadow-xl border-t-4 border-yellow-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">4.2. Walidacja Logiczna</h3>
+
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-4 bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                        <i class="fas fa-flask text-yellow-600 text-2xl mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">Jeśli <code
+                                    class="bg-white px-2 py-1 rounded text-sm">mangan &lt; 5 µg/l</code></p>
+                            <p class="text-sm text-gray-700 mt-1">→ zapisz jako <strong>NULL</strong> (poniżej granicy
+                                detekcji)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4 bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                        <i class="fas fa-tint text-yellow-600 text-2xl mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">Jeśli <code
+                                    class="bg-white px-2 py-1 rounded text-sm">chlor = 0</code></p>
+                            <p class="text-sm text-gray-700 mt-1">→ prawdopodobnie <strong>brak pomiaru</strong> (nie =
+                                "zero chloru")</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4 bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                        <i class="fas fa-droplet text-yellow-600 text-2xl mt-1"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">Jeśli <code
+                                    class="bg-white px-2 py-1 rounded text-sm">twardosc &gt; 300</code></p>
+                            <p class="text-sm text-gray-700 mt-1">→ flaga <strong>"twarda woda"</strong> (high priority
+                                dla UX)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NULL handling note -->
+                <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                        <strong>Obecnie:</strong> Używamy <code class="bg-white px-2 py-1 rounded">NULL</code> dla braku
+                        danych, <code class="bg-white px-2 py-1 rounded">0.0</code> dla zera wykrytego
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: UPSERT TO POSTGRESQL -->
+    <section id="database" class="py-20 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-database text-green-600 mr-3"></i>
+                    5. Faza 3: UPSERT do PostgreSQL
+                </h2>
+                <p class="text-xl text-gray-700">
+                    Dodawanie pomiarów do bazy produkcyjnej
+                </p>
+            </div>
+
+            <!-- Script Structure -->
+            <div
+                class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 md:p-10 shadow-xl mb-8 border-t-4 border-green-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">5.1. Skrypt Dodający Dane (add_grudziadz_data.py)
+                </h3>
+
+                <div class="bg-white rounded-lg p-6 mb-6 border border-green-200">
+                    <h4 class="font-bold text-lg text-deep-blue mb-4">Struktura skryptu (4 sekcje):</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="bg-green-500 text-white rounded w-6 h-6 flex items-center justify-center font-bold flex-shrink-0 text-sm">
+                                1</div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Definicja danych</p>
+                                <code
+                                    class="text-xs text-gray-600">GRUDZIADZ_DATA = {"city": ..., "parameters": {...}}</code>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="bg-green-500 text-white rounded w-6 h-6 flex items-center justify-center font-bold flex-shrink-0 text-sm">
+                                2</div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Mapowanie jednostek</p>
+                                <code
+                                    class="text-xs text-gray-600">UNITS = {"pH": None, "twardosc": "mg CaCO3/l", ...}</code>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="bg-green-500 text-white rounded w-6 h-6 flex items-center justify-center font-bold flex-shrink-0 text-sm">
+                                3</div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Logika UPSERT</p>
+                                <code
+                                    class="text-xs text-gray-600">Znajdź miasto/stację → Sprawdź duplikaty → Dodaj pomiary</code>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="bg-green-500 text-white rounded w-6 h-6 flex items-center justify-center font-bold flex-shrink-0 text-sm">
+                                4</div>
+                            <div>
+                                <p class="font-semibold text-gray-800">Commit transakcji</p>
+                                <code class="text-xs text-gray-600">db.session.commit() + success message</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Example (simplified) -->
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-xs overflow-x-auto">
+                    <pre># 3. Logika UPSERT
+def add_grudziadz_data():
+    with app.app_context():
+        # 3.1. Znajdź miasto i stację
+        city = City.query.filter_by(name="Grudziądz").first()
+        station = Station.query.filter_by(
+            city_id=city.id, 
+            name="SUW Hallera"
+        ).first()
+        
+        # 3.2. Sprawdź duplikaty
+        measurement_date = datetime.strptime("2025-12-15", "%Y-%m-%d")
+        existing = WaterMeasurement.query.filter_by(
+            station_id=station.id,
+            measurement_date=measurement_date
+        ).count()
+        
+        if existing > 0:
+            print(f"⚠️  {existing} pomiarów z tej daty")
+            # Potwierdź kontynuację
+        
+        # 3.3. Dodaj pomiary (jeden per parametr)
+        for param_name, value in parameters.items():
+            if value is None:
+                continue  # Pomiń NULL
+            
+            measurement = WaterMeasurement(
+                station_id=station.id,
+                parameter=param_name,
+                value=value,
+                unit=UNITS.get(param_name),
+                measurement_date=measurement_date
+            )
+            db.session.add(measurement)
+        
+        # 3.4. Commit
+        db.session.commit()
+        print("✅ SUKCES!")</pre>
+                </div>
+            </div>
+
+            <!-- Running the Script -->
+            <div class="bg-white rounded-2xl p-8 shadow-xl border-t-4 border-blue-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">5.2. Uruchamianie Skryptu</h3>
+
+                <div class="bg-slate-50 rounded-lg p-6 mb-6">
+                    <h4 class="font-bold text-gray-800 mb-4">Krok po kroku:</h4>
+                    <div class="bg-gray-900 text-green-400 rounded p-4 font-mono text-xs">
+                        <pre># 1. Upewnij się że .env ma DATABASE_URL
+cat .env | grep DATABASE_URL
+
+# 2. Uruchom weryfikację (opcjonalnie)
+python check_grudziadz_db.py
+
+# 3. Uruchom UPSERT
+python add_grudziadz_data.py</pre>
+                    </div>
+                </div>
+
+                <!-- Example Output -->
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-xs overflow-x-auto">
+                    <pre>============================================================
+🚰 DODAWANIE DANYCH DLA GRUDZIĄDZA DO POSTGRESQL
+============================================================
+Miasto: Grudziądz
+Stacja: SUW Hallera
+Data: 2025-12-15
+============================================================
+🔍 Sprawdzam czy miasto i stacja istnieją...
+✅ Miasto: Grudziądz (ID: 1)
+✅ Stacja: SUW Hallera (ID: 1)
+
+📊 Dodaję pomiary dla daty: 2025-12-15
+  ✅ pH: 7.3
+  ✅ twardosc: 372 mg CaCO3/l
+  ✅ azotany: 6.8 mg/l
+  ✅ zelazo: 0.03 mg/l
+  ⏭️  fluorki: NULL (brak danych w raporcie)
+  ⏭️  chlor: NULL (brak danych w raporcie)
+  ✅ chlorki: 94 mg/l
+
+🎉 SUKCES! Dodano 7 pomiarów dla Grudziądza</pre>
+                </div>
+            </div>
+
+            <!-- get_latest_measurements() Logic -->
+            <div class="bg-white rounded-2xl p-8 shadow-xl border-t-4 border-red-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">5.3. Logika get_latest_measurements()</h3>
+
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-6">
+                    <p class="font-bold text-red-800 mb-2">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        KRYTYCZNE: System wybiera WSZYSTKIE parametry z najnowszej daty (nie mix dat!)
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        Bez tego: Twardość 372 (2025-12-15) + chlor 0.02 (2024-12-01) = MIESZANE DATY (błąd!)
+                    </p>
+                </div>
+
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-xs overflow-x-auto">
+                    <pre>def get_latest_measurements(self):
+    """
+    Zwraca pomiary z najnowszej daty (nie mix dat!).
+    """
+    # 1. Znajdź najnowszą datę
+    latest_date_row = self.measurements.order_by(
+        WaterMeasurement.measurement_date.desc()
+    ).first()
+    if not latest_date_row:
+        return {}
+    
+    latest_date = latest_date_row.measurement_date
+    
+    # 2. Pobierz WSZYSTKIE pomiary z tej daty
+    measurements_from_latest = self.measurements.filter_by(
+        measurement_date=latest_date
+    ).all()
+    
+    # 3. Zwróć jako dict {parametr: obiekt_measurement}
+    result = {}
+    for measurement in measurements_from_latest:
+        result[measurement.parameter] = measurement
+    
+    return result</pre>
+                </div>
+
+                <div class="mt-6 bg-green-50 border-l-4 border-green-500 rounded-lg p-4">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                        <strong>Efekt:</strong> Frontend pokazuje tylko dane z 2025-12-15, chlor = NULL (brak), nie
+                        mieszane daty
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: CACHE & API -->
+    <section id="cache-api" class="py-20 px-6 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-server text-blue-600 mr-3"></i>
+                    6. Faza 4: Cache & API Endpoint
+                </h2>
+                <p class="text-xl text-gray-700">
+                    5-minutowy cache dla 61 miast (Frankfurt production)
+                </p>
+            </div>
+
+            <!-- Cache Implementation -->
+            <div class="bg-white rounded-2xl p-8 md:p-10 shadow-xl mb-8 border-t-4 border-blue-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">6.1. Cache w app.py (5 min TTL)</h3>
+
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-xs overflow-x-auto mb-6">
+                    <pre># app.py (global)
+_water_data_cache = {
+    'data': None,
+    'timestamp': None,
+    'ttl': 300  # 5 minutes
+}
+
+@app.route('/api/water-data')
+def get_water_data():
+    now = datetime.now()
+    cache = _water_data_cache
+    
+    # 1. Sprawdź czy cache jest ważny
+    if (cache['data'] is not None and 
+        cache['timestamp'] is not None and 
+        (now - cache['timestamp']).seconds < cache['ttl']):
+        print("✅ CACHE HIT")
+        return jsonify(cache['data'])
+    
+    # 2. Cache miss → pobierz z bazy
+    print("❌ CACHE MISS - Fetching from DB...")
+    
+    cities = City.query.all()
+    result = []
+    
+    for city in cities:
+        for station in city.stations:
+            # get_latest_measurements() → TYLKO najnowsza data!
+            measurements = station.get_latest_measurements()
+            result.append({
+                'city': city.name,
+                'station': station.name,
+                'measurements': measurements
+            })
+    
+    # 3. Zapisz do cache
+    cache['data'] = result
+    cache['timestamp'] = now
+    
+    return jsonify(result)</pre>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <p class="text-sm font-semibold text-gray-800 mb-1">⏱️ TTL</p>
+                        <p class="text-2xl font-bold text-blue-700">5 minut</p>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <p class="text-sm font-semibold text-gray-800 mb-1">🌍 Miast</p>
+                        <p class="text-2xl font-bold text-green-700">61</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                        <p class="text-sm font-semibold text-gray-800 mb-1">📊 Parametrów</p>
+                        <p class="text-2xl font-bold text-purple-700">15</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Response Structure -->
+            <div class="bg-white rounded-2xl p-8 shadow-xl border-t-4 border-indigo-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">6.2. Struktura Odpowiedzi API</h3>
+
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-xs overflow-x-auto">
+                    <pre>[
+  {
+    "city": "Grudziądz",
+    "station": "SUW Hallera",
+    "measurements": {
+      "pH": {
+        "value": 7.3,
+        "unit": null,
+        "measurement_date": "2025-12-15"
+      },
+      "twardosc": {
+        "value": 372.0,
+        "unit": "mg CaCO3/l",
+        "measurement_date": "2025-12-15"
+      },
+      "azotany": {
+        "value": 6.8,
+        "unit": "mg/l",
+        "measurement_date": "2025-12-15"
+      },
+      "fluorki": null,  // Brak pomiaru
+      "chlor": null     // Brak pomiaru
+    }
+  },
+  {
+    "city": "Toruń",
+    "station": "SUW Rubinkowo",
+    "measurements": { ... }
+  }
+]</pre>
+                </div>
+
+                <div class="mt-6 bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-4">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-info-circle text-indigo-600 mr-2"></i>
+                        <strong>Format:</strong> Array of objects (61 cities × ~2 stations = ~120 objects)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 7: FRONTEND DISPLAY -->
+    <section id="frontend" class="py-20 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-desktop text-purple-600 mr-3"></i>
+                    7. Faza 5: Frontend Display
+                </h2>
+                <p class="text-xl text-gray-700">
+                    JavaScript fetch → HTML injection (waterAnalysis.js)
+                </p>
+            </div>
+
+            <!-- Frontend Code -->
+            <div
+                class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 md:p-10 shadow-xl mb-8 border-t-4 border-purple-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">7.1. loadWaterData() (waterAnalysis.js)</h3>
+
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-xs overflow-x-auto mb-6">
+                    <pre>// static/js/waterAnalysis.js
+async function loadWaterData() {
+    try {
+        const response = await fetch('/api/water-data');
+        const data = await response.json();
+        
+        // 1. Filtruj tylko miasta z measurements
+        const validCities = data.filter(city => 
+            city.measurements && 
+            Object.keys(city.measurements).length > 0
+        );
+        
+        // 2. Dla każdego miasta
+        validCities.forEach(city => {
+            const measurements = city.measurements;
+            
+            // 3. Wyświetl parametry
+            displayParameter('pH', measurements.pH);
+            displayParameter('twardosc', measurements.twardosc);
+            displayParameter('azotany', measurements.azotany);
+            // ... pozostałe 12 parametrów
+        });
+        
+    } catch (error) {
+        console.error('❌ Błąd ładowania danych:', error);
+        showErrorMessage();
+    }
+}
+
+function displayParameter(name, measurement) {
+    if (!measurement || measurement.value === null) {
+        // NULL handling → show "Brak danych"
+        document.getElementById(name).innerHTML = 
+            '<span class="text-gray-400">Brak danych</span>';
+        return;
+    }
+    
+    // Display value + unit
+    const value = measurement.value;
+    const unit = measurement.unit || '';
+    
+    document.getElementById(name).innerHTML = 
+        `<strong>${value}</strong> ${unit}`;
+}</pre>
+                </div>
+
+                <div class="bg-purple-50 border-l-4 border-purple-500 rounded-lg p-4">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-bolt text-purple-600 mr-2"></i>
+                        <strong>Performance:</strong> Fetch 120 stacji × 15 parametrów w <strong>2.05s</strong>
+                        (Frankfurt production)
+                    </p>
+                </div>
+            </div>
+
+            <!-- NULL Handling -->
+            <div class="bg-white rounded-2xl p-8 shadow-xl border-t-4 border-red-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">7.2. NULL Handling (UX)</h3>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-4">❌ Przed:</h4>
+                        <div class="bg-gray-100 rounded-lg p-4 border border-gray-300">
+                            <p class="text-sm text-gray-700 mb-2">Fluorki:</p>
+                            <p class="text-lg font-bold text-red-600">null</p>
+                            <p class="text-xs text-gray-500 mt-1">(pokazywane użytkownikowi wprost)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-4">✅ Po:</h4>
+                        <div class="bg-green-50 rounded-lg p-4 border border-green-300">
+                            <p class="text-sm text-gray-700 mb-2">Fluorki:</p>
+                            <p class="text-lg text-gray-400 italic">Brak danych</p>
+                            <p class="text-xs text-gray-500 mt-1">(user-friendly message)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                        <strong>Future Work:</strong> Dodać tooltips "Parametr nie jest mierzony przez tę stację"
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 8: TOOLS & SCRIPTS -->
+    <section id="tools" class="py-20 px-6 bg-gradient-to-br from-slate-50 to-gray-100">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-tools text-orange-600 mr-3"></i>
+                    8. Narzędzia & Skrypty
+                </h2>
+                <p class="text-xl text-gray-700">
+                    Developer toolkit dla zarządzania danymi
+                </p>
+            </div>
+
+            <!-- Scripts Overview -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg border-t-4 border-green-500">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <i class="fas fa-plus-circle text-green-600 text-3xl"></i>
+                        <div>
+                            <h3 class="text-xl font-bold text-deep-blue">add_grudziadz_data.py</h3>
+                            <p class="text-sm text-gray-600">Dodawanie nowych pomiarów</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs">
+                        python add_grudziadz_data.py</div>
+                    <p class="text-sm text-gray-700 mt-3">
+                        Szablon: Dodaj nowe miasto/stację z jednej daty
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-lg border-t-4 border-blue-500">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <i class="fas fa-search text-blue-600 text-3xl"></i>
+                        <div>
+                            <h3 class="text-xl font-bold text-deep-blue">check_grudziadz_db.py</h3>
+                            <p class="text-sm text-gray-600">Weryfikacja danych w bazie</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs">
+                        python check_grudziadz_db.py</div>
+                    <p class="text-sm text-gray-700 mt-3">
+                        Sanity check: czy dane są w bazie, jakie daty, ile pomiarów
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-lg border-t-4 border-purple-500">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <i class="fas fa-database text-purple-600 text-3xl"></i>
+                        <div>
+                            <h3 class="text-xl font-bold text-deep-blue">seed_db.py</h3>
+                            <p class="text-sm text-gray-600">Inicjalizacja bazy (61 miast)</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs">
+                        python seed_db.py</div>
+                    <p class="text-sm text-gray-700 mt-3">
+                        One-time setup: Dodaj wszystkie miasta + stacje z averages.json
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-lg border-t-4 border-yellow-500">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <i class="fas fa-check-double text-yellow-600 text-3xl"></i>
+                        <div>
+                            <h3 class="text-xl font-bold text-deep-blue">verify_migration.py</h3>
+                            <p class="text-sm text-gray-600">Verify PostgreSQL schema</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 text-green-400 rounded p-3 font-mono text-xs">
+                        python verify_migration.py</div>
+                    <p class="text-sm text-gray-700 mt-3">
+                        Post-migration: Verify tables, indexes, relationships
+                    </p>
+                </div>
+            </div>
+
+            <!-- Adding Multi-Station City (CRITICAL) -->
+            <div class="bg-white rounded-2xl p-8 md:p-10 shadow-xl border-t-4 border-red-500">
+                <h3 class="text-2xl font-bold text-deep-blue mb-6">
+                    <i class="fas fa-exclamation-circle text-red-600 mr-2"></i>
+                    8.1. Dodawanie Miasta z Wieloma Stacjami (TEMPLATE)
+                </h3>
+
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-6 mb-6">
+                    <p class="font-bold text-red-800 mb-2">⚠️ KRYTYCZNE:</p>
+                    <p class="text-sm text-gray-700">
+                        ZAWSZE sprawdź nazwy stacji w PDF przed dodaniem! Różne raporty mogą mieć różne nazwy dla tej
+                        samej stacji.
+                    </p>
+                </div>
+
+                <div class="bg-gray-900 text-green-400 rounded-lg p-6 font-mono text-xs overflow-x-auto">
+                    <pre># Template: add_torun_data.py (2 stacje)
+
+TORUN_DATA = {
+    "city": "Toruń",
+    "stations": [
+        {
+            "name": "SUW Rubinkowo",  # ⚠️ VERIFY NAME!
+            "measurement_date": "2025-12-20",
+            "parameters": {
+                "pH": 7.1,
+                "twardosc": 285,
+                "azotany": 12.5,
+                # ... 12 pozostałych
+            }
+        },
+        {
+            "name": "SUW Czerniewice",  # ⚠️ VERIFY NAME!
+            "measurement_date": "2025-12-20",
+            "parameters": {
+                "pH": 7.4,
+                "twardosc": 310,
+                "azotany": 8.2,
+                # ... 12 pozostałych
+            }
+        }
+    ]
+}
+
+def add_torun_data():
+    with app.app_context():
+        city = City.query.filter_by(name="Toruń").first()
+        
+        for station_data in TORUN_DATA["stations"]:
+            station = Station.query.filter_by(
+                city_id=city.id,
+                name=station_data["name"]  # ⚠️ Must match DB!
+            ).first()
+            
+            if not station:
+                print(f"❌ Stacja '{station_data['name']}' nie istnieje!")
+                continue
+            
+            # ... rest of UPSERT logic
+        
+        db.session.commit()</pre>
+                </div>
+
+                <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-lightbulb text-yellow-600 mr-2"></i>
+                        <strong>Pro tip:</strong> Uruchom <code
+                            class="bg-white px-2 py-1 rounded">check_torun_db.py</code> PRZED dodaniem danych, aby
+                        zweryfikować nazwy stacji
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 9: TROUBLESHOOTING -->
+    <section id="troubleshooting" class="py-20 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold text-deep-blue mb-4">
+                    <i class="fas fa-bug text-red-600 mr-3"></i>
+                    9. Troubleshooting
+                </h2>
+                <p class="text-xl text-gray-700">
+                    Najczęstsze problemy i rozwiązania
+                </p>
+            </div>
+
+            <!-- Common Issues -->
+            <div class="space-y-6">
+                <!-- Issue 1: Cache not updating -->
+                <div class="bg-white rounded-xl p-8 shadow-xl border-l-4 border-blue-500">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <i class="fas fa-clock text-blue-600 text-3xl"></i>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-deep-blue mb-2">Problem: Cache nie odświeża się po dodaniu
+                                danych</h3>
+                            <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Objaw:</strong> Dodałeś nowe pomiary przez <code
+                                        class="bg-white px-2 py-1 rounded">add_grudziadz_data.py</code>, ale frontend
+                                    pokazuje stare dane
+                                </p>
+                            </div>
+                            <div class="bg-gray-900 text-green-400 rounded p-4 font-mono text-xs mb-4">
+                                # Rozwiązanie 1: Zrestartuj Flask
+                                Ctrl+C → python app.py
+
+                                # Rozwiązanie 2: Poczekaj 5 minut (TTL)
+                                # Cache wygaśnie automatycznie
+
+                                # Rozwiązanie 3: Dodaj endpoint do flush cache
+                                @app.route('/api/flush-cache')
+                                def flush_cache():
+                                _water_data_cache['data'] = None
+                                return jsonify({"status": "cache flushed"})</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issue 2: Mixed dates -->
+                <div class="bg-white rounded-xl p-8 shadow-xl border-l-4 border-red-500">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <i class="fas fa-calendar-times text-red-600 text-3xl"></i>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-deep-blue mb-2">Problem: Mieszane daty w pomiarach (np. pH
+                                z 2025, chlor z 2024)</h3>
+                            <div class="bg-red-50 rounded-lg p-4 mb-4">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Przyczyna:</strong> get_latest_measurements() zwraca pomiary z różnych dat
+                                </p>
+                            </div>
+                            <div class="bg-gray-900 text-green-400 rounded p-4 font-mono text-xs mb-4">
+                                # Rozwiązanie: Użyj POPRAWNEJ logiki get_latest_measurements()
+                                def get_latest_measurements(self):
+                                # 1. Znajdź najnowszą datę
+                                latest = self.measurements.order_by(
+                                WaterMeasurement.measurement_date.desc()
+                                ).first()
+
+                                if not latest:
+                                return {}
+
+                                # 2. Pobierz TYLKO pomiary z tej daty
+                                measurements = self.measurements.filter_by(
+                                measurement_date=latest.measurement_date
+                                ).all()
+
+                                # 3. Return as dict
+                                return {m.parameter: m for m in measurements}</div>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-500 rounded p-4">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Verify:</strong> Sprawdź w bazie: <code
+                                        class="bg-white px-2 py-1 rounded">SELECT DISTINCT measurement_date FROM water_measurements WHERE station_id = 1</code>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issue 3: NULL constraint violation -->
+                <div class="bg-white rounded-xl p-8 shadow-xl border-l-4 border-yellow-500">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <i class="fas fa-database text-yellow-600 text-3xl"></i>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-deep-blue mb-2">Problem: NULL constraint violation przy
+                                dodawaniu danych</h3>
+                            <div class="bg-yellow-50 rounded-lg p-4 mb-4">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Błąd:</strong> <code
+                                        class="bg-white px-2 py-1 rounded text-xs">IntegrityError: null value in column "station_id" violates not-null constraint</code>
+                                </p>
+                            </div>
+                            <div class="bg-gray-900 text-green-400 rounded p-4 font-mono text-xs mb-4">
+                                # Rozwiązanie: Sprawdź czy stacja istnieje PRZED dodaniem
+                                station = Station.query.filter_by(
+                                city_id=city.id,
+                                name="SUW Hallera"
+                                ).first()
+
+                                if not station:
+                                print("❌ Stacja nie istnieje! Dodaj ją najpierw:")
+                                print(" new_station = Station(city_id=city.id, name='SUW Hallera')")
+                                print(" db.session.add(new_station)")
+                                print(" db.session.commit()")
+                                return
+
+                                # Dopiero teraz dodaj pomiary
+                                measurement = WaterMeasurement(
+                                station_id=station.id, # ✅ Now exists!
+                                parameter="pH",
+                                value=7.3
+                                )</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issue 4: Localhost latency -->
+                <div class="bg-white rounded-xl p-8 shadow-xl border-l-4 border-green-500">
+                    <div class="flex items-start space-x-4 mb-4">
+                        <i class="fas fa-network-wired text-green-600 text-3xl"></i>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold text-deep-blue mb-2">Problem: API wolne na localhost (28s
+                                zamiast 2s)</h3>
+                            <div class="bg-green-50 rounded-lg p-4 mb-4">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Przyczyna:</strong> Localhost → Frankfurt (200ms RTT) × 300 SQL queries = 28
+                                    sekund
+                                </p>
+                            </div>
+                            <div class="bg-gray-900 text-green-400 rounded p-4 font-mono text-xs mb-4">
+                                # ✅ FIXED: get_latest_measurements() redukuje zapytania
+                                # Przed: 300+ queries (każdy parametr osobno)
+                                # Po: 5 queries (batch per stacja)
+
+                                # Verify w terminalu:
+                                curl http://localhost:5000/api/water-data
+                                # Response time: ~2.5s (zamiast 28s!)</div>
+                            <div class="bg-blue-50 border-l-4 border-blue-500 rounded p-4">
+                                <p class="text-sm text-gray-700">
+                                    <strong>Production (Frankfurt):</strong> Skankran + PostgreSQL co-located →
+                                    <strong>2.05s</strong> natychmiast
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="mt-12 bg-gradient-to-br from-data-cyan to-blue-600 rounded-2xl p-8 text-white text-center">
+                <h3 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Masz problem? Sprawdź te 4 rzeczy:
+                </h3>
+                <div class="grid md:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-white/10 rounded-lg p-4">
+                        <i class="fas fa-database text-3xl mb-2"></i>
+                        <p class="font-semibold">Czy dane są w bazie?</p>
+                        <code class="text-xs">check_*.py</code>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4">
+                        <i class="fas fa-clock text-3xl mb-2"></i>
+                        <p class="font-semibold">Czy cache wygasł?</p>
+                        <code class="text-xs">5 min TTL</code>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4">
+                        <i class="fas fa-calendar text-3xl mb-2"></i>
+                        <p class="font-semibold">Czy daty są spójne?</p>
+                        <code class="text-xs">get_latest_*</code>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4">
+                        <i class="fas fa-server text-3xl mb-2"></i>
+                        <p class="font-semibold">Czy Flask działa?</p>
+                        <code class="text-xs">python app.py</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FINAL FOOTER -->
+    <footer class="bg-deep-blue text-white py-16 px-6">
+        <div class="max-w-6xl mx-auto">
+            <!-- Main Footer Content -->
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <!-- Column 1: Pipeline Overview -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-data-cyan">
+                        <i class="fas fa-stream mr-2"></i>
+                        Complete Pipeline
+                    </h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><i class="fas fa-file-pdf text-red-500 mr-2"></i>PDF Reports (61 cities)</li>
+                        <li><i class="fas fa-code text-yellow-500 mr-2"></i>JSON Extraction (Copilot)</li>
+                        <li><i class="fas fa-database text-green-500 mr-2"></i>PostgreSQL UPSERT (Frankfurt)</li>
+                        <li><i class="fas fa-server text-blue-500 mr-2"></i>API Cache (5 min TTL)</li>
+                        <li><i class="fas fa-desktop text-purple-500 mr-2"></i>Frontend Display (2.05s)</li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: Key Metrics -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-data-cyan">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        System Performance
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between items-center bg-white/5 rounded p-2">
+                            <span class="text-gray-400">API Response Time</span>
+                            <span class="font-bold text-green-400">2.05s</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white/5 rounded p-2">
+                            <span class="text-gray-400">SQL Queries (optimized)</span>
+                            <span class="font-bold text-green-400">5</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white/5 rounded p-2">
+                            <span class="text-gray-400">Cities × Stations</span>
+                            <span class="font-bold text-blue-400">61 × ~120</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white/5 rounded p-2">
+                            <span class="text-gray-400">Cache TTL</span>
+                            <span class="font-bold text-purple-400">5 min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 3: Documentation Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-data-cyan">
+                        <i class="fas fa-book mr-2"></i>
+                        Related Documentation
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>
+                            <a href="/readme"
+                                class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-home mr-2"></i>Project Overview
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/compliance"
+                                class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-shield-alt mr-2"></i>Compliance & Performance
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/security"
+                                class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-lock mr-2"></i>Security Procedures
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/pentesty"
+                                class="text-gray-400 hover:text-white transition-colors flex items-center">
+                                <i class="fas fa-bug mr-2"></i>Penetration Testing
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-700 pt-8 text-center">
+                <p class="text-gray-400 mb-2">
+                    <strong class="text-white">SKANKRAN</strong> - Data Flow Architecture
+                </p>
+                <p class="text-sm text-gray-500">
+                    <i class="fas fa-map-marker-alt text-data-cyan mr-2"></i>
+                    Production Environment: Frankfurt Datacenter (Hetzner Cloud)
+                </p>
+                <p class="text-xs text-gray-600 mt-4">
+                    Complete technical documentation for EU grant application • January 2026
+                </p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

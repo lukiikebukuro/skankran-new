@@ -1,0 +1,2160 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛰️ Skankran - Centrum Zarządzania Kryzysowego</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <!-- 🆕 NLP: Chart.js for User Profiling pie chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== HEADER (TOP BAR) ========== */
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 2px solid #334155;
+            padding: 20px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .header-left h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #3b82f6;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .header-left .subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px #10b981;
+            }
+
+            50% {
+                opacity: 0.6;
+                box-shadow: 0 0 16px #10b981;
+            }
+        }
+
+        /* ========== MODUŁ A: SYTUACJA OPERACYJNA ========== */
+        .situation-bar {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 24px 32px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .situation-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            position: relative;
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px 20px 20px 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* Kolorowe paski z lewej strony */
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 12px 0 0 12px;
+            transition: width 0.3s ease;
+        }
+
+        /* Online (Niebieski/Zielony) */
+        .stat-card:nth-child(1)::before {
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Zagrożenia (Neonowy Czerwony) */
+        .stat-card:nth-child(2)::before {
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Sesje (Fioletowy) */
+        .stat-card:nth-child(3)::before {
+            background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Zapytania (Pomarańczowy) */
+        .stat-card:nth-child(4)::before {
+            background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card:hover::before {
+            width: 6px;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        /* Kolor liczby dopasowany do paska */
+        .stat-card:nth-child(1) .stat-value {
+            color: #10b981;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .stat-card:nth-child(2) .stat-value {
+            color: #ef4444;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+        }
+
+        .stat-card:nth-child(3) .stat-value {
+            color: #8b5cf6;
+            text-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
+        }
+
+        .stat-card:nth-child(4) .stat-value {
+            color: #f97316;
+            text-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
+        }
+
+        .stat-value.green {
+            color: #10b981;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .stat-value.red {
+            color: #ef4444;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+
+        /* TAB CONTENT VISIBILITY */
+        .tab-content {
+            display: none !important;
+        }
+
+        .tab-content.active {
+            display: block !important;
+        }
+
+        .main-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .module {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .module:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .module-header {
+            background: linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
+            backdrop-filter: blur(8px);
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .module-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+        }
+
+        .module-subtitle {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .module-body {
+            padding: 24px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .module-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .module-body::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        .module-body::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .module-body::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* ========== TABELE ========== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        td {
+            padding: 16px;
+            font-size: 14px;
+            color: #e2e8f0;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.15);
+            transform: scale(1.01);
+        }
+
+        tbody tr:hover td {
+            border-bottom-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .city-name {
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        .query-count {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .engagement-score {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .score-hot {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .score-warm {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fcd34d;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .score-cold {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        /* Status Badges (Pigułki) */
+        .confidence-low,
+        .confidence-medium,
+        .confidence-high {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .confidence-low {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .confidence-medium {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fcd34d;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .confidence-high {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        /* Status badges dla innych statusów */
+        .status-badge-success {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge-error {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge-warning {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: rgba(251, 191, 36, 0.2);
+            color: #fcd34d;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* ========== TOOLTIP ========== */
+        .topic-summary {
+            cursor: help;
+            border-bottom: 1px dotted rgba(59, 130, 246, 0.5);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .topic-summary:hover {
+            border-bottom-color: #3b82f6;
+            color: #60a5fa;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .new-entry {
+            animation: highlightNew 1s ease-out;
+        }
+
+        @keyframes highlightNew {
+            0% {
+                background: rgba(59, 130, 246, 0.4);
+            }
+
+            100% {
+                background: transparent;
+            }
+        }
+
+        /* ========== TAB NAVIGATION ========== */
+        .tab-navigation {
+            display: flex;
+            gap: 8px;
+            padding: 0 32px;
+            margin-top: -1px;
+            background: #1e293b;
+            border-bottom: 2px solid #334155;
+            position: sticky;
+            top: 84px;
+            z-index: 99;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 16px 24px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: #e2e8f0;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .tab-btn.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        /* ========== TAB CONTENT ========== */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* ========== ANALYTICS CARDS (Top 3) ========== */
+        .top-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            padding: 32px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .analytics-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+
+        .card-icon {
+            font-size: 48px;
+            line-height: 1;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: #3b82f6;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .card-label {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1400px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .top-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .situation-content {
+                grid-template-columns: 1fr;
+            }
+
+            .module-body {
+                max-height: 400px;
+            }
+
+            .tab-navigation {
+                overflow-x: auto;
+                padding: 0 16px;
+            }
+
+            .tab-btn {
+                padding: 12px 16px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>🛰️ SKANKRAN - Centrum Zarządzania Kryzysowego</h1>
+                <div class="subtitle">Real-time Analytics & B2B Intelligence</div>
+            </div>
+            <div class="header-right">
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    SATELITA AKTYWNA
+                </div>
+                <a href="{{ url_for('index') }}" class="btn-primary">🌍 Widok Klienta</a>
+                <a href="{{ url_for('logout') }}" class="btn-danger">Wyloguj</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODUŁ A: SYTUACJA OPERACYJNA -->
+    <div class="situation-bar">
+        <div class="situation-content">
+            <div class="stat-card">
+                <div class="stat-value green" id="usersOnline">0</div>
+                <div class="stat-label">👥 Użytkownicy Online</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="sessionsToday">0</div>
+                <div class="stat-label">📊 Sesje Dziś</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalQueries">0</div>
+                <div class="stat-label">💬 Zapytania Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value red" id="threatsToday">0</div>
+                <div class="stat-label">⚠️ Zagrożenia Dnia</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB NAVIGATION -->
+    <div class="tab-navigation">
+        <button class="tab-btn active" data-tab="aquabot">🤖 Logi AquaBota</button>
+        <button class="tab-btn" data-tab="b2b-leads">🎯 Wywiad B2B</button>
+        <button class="tab-btn" data-tab="sensory">👃 Skargi Sensoryczne</button>
+        <button class="tab-btn" data-tab="city-search">🚰 Sprawdź Kranówkę</button>
+        <button class="tab-btn" data-tab="station-search">🏭 Znajdź Stacje</button>
+        <button class="tab-btn" data-tab="rankings">🏆 Rankingi</button>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="main-content">
+
+        <!-- TAB: LOGI AQUABOTA (domyślnie widoczny) -->
+        <div class="tab-content active" id="tab-aquabot">
+            <div class="dashboard-grid">
+                <!-- MODUŁ B: MAPA SKAŻEŃ -->
+                <div class="module">
+                    <div class="module-header">
+                        <div class="module-title">
+                            🗺️ MAPA SKAŻEŃ - Top Locations
+                        </div>
+                        <div class="module-subtitle">
+                            Miasta z największą liczbą zapytań o jakość wody
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <table id="heatmapTable">
+                            <thead>
+                                <tr>
+                                    <th>Miasto</th>
+                                    <th>Kraj</th>
+                                    <th>Czego Szukali</th>
+                                    <th>Zapytania</th>
+                                </tr>
+                            </thead>
+                            <tbody id="heatmapBody">
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">🗺️</div>
+                                            <div class="empty-state-text">Ładowanie danych...</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MODUŁ C: SKARGI SENSORYCZNE - ALERTY -->
+                <div class="module">
+                    <div class="module-header">
+                        <div class="module-title">
+                            👃 SKARGI SENSORYCZNE - System Alertów
+                        </div>
+                        <div class="module-subtitle">
+                            Wykrywanie problemów organoleptycznych (Zapach, Smak, Wygląd)
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <div
+                            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;">
+                            <!-- Top 3 Alert Categories -->
+                            <div
+                                style="background: rgba(239, 68, 68, 0.1); padding: 16px; border-radius: 12px; border-left: 4px solid #ef4444;">
+                                <div style="font-size: 32px; font-weight: 800; color: #ef4444;" id="zapach-count">0
+                                </div>
+                                <div style="color: #e2e8f0; font-size: 14px; margin-top: 4px;">🤢 Skargi na ZAPACH</div>
+                            </div>
+                            <div
+                                style="background: rgba(245, 158, 11, 0.1); padding: 16px; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                                <div style="font-size: 32px; font-weight: 800; color: #f59e0b;" id="smak-count">0</div>
+                                <div style="color: #e2e8f0; font-size: 14px; margin-top: 4px;">😖 Skargi na SMAK</div>
+                            </div>
+                            <div
+                                style="background: rgba(34, 197, 94, 0.1); padding: 16px; border-radius: 12px; border-left: 4px solid #22c55e;">
+                                <div style="font-size: 32px; font-weight: 800; color: #22c55e;" id="wyglad-count">0
+                                </div>
+                                <div style="color: #e2e8f0; font-size: 14px; margin-top: 4px;">👁️ Skargi na WYGLĄD
+                                </div>
+                            </div>
+                        </div>
+
+                        <table id="sensoryAlertsTable">
+                            <thead>
+                                <tr>
+                                    <th>Kategoria</th>
+                                    <th>Zapytanie</th>
+                                    <th>Miasto</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sensoryAlertsBody">
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">👃</div>
+                                            <div class="empty-state-text">Brak skarg sensorycznych</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🆕 NLP MODUŁ: USER PROFILING -->
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-title">
+                        👥 PROFILOWANIE UŻYTKOWNIKÓW - NLP
+                    </div>
+                    <div class="module-subtitle">
+                        Klasyfikacja użytkowników: Rodzic, Biohacker, Pacjent, Ogólny
+                    </div>
+                </div>
+                <div class="module-body">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <!-- Pie Chart -->
+                        <div>
+                            <canvas id="userProfilesChart" style="max-height: 300px;"></canvas>
+                        </div>
+
+                        <!-- Stats -->
+                        <div id="userProfilesStats" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">👥</div>
+                                <div class="empty-state-text">Ładowanie danych...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODUŁ D: LOST DEMAND (Full Width) -->
+                <div class="module">
+                    <div class="module-header">
+                        <div class="module-title">
+                            ❌ LOST DEMAND - Niezaspokojony Popyt
+                        </div>
+                        <div class="module-subtitle">
+                            Zapytania, na które bot nie umiał dobrze odpowiedzieć (priorytet do poprawy)
+                        </div>
+                    </div>
+                    <div class="module-body">
+                        <table id="lostDemandTable">
+                            <thead>
+                                <tr>
+                                    <th>Pytanie Użytkownika</th>
+                                    <th>Miasto</th>
+                                    <th>Firma</th>
+                                    <th>Timestamp</th>
+                                    <th>Confidence</th>
+                                    <th>Odpowiedź Bota</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lostDemandBody">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">❌</div>
+                                            <div class="empty-state-text">Brak problemów z botem (wszystko działa!)
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Koniec TAB: LOGI AQUABOTA -->
+
+        <!-- TAB: WYWIAD B2B -->
+        <div class="tab-content" id="tab-b2b-leads" style="display: none;">
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-title">
+                        🎯 WYWIAD B2B - Potencjalni Klienci
+                    </div>
+                    <div class="module-subtitle">
+                        Firmy i instytucje zainteresowane jakością wody (potencjalni klienci B2B)
+                    </div>
+                </div>
+                <div class="module-body">
+                    <table id="b2bTableFull">
+                        <thead>
+                            <tr>
+                                <th>Firma</th>
+                                <th>Lokalizacja</th>
+                                <th>Zapytania</th>
+                                <th>Engagement</th>
+                                <th>Ostatnia Wizyta</th>
+                            </tr>
+                        </thead>
+                        <tbody id="b2bBodyFull">
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">🎯</div>
+                                        <div class="empty-state-text">Czekam na leady B2B...</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Koniec TAB: WYWIAD B2B -->
+
+        <!-- TAB: SKARGI SENSORYCZNE -->
+        <div class="tab-content" id="tab-sensory" style="display: none;">
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-title">
+                        👃 SKARGI SENSORYCZNE - Smak i Zapach
+                    </div>
+                    <div class="module-subtitle">
+                        Użytkownicy zgłaszający problemy organoleptyczne (gorzki, metaliczny, chlorowy, rdzawy)
+                    </div>
+                </div>
+                <div class="module-body">
+                    <table id="sensoryInsightsTableFull">
+                        <thead>
+                            <tr>
+                                <th>Zapytanie</th>
+                                <th>Miasto</th>
+                                <th>Organizacja</th>
+                                <th>Profil Użytkownika</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sensoryInsightsBodyFull">
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">👃</div>
+                                        <div class="empty-state-text">Brak skarg na smak/zapach</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Koniec TAB: SKARGI SENSORYCZNE -->
+
+        <!-- TAB: SPRAWDŹ KRANÓWKĘ -->
+        <div class="tab-content" id="tab-city-search" style="display: none;">
+            <div class="top-cards">
+                <div class="analytics-card">
+                    <div class="card-icon">🥇</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-city-1-count">-</div>
+                        <div class="card-label" id="top-city-1-name">Ładowanie...</div>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">🥈</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-city-2-count">-</div>
+                        <div class="card-label" id="top-city-2-name">Ładowanie...</div>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">🥉</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-city-3-count">-</div>
+                        <div class="card-label" id="top-city-3-name">Ładowanie...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-title">📜 Historia Wyszukiwań Miast</div>
+                    <div class="module-subtitle">Ostatnie 50 wyszukiwań jakości wody</div>
+                </div>
+                <div class="module-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Miasto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="citySearchHistory">
+                            <tr>
+                                <td colspan="2">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">🚰</div>
+                                        <div class="empty-state-text">Ładowanie...</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: ZNAJDŹ STACJE -->
+        <div class="tab-content" id="tab-station-search">
+            <div class="top-cards">
+                <div class="analytics-card">
+                    <div class="card-icon">🥇</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-location-1-count">-</div>
+                        <div class="card-label" id="top-location-1-name">Ładowanie...</div>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">🥈</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-location-2-count">-</div>
+                        <div class="card-label" id="top-location-2-name">Ładowanie...</div>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">🥉</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-location-3-count">-</div>
+                        <div class="card-label" id="top-location-3-name">Ładowanie...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-title">📜 Historia Wyszukiwań Stacji</div>
+                    <div class="module-subtitle">Ostatnie 50 wyszukiwań najbliższych stacji</div>
+                </div>
+                <div class="module-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Miasto</th>
+                                <th>Ulica</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stationSearchHistory">
+                            <tr>
+                                <td colspan="3">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">🏭</div>
+                                        <div class="empty-state-text">Ładowanie...</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: RANKINGI -->
+        <div class="tab-content" id="tab-rankings">
+            <div class="top-cards">
+                <div class="analytics-card">
+                    <div class="card-icon">🥇</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-param-1-count">-</div>
+                        <div class="card-label" id="top-param-1-name">Ładowanie...</div>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">🥈</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-param-2-count">-</div>
+                        <div class="card-label" id="top-param-2-name">Ładowanie...</div>
+                    </div>
+                </div>
+                <div class="analytics-card">
+                    <div class="card-icon">🥉</div>
+                    <div class="card-content">
+                        <div class="card-number" id="top-param-3-count">-</div>
+                        <div class="card-label" id="top-param-3-name">Ładowanie...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="module">
+                <div class="module-header">
+                    <div class="module-title">📜 Historia Rankingów</div>
+                    <div class="module-subtitle">Ostatnie 50 wygenerowanych rankingów</div>
+                </div>
+                <div class="module-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Parametr</th>
+                                <th>Typ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingsHistory">
+                            <tr>
+                                <td colspan="3">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">🏆</div>
+                                        <div class="empty-state-text">Ładowanie...</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========== JAVASCRIPT - LOGIKA PRZESYŁU DANYCH ========== -->
+    <script>
+        console.log('🛰️ SATELITA Dashboard Loading...');
+
+        // ============================================
+        // TAB SWITCHING LOGIC
+        // ============================================
+
+        function initTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const tabName = btn.getAttribute('data-tab');
+
+                    // Remove active class from all buttons and contents
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    btn.classList.add('active');
+                    const targetContent = document.getElementById(`tab-${tabName}`);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+
+                    // Load data for the tab if not already loaded
+                    console.log(`🔄 Switching to tab: ${tabName}`);
+
+                    // Trigger refresh functions based on tab
+                    switch (tabName) {
+                        case 'aquabot':
+                            // Already loaded in initDashboard
+                            break;
+                        case 'b2b-leads':
+                            await refreshB2BLeadsFull();
+                            break;
+                        case 'sensory':
+                            await refreshSensoryInsightsFull();
+                            break;
+                        case 'city-search':
+                            // City search has its own search functionality
+                            break;
+                        case 'station-search':
+                            // Station search has its own search functionality
+                            break;
+                        case 'rankings':
+                            await refreshRankings();
+                            break;
+                    }
+                });
+            });
+        }
+
+        // ============================================
+        // SOCKET.IO CONNECTION (Real-time)
+        // ============================================
+
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('✅ Socket.IO Connected');
+        });
+
+        socket.on('disconnect', () => {
+            console.warn('⚠️ Socket.IO Disconnected');
+        });
+
+        // Real-time: Nowy visitor
+        socket.on('new_visitor', (data) => {
+            console.log('👤 Nowy visitor:', data);
+            refreshStats();
+            refreshHeatmap();
+        });
+
+        // Real-time: Nowe zapytanie
+        socket.on('new_query', (data) => {
+            console.log('💬 Nowe zapytanie:', data);
+            refreshStats();
+            refreshB2BLeads();
+            refreshLostDemand();
+
+            // Highlight new entry
+            setTimeout(() => {
+                const tables = document.querySelectorAll('tbody tr:first-child');
+                tables.forEach(row => row.classList.add('new-entry'));
+            }, 100);
+        });
+
+        // ============================================
+        // FETCH API - Odświeżanie danych
+        // ============================================
+
+        async function refreshStats() {
+            try {
+                const response = await fetch('/api/analytics/stats');
+                const data = await response.json();
+
+                // Update Moduł A
+                document.getElementById('usersOnline').textContent = data.active_now || 0;
+                document.getElementById('sessionsToday').textContent = data.sessions_today || 0;
+                document.getElementById('totalQueries').textContent = data.total_queries || 0;
+                document.getElementById('threatsToday').textContent = data.threats_today || 0;
+
+                // Color coding
+                const usersOnline = data.active_now || 0;
+                const usersEl = document.getElementById('usersOnline');
+                usersEl.className = usersOnline >= 10 ? 'stat-value green' : 'stat-value red';
+
+                console.log('📊 Stats updated:', data);
+
+            } catch (error) {
+                console.error('❌ Error fetching stats:', error);
+            }
+        }
+
+        async function refreshHeatmap() {
+            try {
+                const response = await fetch('/api/analytics/heatmap');
+                const data = await response.json();
+
+                const tbody = document.getElementById('heatmapBody');
+
+                if (data.heatmap && data.heatmap.length > 0) {
+                    tbody.innerHTML = data.heatmap.map(item => `
+                        <tr class="fade-in">
+                            <td><span class="city-name">${escapeHtml(item.city || 'Unknown')}</span></td>
+                            <td>${escapeHtml(item.country || 'N/A')}</td>
+                            <td>
+                                <span class="topic-summary" title="${escapeHtml(item.all_topics || item.most_searched)}">
+                                    ${escapeHtml(item.most_searched || 'Ogólne pytania')}
+                                </span>
+                            </td>
+                            <td><span class="query-count">${item.queries}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🗺️</div>
+                                    <div class="empty-state-text">Brak danych (czekam na pierwsze zapytania)</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                console.log('🗺️ Heatmap updated:', data.heatmap);
+
+            } catch (error) {
+                console.error('❌ Error fetching heatmap:', error);
+            }
+        }
+
+        async function refreshB2BLeads() {
+            try {
+                const response = await fetch('/api/analytics/b2b-leads');
+                const data = await response.json();
+
+                const tbody = document.getElementById('b2bBody');
+
+                if (data.leads && data.leads.length > 0) {
+                    tbody.innerHTML = data.leads.map(lead => {
+                        const score = lead.engagement_score || 0;
+                        const scoreClass = score >= 70 ? 'score-hot' : score >= 40 ? 'score-warm' : 'score-cold';
+
+                        return `
+                            <tr class="fade-in">
+                                <td><strong>${escapeHtml(lead.company)}</strong></td>
+                                <td>${escapeHtml(lead.city || 'Unknown')}, ${escapeHtml(lead.country || '')}</td>
+                                <td>${lead.total_queries}</td>
+                                <td><span class="engagement-score ${scoreClass}">${score}/100</span></td>
+                                <td>${lead.last_visit}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🎯</div>
+                                    <div class="empty-state-text">Brak leadów B2B (czekam na firmowe IP)</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                console.log('🎯 B2B Leads updated:', data.leads);
+
+            } catch (error) {
+                console.error('❌ Error fetching B2B leads:', error);
+            }
+        }
+
+        // 🆕 B2B LEADS FULL TAB
+        async function refreshB2BLeadsFull() {
+            try {
+                const response = await fetch('/api/analytics/b2b-leads');
+                const data = await response.json();
+
+                const tbody = document.getElementById('b2bBodyFull');
+
+                if (data.leads && data.leads.length > 0) {
+                    tbody.innerHTML = data.leads.map(lead => {
+                        const score = lead.engagement_score || 0;
+                        const scoreClass = score >= 70 ? 'score-hot' : score >= 40 ? 'score-warm' : 'score-cold';
+                        return `
+                                <tr class="fade-in">
+                                    <td><strong>${escapeHtml(lead.company)}</strong></td>
+                                    <td>${escapeHtml(lead.city || 'Unknown')}, ${escapeHtml(lead.country || '')}</td>
+                                    <td>${lead.total_queries}</td>
+                                    <td><span class="engagement-score ${scoreClass}">${score}/100</span></td>
+                                    <td>${lead.last_visit}</td>
+                                </tr>
+                            `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">🎯</div>
+                                        <div class="empty-state-text">Brak leadów B2B</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                }
+            } catch (error) {
+                console.error('Error B2B full:', error);
+            }
+        }
+
+        // 🆕 SENSORY FULL TAB
+        async function refreshSensoryInsightsFull() {
+            try {
+                const response = await fetch('/api/analytics/user-profiles');
+                const data = await response.json();
+                const tbody = document.getElementById('sensoryInsightsBodyFull');
+
+                if (data.sensory_alerts && data.sensory_alerts.length > 0) {
+                    tbody.innerHTML = data.sensory_alerts.map(item => {
+                        const emoji = item.category === 'Zapach' ? '🤢' : item.category === 'Smak' ? '😖' : '👁️';
+                        return `
+                                <tr class="fade-in">
+                                    <td>${escapeHtml(item.query)}</td>
+                                    <td>${escapeHtml(item.city || 'Unknown')}</td>
+                                    <td>${escapeHtml(item.organization || 'Unknown')}</td>
+                                    <td><strong>${emoji} ${item.category}</strong></td>
+                                    <td>${item.timestamp}</td>
+                                </tr>
+                            `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">👃</div><div class="empty-state-text">Brak skarg</div></div></td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error sensory full:', error);
+            }
+        }
+
+        // 🆕 RANKINGS TAB
+        async function refreshRankings() {
+            try {
+                const response = await fetch('/api/analytics/rankings');
+                const data = await response.json();
+                const tbody = document.getElementById('rankingsHistory');
+
+                if (data.history && data.history.length > 0) {
+                    tbody.innerHTML = data.history.map(item => `<tr class="fade-in"><td>${item.timestamp}</td><td><strong>${item.parameter}</strong></td><td>${item.type}</td></tr>`).join('');
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-text">Brak rankingów</div></div></td></tr>`;
+                }
+            } catch (error) {
+                console.error('Error rankings:', error);
+            }
+        }
+
+        async function refreshLostDemand() {
+            try {
+                const response = await fetch('/api/analytics/lost-demand');
+                const data = await response.json();
+
+                const tbody = document.getElementById('lostDemandBody');
+
+                if (data.lost_demand && data.lost_demand.length > 0) {
+                    tbody.innerHTML = data.lost_demand.map(item => {
+                        const confidence = item.confidence;
+                        let confidenceClass = 'confidence-high';
+                        if (confidence !== 'N/A') {
+                            if (confidence < 0.3) confidenceClass = 'confidence-low';
+                            else if (confidence < 0.7) confidenceClass = 'confidence-medium';
+                        }
+
+                        // 🔥 NAPRAWA: Skróć długie odpowiedzi + tooltip
+                        const responseText = item.response || 'No response';
+                        const truncatedResponse = responseText.length > 80
+                            ? responseText.substring(0, 80) + '...'
+                            : responseText;
+
+                        // Unikalny ID dla każdego wiersza
+                        const rowId = `response-${Math.random().toString(36).substr(2, 9)}`;
+
+                        // Przechowuj pełną odpowiedź w globalnym obiekcie
+                        if (!window.botResponses) window.botResponses = {};
+                        window.botResponses[rowId] = responseText;
+
+                        return `
+                            <tr class="fade-in">
+                                <td><strong>${escapeHtml(item.query)}</strong></td>
+                                <td>${escapeHtml(item.city || 'Unknown')}</td>
+                                <td>${escapeHtml(item.organization || 'Unknown')}</td>
+                                <td>${item.timestamp}</td>
+                                <td class="${confidenceClass}">${confidence !== 'N/A' ? (confidence * 100).toFixed(0) + '%' : 'N/A'}</td>
+                                <td>
+                                    <span class="bot-response-preview" 
+                                          onclick="showFullResponse('${rowId}')"
+                                          style="cursor: pointer; color: #3b82f6; text-decoration: underline;">
+                                        ${truncatedResponse}
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">✅</div>
+                                    <div class="empty-state-text">Brak problemów z botem (wszystko działa!)</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                console.log('❌ Lost Demand updated:', data.lost_demand);
+
+            } catch (error) {
+                console.error('❌ Error fetching lost demand:', error);
+            }
+        }
+
+        // 🆕 NLP: Refresh User Profiles (Pie Chart)
+        let userProfilesChart = null;
+        async function refreshUserProfiles() {
+            try {
+                const response = await fetch('/api/analytics/user-profiles');
+                const data = await response.json();
+
+                if (data.profiles && data.profiles.length > 0) {
+                    // Prepare data for pie chart
+                    const labels = data.profiles.map(p => p.profile);
+                    const counts = data.profiles.map(p => p.count);
+                    const total = counts.reduce((a, b) => a + b, 0);
+
+                    // Colors for each profile (8 personas)
+                    const colors = {
+                        'Rodzic': '#3b82f6',      // Blue
+                        'Biohacker': '#8b5cf6',   // Purple
+                        'Pacjent': '#ef4444',     // Red
+                        'Techniczny': '#f59e0b',  // Amber
+                        'Smakosz': '#10b981',     // Emerald
+                        'Ekonomiczny': '#f97316', // Orange
+                        'EkoWarrior': '#22c55e',  // Green
+                        'Ogólny': '#64748b'       // Gray
+                    };
+
+                    const backgroundColors = labels.map(label => colors[label] || '#64748b');
+
+                    // Destroy old chart if exists
+                    if (userProfilesChart) {
+                        userProfilesChart.destroy();
+                    }
+
+                    // Create pie chart
+                    const ctx = document.getElementById('userProfilesChart').getContext('2d');
+                    userProfilesChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: counts,
+                                backgroundColor: backgroundColors,
+                                borderColor: '#1e293b',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: '#e2e8f0',
+                                        font: { size: 12, family: 'Inter' }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const percentage = ((value / total) * 100).toFixed(1);
+                                            return `${label}: ${value} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Update stats sidebar
+                    const statsDiv = document.getElementById('userProfilesStats');
+                    statsDiv.innerHTML = data.profiles.map(p => {
+                        const percentage = ((p.count / total) * 100).toFixed(1);
+                        const color = colors[p.profile] || '#64748b';
+                        return `
+                            <div style="padding: 12px; background: rgba(30, 41, 59, 0.6); border-radius: 8px; border-left: 4px solid ${color};">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-weight: 600; color: #e2e8f0;">${p.profile}</span>
+                                    <span style="font-size: 24px; font-weight: 800; color: ${color};">${p.count}</span>
+                                </div>
+                                <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">${percentage}% użytkowników</div>
+                            </div>
+                        `;
+                    }).join('');
+
+                } else {
+                    document.getElementById('userProfilesStats').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <div class="empty-state-text">Brak danych profilowania</div>
+                        </div>
+                    `;
+                }
+
+                console.log('👥 User profiles updated');
+
+            } catch (error) {
+                console.error('Error fetching user profiles:', error);
+            }
+        }
+
+        // 🆕 NLP: Refresh Sensory Insights
+        async function refreshSensoryInsights() {
+            try {
+                const response = await fetch('/api/analytics/user-profiles');
+                const data = await response.json();
+
+                const tbody = document.getElementById('sensoryInsightsBody');
+
+                if (data.sensory_insights && data.sensory_insights.length > 0) {
+                    tbody.innerHTML = data.sensory_insights.map(item => `
+                        <tr class="fade-in">
+                            <td><strong>${escapeHtml(item.query)}</strong></td>
+                            <td>${escapeHtml(item.city || 'Unknown')}</td>
+                            <td>${escapeHtml(item.organization || 'Unknown')}</td>
+                            <td>${item.timestamp}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">👃</div>
+                                    <div class="empty-state-text">Brak skarg na smak/zapach</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                console.log('👃 Sensory insights updated');
+
+            } catch (error) {
+                console.error('Error fetching sensory insights:', error);
+            }
+        }
+
+        // 🆕 SENSORY ALERTS: Refresh for main page module
+        async function refreshSensoryAlerts() {
+            try {
+                const response = await fetch('/api/analytics/user-profiles');
+                const data = await response.json();
+
+                // Update count boxes
+                if (data.sensory_counts) {
+                    document.getElementById('zapach-count').textContent = data.sensory_counts.Zapach || 0;
+                    document.getElementById('smak-count').textContent = data.sensory_counts.Smak || 0;
+                    document.getElementById('wyglad-count').textContent = data.sensory_counts.Wygląd || 0;
+                }
+
+                // Update alerts table
+                const tbody = document.getElementById('sensoryAlertsBody');
+
+                if (data.sensory_alerts && data.sensory_alerts.length > 0) {
+                    tbody.innerHTML = data.sensory_alerts.map(item => {
+                        const emoji = item.category === 'Zapach' ? '🤢' :
+                            item.category === 'Smak' ? '😖' : '👁️';
+                        return `
+                                <tr class="fade-in">
+                                    <td><strong>${emoji} ${item.category}</strong></td>
+                                    <td>${escapeHtml(item.query)}</td>
+                                    <td>${escapeHtml(item.city || 'Unknown')}</td>
+                                    <td>${item.timestamp}</td>
+                                </tr>
+                            `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = `
+                            <tr>
+                                <td colspan="4">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">👃</div>
+                                        <div class="empty-state-text">Brak skarg sensorycznych</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                }
+
+                console.log('👃 Sensory alerts updated');
+
+            } catch (error) {
+                console.error('Error fetching sensory alerts:', error);
+            }
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 🔥 MODAL: Wyświetlanie pełnej odpowiedzi bota
+        function showFullResponse(rowId) {
+            console.log('showFullResponse called with:', rowId);
+            console.log('Available responses:', window.botResponses);
+
+            const responseText = window.botResponses?.[rowId];
+
+            if (!responseText || responseText === 'No response') {
+                alert('Brak odpowiedzi do wyświetlenia!');
+                console.error('Brak odpowiedzi dla:', rowId, responseText);
+                return;
+            }
+
+            console.log('Full response text length:', responseText.length);
+
+            // Stwórz tło modalu
+            const modalOverlay = document.createElement('div');
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                padding: 40px 20px;
+                box-sizing: border-box;
+                animation: fadeIn 0.2s ease-out;
+            `;
+
+            // Container modalu - SCROLLABLE FLEXBOX
+            modalOverlay.innerHTML = `
+                    <div class="modal-content" style="
+                        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                        border-radius: 20px;
+                        width: 90%;
+                        max-width: 900px;
+                        height: 90vh;
+                        max-height: 90vh;
+                        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(59, 130, 246, 0.3);
+                        color: #e2e8f0;
+                        display: flex;
+                        flex-direction: column;
+                        overflow: hidden;
+                    ">
+                        <!-- Header -->
+                        <div class="modal-header" style="
+                            padding: 24px 32px;
+                            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+                            background: rgba(59, 130, 246, 0.05);
+                            flex-shrink: 0;
+                        ">
+                            <h3 style="
+                                margin: 0;
+                                color: #3b82f6;
+                                font-size: 22px;
+                                font-weight: 700;
+                                display: flex;
+                                align-items: center;
+                                gap: 12px;
+                            ">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                Pełna Odpowiedź Bota
+                            </h3>
+                        </div>
+                        
+                        <!-- Body - SCROLLABLE -->
+                        <div class="modal-body" style="
+                            flex: 1;
+                            overflow-y: auto;
+                            white-space: pre-wrap;
+                            padding: 32px;
+                        ">
+                            <div class="bot-response-content" style="
+                                background: rgba(15, 23, 42, 0.6);
+                                padding: 24px;
+                                border-radius: 12px;
+                                border: 1px solid rgba(255, 255, 255, 0.08);
+                                line-height: 1.8;
+                                word-break: break-word;
+                            "></div>
+                        </div>
+                        
+                        <!-- Footer -->
+                        <div class="modal-footer" style="
+                            padding: 20px 32px;
+                            border-top: 1px solid rgba(255, 255, 255, 0.08);
+                            background: rgba(15, 23, 42, 0.5);
+                            display: flex;
+                            justify-content: flex-end;
+                            flex-shrink: 0;
+                        ">
+                            <button class="modal-close-btn" style="
+                                padding: 12px 32px;
+                                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                                border: none;
+                                border-radius: 10px;
+                                color: white;
+                                cursor: pointer;
+                                font-weight: 600;
+                                font-size: 15px;
+                                transition: all 0.2s;
+                                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                            ">Zamknij</button>
+                    </div>
+                </div>
+            `;
+
+            // Dodaj style dla kropek kolorowych WEWNĄTRZ modalu
+            const dotStyles = document.createElement('style');
+            dotStyles.textContent = `
+                .bot-response-content .dot {
+                    display: inline-block;
+                    width: 15px;
+                    height: 15px;
+                    border-radius: 50%;
+                    margin-right: 10px;
+                    vertical-align: middle;
+                }
+                .bot-response-content .green-dot { background-color: #22c55e; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2); }
+                .bot-response-content .orange-dot { background-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
+                .bot-response-content .red-dot { background-color: #ef4444; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
+                .bot-response-content .green { background-color: #22c55e !important; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important; }
+                .bot-response-content .orange { background-color: #f97316 !important; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2) !important; }
+                .bot-response-content .red { background-color: #ef4444 !important; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important; }
+            `;
+            modalOverlay.appendChild(dotStyles);
+
+            // Wypełnij treść (RENDERUJ HTML dla kropek kolorowych!)
+            const contentDiv = modalOverlay.querySelector('.bot-response-content');
+            console.log('Setting innerHTML with length:', responseText.length);
+            console.log('Response text preview:', responseText.substring(0, 200) + '...');
+            contentDiv.innerHTML = responseText;  // Przywróć innerHTML dla renderowania HTML
+
+            console.log('Modal rendered with', contentDiv.innerHTML.length, 'chars');
+            console.log('Content div scrollHeight:', contentDiv.scrollHeight, 'clientHeight:', contentDiv.clientHeight);
+
+            // Dodatkowe logowanie dla debugowania
+            const modalContainer = modalOverlay.firstElementChild;
+            const modalBody = modalContainer.children[1]; // Body div
+            console.log('Modal container height:', modalContainer.offsetHeight, 'scrollHeight:', modalContainer.scrollHeight);
+            console.log('Modal body height:', modalBody.offsetHeight, 'scrollHeight:', modalBody.scrollHeight);
+            console.log('Window height:', window.innerHeight);
+            console.log('Modal overlay padding:', getComputedStyle(modalOverlay).padding);
+
+            // Event listeners
+            const closeBtn = modalOverlay.querySelector('.modal-close-btn');
+            closeBtn.onclick = () => modalOverlay.remove();
+
+            closeBtn.onmouseover = () => {
+                closeBtn.style.transform = 'translateY(-2px)';
+                closeBtn.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.4)';
+            };
+            closeBtn.onmouseout = () => {
+                closeBtn.style.transform = 'translateY(0)';
+                closeBtn.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+            };
+
+            // Zamknij po kliknięciu tła
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    modalOverlay.remove();
+                }
+            });
+
+            // Zamknij na ESC
+            const escHandler = (e) => {
+                if (e.key === 'Escape') {
+                    modalOverlay.remove();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+
+            // Dodaj animacje CSS
+            if (!document.getElementById('modal-animations')) {
+                const style = document.createElement('style');
+                style.id = 'modal-animations';
+                style.textContent = `
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes slideUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(30px) scale(0.95);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0) scale(1);
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            document.body.appendChild(modalOverlay);
+        }
+
+        // ============================================
+        // TAB SWITCHING
+        // ============================================
+
+        function initTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.dataset.tab;
+
+                    // Remove active class from all
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active to clicked
+                    btn.classList.add('active');
+                    document.getElementById(`tab-${tabName}`).classList.add('active');
+
+                    // Load data for this tab
+                    loadTabData(tabName);
+                });
+            });
+        }
+
+        async function loadTabData(tabName) {
+            console.log(`📊 Loading data for tab: ${tabName}`);
+
+            switch (tabName) {
+                case 'aquabot':
+                    await refreshStats();
+                    await refreshHeatmap();
+                    await refreshB2BLeads();
+                    await refreshLostDemand();
+                    break;
+
+                case 'city-search':
+                    await refreshCitySearches();
+                    break;
+
+                case 'station-search':
+                    await refreshStationSearches();
+                    break;
+
+                case 'rankings':
+                    await refreshRankingsAnalytics();
+                    break;
+            }
+        }
+
+        // ============================================
+        // NOWE FUNKCJE ANALITYKI
+        // ============================================
+
+        async function refreshCitySearches() {
+            try {
+                const response = await fetch('/api/analytics/city-searches');
+                const data = await response.json();
+
+                // Update Top 3 Cards
+                data.top_cities.forEach((item, index) => {
+                    const num = index + 1;
+                    document.getElementById(`top-city-${num}-count`).textContent = item.count;
+                    document.getElementById(`top-city-${num}-name`).textContent = item.city;
+                });
+
+                // Fill missing cards
+                for (let i = data.top_cities.length; i < 3; i++) {
+                    const num = i + 1;
+                    document.getElementById(`top-city-${num}-count`).textContent = '0';
+                    document.getElementById(`top-city-${num}-name`).textContent = 'Brak danych';
+                }
+
+                // Update History Table
+                const tbody = document.getElementById('citySearchHistory');
+                if (data.history && data.history.length > 0) {
+                    tbody.innerHTML = data.history.map(item => `
+                        <tr class="fade-in">
+                            <td>${item.timestamp}</td>
+                            <td><strong>${item.city}</strong></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="2">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🚰</div>
+                                    <div class="empty-state-text">Brak wyszukiwań</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                console.log('🚰 City searches updated');
+
+            } catch (error) {
+                console.error('Error fetching city searches:', error);
+            }
+        }
+
+        async function refreshStationSearches() {
+            try {
+                const response = await fetch('/api/analytics/station-searches');
+                const data = await response.json();
+
+                // Update Top 3 Cards
+                data.top_locations.forEach((item, index) => {
+                    const num = index + 1;
+                    document.getElementById(`top-location-${num}-count`).textContent = item.count;
+                    document.getElementById(`top-location-${num}-name`).textContent = item.city;
+                });
+
+                // Fill missing cards
+                for (let i = data.top_locations.length; i < 3; i++) {
+                    const num = i + 1;
+                    document.getElementById(`top-location-${num}-count`).textContent = '0';
+                    document.getElementById(`top-location-${num}-name`).textContent = 'Brak danych';
+                }
+
+                // Update History Table
+                const tbody = document.getElementById('stationSearchHistory');
+                if (data.history && data.history.length > 0) {
+                    tbody.innerHTML = data.history.map(item => `
+                        <tr class="fade-in">
+                            <td>${item.timestamp}</td>
+                            <td><strong>${item.city}</strong></td>
+                            <td>${item.street}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="3">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🏭</div>
+                                    <div class="empty-state-text">Brak wyszukiwań</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                console.log('🏭 Station searches updated');
+
+            } catch (error) {
+                console.error('Error fetching station searches:', error);
+            }
+        }
+
+        async function refreshRankingsAnalytics() {
+            try {
+                const response = await fetch('/api/analytics/rankings');
+                const data = await response.json();
+
+                // Update Top 3 Cards
+                data.top_parameters.forEach((item, index) => {
+                    const num = index + 1;
+                    document.getElementById(`top-param-${num}-count`).textContent = item.count;
+                    document.getElementById(`top-param-${num}-name`).textContent = item.parameter;
+                });
+
+                // Fill missing cards
+                for (let i = data.top_parameters.length; i < 3; i++) {
+                    const num = i + 1;
+                    document.getElementById(`top-param-${num}-count`).textContent = '0';
+                    document.getElementById(`top-param-${num}-name`).textContent = 'Brak danych';
+                }
+
+                // Update History Table
+                const tbody = document.getElementById('rankingsHistory');
+                if (data.history && data.history.length > 0) {
+                    tbody.innerHTML = data.history.map(item => `
+                        <tr class="fade-in">
+                            <td>${item.timestamp}</td>
+                            <td><strong>${item.parameter}</strong></td>
+                            <td><span style="color: #94a3b8;">${item.type}</span></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="3">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🏆</div>
+                                    <div class="empty-state-text">Brak rankingów</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                console.log('🏆 Rankings analytics updated');
+
+            } catch (error) {
+                console.error('Error fetching rankings:', error);
+            }
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        async function initDashboard() {
+            console.log('🚀 Initializing Dashboard...');
+
+            // Initialize tabs
+            initTabs();
+
+            // Load default tab (AquaBot) - z opóźnieniami aby uniknąć rate limiting
+            await refreshStats();
+            await new Promise(resolve => setTimeout(resolve, 200)); // 200ms delay
+            await refreshHeatmap();
+            await new Promise(resolve => setTimeout(resolve, 200)); // 200ms delay
+            await refreshLostDemand();
+            await new Promise(resolve => setTimeout(resolve, 200)); // 200ms delay
+            // 🆕 NLP: Load user profiles and sensory insights
+            await refreshUserProfiles();
+            await new Promise(resolve => setTimeout(resolve, 200)); // 200ms delay
+            // 🆕 SENSORY ALERTS: Load main page module
+            await refreshSensoryAlerts();
+
+            console.log('✅ Dashboard Ready!');
+        }
+
+        // Auto-refresh every 30 seconds (backup for Socket.IO) - z opóźnieniami
+        setInterval(async () => {
+            console.log('🔄 Auto-refresh triggered');
+            await refreshStats();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            await refreshHeatmap();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            await refreshLostDemand();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            // 🆕 NLP: Refresh user profiles and sensory insights
+            await refreshUserProfiles();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            // 🆕 SENSORY ALERTS
+            await refreshSensoryAlerts();
+        }, 30000);
+
+        // Start dashboard
+        document.addEventListener('DOMContentLoaded', initDashboard);
+
+        console.log('🛰️ SATELITA Dashboard Script Loaded');
+    </script>
+</body>
+
+</html>
