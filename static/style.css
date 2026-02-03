@@ -1,8 +1,11 @@
 .section {
-    display: none; /* Ukrywa wszystkie sekcje domyślnie */
+    display: none;
+    /* Ukrywa wszystkie sekcje domyślnie */
 }
+
 .section.active {
-    display: block; /* Pokazuje tylko aktywną sekcję */
+    display: block;
+    /* Pokazuje tylko aktywną sekcję */
 }
 
 body {
@@ -28,34 +31,53 @@ body {
 }
 
 .sticky-nav {
-    position: sticky; /* Utrzymuje kontener przy górze ekranu podczas przewijania */
-    top: 0; /* Przykleja do górnej krawędzi */
-    background: linear-gradient(135deg, #e0f7fa, #b3e5fc); /* Nowoczesny, jasny gradient jako tło */
-    padding: 15px 20px; /* Większy padding dla oddechu */
-    display: flex; /* Układ elastyczny dla przycisków */
-    flex-wrap: wrap; /* Przyciski zawijają się na mniejszych ekranach */
-    justify-content: space-around; /* Równomierne rozłożenie przycisków */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Głębszy cień dla efektu 3D */
-    z-index: 2000; /* Wysoka warstwa, żeby był nad innymi elementami */
-    border-radius: 12px; /* Zaokrąglone rogi */
-    margin-bottom: 40px; /* Odstęp od sekcji poniżej */
-    margin-top: 170px; /* Obniżenie, żeby nie nachodził na legendę */
-    backdrop-filter: blur(5px); /* Subtelny efekt rozmycia tła dla nowoczesności */
+    position: sticky;
+    /* Utrzymuje kontener przy górze ekranu podczas przewijania */
+    top: 0;
+    /* Przykleja do górnej krawędzi */
+    background: linear-gradient(135deg, #e0f7fa, #b3e5fc);
+    /* Nowoczesny, jasny gradient jako tło */
+    padding: 15px 20px;
+    /* Większy padding dla oddechu */
+    display: flex;
+    /* Układ elastyczny dla przycisków */
+    flex-wrap: wrap;
+    /* Przyciski zawijają się na mniejszych ekranach */
+    justify-content: space-around;
+    /* Równomierne rozłożenie przycisków */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* Głębszy cień dla efektu 3D */
+    z-index: 2000;
+    /* Wysoka warstwa, żeby był nad innymi elementami */
+    border-radius: 12px;
+    /* Zaokrąglone rogi */
+    margin-bottom: 40px;
+    /* Odstęp od sekcji poniżej */
+    margin-top: 170px;
+    /* Obniżenie, żeby nie nachodził na legendę */
+    backdrop-filter: blur(5px);
+    /* Subtelny efekt rozmycia tła dla nowoczesności */
 }
 
 .sticky-nav button {
     padding: 12px 20px;
     font-size: 17px;
-    background: #FFFFFF; /* Czysta biel */
-    color: #0277bd; /* Ciemniejszy niebieski dla lepszego kontrastu */
-    border: 1px solid rgba(2, 136, 209, 0.1); /* Subtelne obramowanie */
+    background: #FFFFFF;
+    /* Czysta biel */
+    color: #0277bd;
+    /* Ciemniejszy niebieski dla lepszego kontrastu */
+    border: 1px solid rgba(2, 136, 209, 0.1);
+    /* Subtelne obramowanie */
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Płynniejsza animacja */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Płynniejsza animacja */
     margin: 5px;
-    box-shadow: 0 2px 8px rgba(2, 136, 209, 0.15); /* Jasnoniebieskie światło */
+    box-shadow: 0 2px 8px rgba(2, 136, 209, 0.15);
+    /* Jasnoniebieskie światło */
     font-family: 'Poppins', sans-serif;
-    font-weight: 600; /* Pogrubienie dla lepszej czytelności */
+    font-weight: 600;
+    /* Pogrubienie dla lepszej czytelności */
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -63,10 +85,14 @@ body {
 }
 
 .sticky-nav button:hover {
-    background: #FFFFFF; /* Pozostaje białe */
-    color: #0277bd; /* Nieco ciemniejszy niebieski */
-    transform: translateY(-3px); /* Wyraźniejsze uniesienie */
-    box-shadow: 0 6px 20px rgba(2, 136, 209, 0.25); /* Intensywniejszy cień */
+    background: #FFFFFF;
+    /* Pozostaje białe */
+    color: #0277bd;
+    /* Nieco ciemniejszy niebieski */
+    transform: translateY(-3px);
+    /* Wyraźniejsze uniesienie */
+    box-shadow: 0 6px 20px rgba(2, 136, 209, 0.25);
+    /* Intensywniejszy cień */
     border-color: rgba(2, 136, 209, 0.3);
 }
 
@@ -101,7 +127,8 @@ h1 {
     font-size: 24px;
     font-weight: 700;
     color: #0288d1;
-    margin-top: 20px; /* Mniejszy margines, bliżej logo */
+    margin-top: 20px;
+    /* Mniejszy margines, bliżej logo */
 }
 
 h2 {
@@ -159,16 +186,19 @@ button {
 button:active {
     transform: scale(0.9) rotate(-1deg);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    background-color: #005f9e; /* Slightly darker shade for active state */
+    background-color: #005f9e;
+    /* Slightly darker shade for active state */
 }
 
 button:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    background-color: #0288d1; /* Brighter shade for hover */
+    background-color: #0288d1;
+    /* Brighter shade for hover */
 }
 
-input, select {
+input,
+select {
     padding: 14px;
     font-size: 16px;
     border: 1px solid rgba(179, 229, 252, 0.5);
@@ -220,7 +250,8 @@ input:focus {
     position: absolute;
     top: 20px;
     /* Przywrócone stare domyślne przesunięcie i rozmiary (jak wcześniej) */
-    left: 70px; /* Przesunięte w prawo, żeby nie zasłaniać kontrolek zoom Leaflet */
+    left: 70px;
+    /* Przesunięte w prawo, żeby nie zasłaniać kontrolek zoom Leaflet */
     right: auto;
     z-index: 1000;
     background: #FFFFFF;
@@ -269,7 +300,8 @@ input:focus {
     font-family: 'Inter', sans-serif;
     border: 2px solid #e0e0e0;
     border-radius: 12px;
-    box-sizing: border-box; /* zapobiega overflow spowodowanemu paddingiem */
+    box-sizing: border-box;
+    /* zapobiega overflow spowodowanemu paddingiem */
     outline: none;
     transition: all 0.3s ease;
     background: #f8f9fa;
@@ -584,12 +616,12 @@ input:focus {
         margin-bottom: 20px;
         border-radius: 12px;
     }
-    
+
     #map {
         height: 400px !important;
         border-radius: 12px;
     }
-    
+
     .map-controls-pills {
         position: relative;
         bottom: auto;
@@ -597,19 +629,19 @@ input:focus {
         transform: none;
         margin-top: 12px;
     }
-    
+
     .map-container {
         border-radius: 12px;
     }
-    
+
     .parameters-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .stations-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .station-feature-card {
         padding: 20px;
     }
@@ -630,10 +662,13 @@ input:focus {
         flex-direction: column;
         align-items: center;
     }
-    input, select {
+
+    input,
+    select {
         width: 100%;
         max-width: 300px;
     }
+
     .result-box {
         max-height: 300px;
     }
@@ -686,24 +721,152 @@ input:focus {
     line-height: 15px;
 }
 
-.green-dot { background-color: #22c55e; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2); }
-.orange-dot { background-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
-.red-dot { background-color: #ef4444; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
-.grey-dot { background-color: #9ca3af; box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2); }
+.green-dot {
+    background-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.orange-dot {
+    background-color: #f97316;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+}
+
+.red-dot {
+    background-color: #ef4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.grey-dot {
+    background-color: #9ca3af;
+    box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2);
+}
 
 /* Kolory kropek dla AquaBot (inline style override) */
-.green { background-color: #22c55e !important; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important; }
-.orange { background-color: #f97316 !important; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2) !important; }
-.red { background-color: #ef4444 !important; box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important; }
-.grey { background-color: #9ca3af !important; box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2) !important; }
+.green {
+    background-color: #22c55e !important;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+}
 
-#aqua-bot-skin-options button:hover, #aqua-bot-wellbeing-options button:hover {
+.orange {
+    background-color: #f97316 !important;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2) !important;
+}
+
+.red {
+    background-color: #ef4444 !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+}
+
+.grey {
+    background-color: #9ca3af !important;
+    box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.2) !important;
+}
+
+/* ============================================
+   TREND INDICATORS - Enterprise Style
+   ============================================ */
+
+.trend-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+}
+
+.trend-indicator:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Wzrost = czerwony (niekorzystny dla większości parametrów) */
+.trend-up {
+    color: #dc2626;
+    border-color: rgba(220, 38, 38, 0.2);
+    background: rgba(220, 38, 38, 0.05);
+}
+
+.trend-up .trend-arrow {
+    color: #ef4444;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Spadek = zielony (korzystny) */
+.trend-down {
+    color: #16a34a;
+    border-color: rgba(22, 163, 74, 0.2);
+    background: rgba(22, 163, 74, 0.05);
+}
+
+.trend-down .trend-arrow {
+    color: #22c55e;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Stabilny = szary */
+.trend-stable {
+    color: #6b7280;
+    border-color: rgba(107, 114, 128, 0.2);
+    background: rgba(107, 114, 128, 0.05);
+}
+
+/* Elementy wskaźnika trendu */
+.trend-arrow {
+    display: inline-block;
+    line-height: 1;
+}
+
+.trend-value {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.trend-prev {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.trend-date {
+    font-size: 10px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Responsive: uproszczona wersja na mobile */
+@media (max-width: 768px) {
+    .trend-indicator {
+        gap: 4px;
+        margin-left: 6px;
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    .trend-prev,
+    .trend-date {
+        display: none;
+        /* Ukryj na mobile dla oszczędności miejsca */
+    }
+}
+
+#aqua-bot-skin-options button:hover,
+#aqua-bot-wellbeing-options button:hover {
     background: linear-gradient(45deg, #43a047, #66bb6a);
     box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
     transform: translateY(-3px);
 }
 
-.post-box textarea, .add-comment-box textarea {
+.post-box textarea,
+.add-comment-box textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid rgba(179, 229, 250, 0.5);
@@ -779,7 +942,8 @@ input:focus {
     margin: 10px 0;
 }
 
-#city-suggestions, #bottle-suggestions {
+#city-suggestions,
+#bottle-suggestions {
     border: 1px solid #ccc;
     max-height: 100px;
     overflow-y: auto;
@@ -831,7 +995,8 @@ input:focus {
     margin-top: 10px;
 }
 
-.history-data, .current-data {
+.history-data,
+.current-data {
     flex: 1;
     min-width: 200px;
     padding: 10px;
@@ -849,7 +1014,8 @@ input:focus {
     background: #E0F7FA;
 }
 
-.history-label, .current-label {
+.history-label,
+.current-label {
     font-weight: 600;
     margin-bottom: 5px;
     display: flex;
@@ -1143,13 +1309,16 @@ input:focus {
     #rankings {
         padding: 15px;
     }
+
     #rankings h3 {
         font-size: 18px;
     }
+
     #rankings li {
         font-size: 14px;
         flex-direction: row;
     }
+
     #rankings .dot {
         width: 16px;
         height: 16px;
@@ -1186,7 +1355,9 @@ input:focus {
     margin-top: 15px;
 }
 
-#all-suw, #all-points, #bottle-rankings {
+#all-suw,
+#all-points,
+#bottle-rankings {
     padding: 20px;
     background: rgba(224, 247, 250, 0.5);
     border-radius: 10px;
@@ -1199,7 +1370,8 @@ input:focus {
     margin-bottom: 20px;
 }
 
-.norms-table th, .norms-table td {
+.norms-table th,
+.norms-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
@@ -1229,29 +1401,29 @@ header {
 }
 
 /* Centrowany prosty header dla stron pomocniczych (Aktualizacje, Misja, Regulamin, Napisz do mnie) */
-header > #logo,
-header > .main-title,
-header > a {
+header>#logo,
+header>.main-title,
+header>a {
     display: block;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
 }
 
-header > #logo {
+header>#logo {
     width: 120px;
     height: auto;
     margin-bottom: 12px;
 }
 
-header > .main-title {
+header>.main-title {
     font-family: 'Poppins', sans-serif;
     font-size: 28px;
     color: #0288d1;
     margin: 6px 0 8px 0;
 }
 
-header > a {
+header>a {
     color: #ffffff;
     text-decoration: none;
     font-weight: 700;
@@ -1268,7 +1440,7 @@ header > a {
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-header > a:hover {
+header>a:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 24px rgba(2, 136, 209, 0.3);
 }
@@ -1383,8 +1555,15 @@ header > a:hover {
 }
 
 @keyframes floatAnimation {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
 }
 
 /* RESPONSIVE - MOBILE */
@@ -1394,29 +1573,29 @@ header > a:hover {
         gap: 40px;
         text-align: center;
     }
-    
+
     .hero-left {
         text-align: center;
         align-items: center;
     }
-    
+
     .hero-title {
         font-size: 36px;
     }
-    
+
     .hero-subtitle {
         font-size: 16px;
     }
-    
+
     .hero-benefits {
         align-items: flex-start;
         text-align: left;
     }
-    
+
     .hero-cta {
         align-self: center;
     }
-    
+
     .hero-logo {
         max-width: 350px;
     }
@@ -1444,7 +1623,7 @@ header > a:hover {
     display: flex;
     justify-content: space-around;
     padding: 10px 0;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
     z-index: 1000;
 }
 
@@ -1459,6 +1638,7 @@ header > a:hover {
         width: 28px;
         height: 28px;
     }
+
     .logo {
         width: 100px;
     }
@@ -1751,9 +1931,13 @@ header > a:hover {
 }
 
 @keyframes typing-bounce {
-    0%, 60%, 100% {
+
+    0%,
+    60%,
+    100% {
         transform: translateY(0);
     }
+
     30% {
         transform: translateY(-8px);
     }
@@ -2120,30 +2304,30 @@ header > a:hover {
     .search-widget-card {
         padding: 24px;
     }
-    
+
     .search-widget-content {
         grid-template-columns: 1fr;
         gap: 30px;
     }
-    
+
     .search-bar-container {
         order: 1;
     }
-    
+
     .trust-badges {
         order: 2;
     }
-    
+
     #check-tapwater h2 {
         font-size: 24px;
         margin-bottom: 24px;
     }
-    
+
     .search-input-wrapper input {
         height: 54px;
         font-size: 16px;
     }
-    
+
     .search-submit-btn {
         height: 54px;
         font-size: 16px;
@@ -2190,20 +2374,29 @@ button:hover {
     background-color: #01579b;
 }
 
-#city-ranking, #suw-ranking, #district-ranking, #bottle-rankings {
+#city-ranking,
+#suw-ranking,
+#district-ranking,
+#bottle-rankings {
     margin-top: 20px;
     padding: 10px;
     background: rgba(224, 247, 250, 0.5);
     border-radius: 10px;
 }
 
-#city-ranking ol, #suw-ranking ol, #district-ranking ol, #bottle-rankings ol {
+#city-ranking ol,
+#suw-ranking ol,
+#district-ranking ol,
+#bottle-rankings ol {
     list-style: none;
     padding-left: 0;
     margin: 0;
 }
 
-#city-ranking li, #suw-ranking li, #district-ranking li, #bottle-rankings li {
+#city-ranking li,
+#suw-ranking li,
+#district-ranking li,
+#bottle-rankings li {
     background: white;
     margin: 12px 0;
     padding: 16px 20px;
@@ -2218,7 +2411,10 @@ button:hover {
     overflow: hidden;
 }
 
-#city-ranking li:hover, #suw-ranking li:hover, #district-ranking li:hover, #bottle-rankings li:hover {
+#city-ranking li:hover,
+#suw-ranking li:hover,
+#district-ranking li:hover,
+#bottle-rankings li:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
@@ -2281,12 +2477,14 @@ button:hover {
     text-align: center;
     margin-right: 15px;
 }
+
 #tap-water-rankings {
     display: flex;
     gap: 20px;
 }
 
-#city-rankings, #suw-district-rankings {
+#city-rankings,
+#suw-district-rankings {
     flex: 1;
 }
 
@@ -2304,34 +2502,53 @@ button:hover {
 
 /* Styl dla legendy w lewym górnym rogu */
 .legend {
-    position: absolute; /* Ustawia pozycję niezależną od przepływu strony, względem rodzica (header) */
-    top: 10px; /* Odległość od górnej krawędzi rodzica (10 pikseli) */
-    left: 10px; /* Odległość od lewej krawędzi rodzica (10 pikseli) */
-    width: 300px; /* Szerokość kontenera legendy (możesz zmienić, np. na 250px) */
-    background: rgba(255, 255, 255, 0.8); /* Białe tło z 80% przezroczystości (możesz zmienić na np. rgba(224, 247, 250, 0.7)) */
-    padding: 10px; /* Wewnętrzny odstęp (możesz zwiększyć, np. 15px) */
-    border-radius: 5px; /* Zaokrąglenie rogów (możesz zmienić, np. 8px) */
-    font-size: 14px; /* Rozmiar czcionki dla całego kontenera (możesz zmienić, np. 14px) */
-    font-family: 'Roboto', sans-serif; /* Czcionka (możesz zmienić na 'Open Sans') */
-    color: #333; /* Kolor tekstu (możesz zmienić, np. na #0288d1) */
-    z-index: 1000; /* Warstwa (wyżej niż inne elementy, zwykle nie zmieniasz) */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Cień (możesz zmienić, np. 0 4px 8px) */
+    position: absolute;
+    /* Ustawia pozycję niezależną od przepływu strony, względem rodzica (header) */
+    top: 10px;
+    /* Odległość od górnej krawędzi rodzica (10 pikseli) */
+    left: 10px;
+    /* Odległość od lewej krawędzi rodzica (10 pikseli) */
+    width: 300px;
+    /* Szerokość kontenera legendy (możesz zmienić, np. na 250px) */
+    background: rgba(255, 255, 255, 0.8);
+    /* Białe tło z 80% przezroczystości (możesz zmienić na np. rgba(224, 247, 250, 0.7)) */
+    padding: 10px;
+    /* Wewnętrzny odstęp (możesz zwiększyć, np. 15px) */
+    border-radius: 5px;
+    /* Zaokrąglenie rogów (możesz zmienić, np. 8px) */
+    font-size: 14px;
+    /* Rozmiar czcionki dla całego kontenera (możesz zmienić, np. 14px) */
+    font-family: 'Roboto', sans-serif;
+    /* Czcionka (możesz zmienić na 'Open Sans') */
+    color: #333;
+    /* Kolor tekstu (możesz zmienić, np. na #0288d1) */
+    z-index: 1000;
+    /* Warstwa (wyżej niż inne elementy, zwykle nie zmieniasz) */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Cień (możesz zmienić, np. 0 4px 8px) */
 }
 
 .legend-item {
-    display: flex; /* Ustawia układ elastyczny (ikonka i tekst w linii) */
-    align-items: center; /* Wyrównuje elementy w pionie do środka */
-    gap: 12px; /* Odstęp między ikoną a tekstem (możesz zwiększyć, np. 8px) */
-    margin-bottom: 18px; /* Odstęp pod każdym elementem (możesz zwiększyć, np. 8px) */
+    display: flex;
+    /* Ustawia układ elastyczny (ikonka i tekst w linii) */
+    align-items: center;
+    /* Wyrównuje elementy w pionie do środka */
+    gap: 12px;
+    /* Odstęp między ikoną a tekstem (możesz zwiększyć, np. 8px) */
+    margin-bottom: 18px;
+    /* Odstęp pod każdym elementem (możesz zwiększyć, np. 8px) */
 }
 
 .legend-item p {
-    margin: 0; /* Usuwa domyślne marginesy tekstu (zwykle nie zmieniasz) */
+    margin: 0;
+    /* Usuwa domyślne marginesy tekstu (zwykle nie zmieniasz) */
 }
 
 .icon {
-    width: 30px; /* Szerokość ikonki (możesz zmienić, np. na 40px) */
-    height: 30px; /* Wysokość ikonki (możesz zmienić, np. na 40px) */
+    width: 30px;
+    /* Szerokość ikonki (możesz zmienić, np. na 40px) */
+    height: 30px;
+    /* Wysokość ikonki (możesz zmienić, np. na 40px) */
 }
 
 /* Styl dla GIF-a w sekcji O nas */
@@ -2477,21 +2694,29 @@ button:hover {
 /* Styl dla napisów w header */
 header h1,
 .alert-text {
-    margin-left: 320px; /* Przesuwa napisy na prawo, uwzględniając szerokość legendy (300px) + odstęp */
+    margin-left: 320px;
+    /* Przesuwa napisy na prawo, uwzględniając szerokość legendy (300px) + odstęp */
 }
 
 /* Responsywność dla mniejszych ekranów */
 @media (max-width: 600px) {
+
     header h1,
     .alert-text {
-        margin-left: 0; /* Usuwa margines na małych ekranach */
+        margin-left: 0;
+        /* Usuwa margines na małych ekranach */
     }
+
     .legend {
-        position: static; /* Legenda staje się częścią normalnego przepływu */
-        width: 100%; /* Pełna szerokość na małych ekranach */
-        margin-bottom: 20px; /* Odstęp pod legendą */
+        position: static;
+        /* Legenda staje się częścią normalnego przepływu */
+        width: 100%;
+        /* Pełna szerokość na małych ekranach */
+        margin-bottom: 20px;
+        /* Odstęp pod legendą */
     }
 }
+
 /* ============================================
    PROFESSIONAL FOOTER
    ============================================ */
@@ -2548,12 +2773,15 @@ header h1,
 /* Footer styling for hamburger-linked pages: hide brand lead but style legal area */
 .footer .legal-links {
     font-size: 0.95em;
-    color: #000000; /* wyraźny czarny kolor */
+    color: #000000;
+    /* wyraźny czarny kolor */
     margin-top: 12px;
     text-align: center;
 }
+
 .footer .legal-links a {
-    color: #0b69d6; /* mocny niebieski */
+    color: #0b69d6;
+    /* mocny niebieski */
     font-weight: 700;
     text-decoration: none;
     margin: 0 6px;
@@ -2575,22 +2803,26 @@ header h1,
     margin: 20px auto;
     align-items: start;
 }
+
 .feedback-left {
     padding: 24px 32px;
 }
+
 .feedback-list {
     list-style: disc;
     padding-left: 20px;
     color: #0b69d6;
 }
+
 .feedback-right {
-    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(240,249,255,0.8));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(240, 249, 255, 0.8));
     padding: 28px;
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(2, 119, 189, 0.08);
     display: flex;
     flex-direction: column;
 }
+
 .feedback-right textarea#feedback-text {
     width: 100%;
     min-height: 260px;
@@ -2601,22 +2833,25 @@ header h1,
     resize: vertical;
     box-sizing: border-box;
 }
+
 .feedback-actions {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-top: 16px;
 }
+
 .primary-btn {
-    background: linear-gradient(135deg,#0288d1 0%, #26c6da 100%);
+    background: linear-gradient(135deg, #0288d1 0%, #26c6da 100%);
     color: #fff;
     padding: 12px 22px;
     border-radius: 10px;
     border: none;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(2,136,209,0.18);
+    box-shadow: 0 8px 24px rgba(2, 136, 209, 0.18);
 }
+
 .feedback-status {
     font-size: 0.95em;
     color: #0b69d6;
@@ -2778,11 +3013,11 @@ header h1,
         grid-template-columns: 1fr;
         gap: 40px;
     }
-    
+
     .footer-main {
         padding: 40px 20px;
     }
-    
+
     .footer-bottom {
         flex-direction: column;
         gap: 16px;
@@ -2798,57 +3033,85 @@ header h1,
     position: absolute;
     top: 10px;
     right: 10px;
-    gap: 25px; /* Bez zmian – odstęp OK */
+    gap: 25px;
+    /* Bez zmian – odstęp OK */
     z-index: 2000;
 }
+
 .coffee-support {
     display: flex;
     align-items: center;
-    gap: 8px; /* Lekko zwiększony odstęp między tekstem a ikonką */
-    color: #026fa7; /* Przyciemniony niebieski dla pro wyglądu */
+    gap: 8px;
+    /* Lekko zwiększony odstęp między tekstem a ikonką */
+    color: #026fa7;
+    /* Przyciemniony niebieski dla pro wyglądu */
     text-decoration: none;
-    font-family: 'Roboto', sans-serif; /* Zmiana na Roboto – spójniejsza z stroną */
+    font-family: 'Roboto', sans-serif;
+    /* Zmiana na Roboto – spójniejsza z stroną */
     font-size: 16px;
-    font-weight: 500; /* Lekko lżejszy weight dla elegancji */
-    padding: 8px 15px; /* Większy padding – wygląda jak button */
-    border-radius: 8px; /* Miękksze rogi */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtelny cień zamiast border */
+    font-weight: 500;
+    /* Lekko lżejszy weight dla elegancji */
+    padding: 8px 15px;
+    /* Większy padding – wygląda jak button */
+    border-radius: 8px;
+    /* Miękksze rogi */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Subtelny cień zamiast border */
     cursor: pointer;
-    transition: background 0.3s, color 0.3s, box-shadow 0.3s; /* Smooth dla wszystkich */
-    margin-right: 60px; /* Bez zmian – przesunięcie na lewo */
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+    /* Smooth dla wszystkich */
+    margin-right: 60px;
+    /* Bez zmian – przesunięcie na lewo */
 }
+
 .coffee-support:hover {
-    background: linear-gradient(45deg, rgba(224, 247, 250, 0.5), rgba(179, 229, 252, 0.5)); /* Lekki gradient na hover – pasuje do strony */
-    color: #01579b; /* Ciemniejszy hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Mocniejszy cień na hover */
-    text-decoration: underline; /* Zachowane dla klikalności */
+    background: linear-gradient(45deg, rgba(224, 247, 250, 0.5), rgba(179, 229, 252, 0.5));
+    /* Lekki gradient na hover – pasuje do strony */
+    color: #01579b;
+    /* Ciemniejszy hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    /* Mocniejszy cień na hover */
+    text-decoration: underline;
+    /* Zachowane dla klikalności */
 }
+
 .coffee-icon {
-    width: 80px; /* Bez zmian – duża jak ustawiłeś */
+    width: 80px;
+    /* Bez zmian – duża jak ustawiłeś */
     height: auto;
-    margin-left: 5px; /* Dodany margines – lepiej oddziela od tekstu */
+    margin-left: 5px;
+    /* Dodany margines – lepiej oddziela od tekstu */
 }
 
 
 
 #bottled-water input#bottleName {
-    width: 300px; /* Szerszy input – z domyślnego na 300px (dostosuj na 250px/350px jeśli za szeroki) */
+    width: 300px;
+    /* Szerszy input – z domyślnego na 300px (dostosuj na 250px/350px jeśli za szeroki) */
 }
 
 @media (max-width: 600px) {
     .legend {
-        position: static; /* Statyczna na mobile – unika nachodzenia */
-        width: 100%; /* Pełna szerokość */
-        margin: 10px auto 20px; /* Centrowanie + odstęp pod */
-        max-height: none; /* Bez limitu wysokości */
+        position: static;
+        /* Statyczna na mobile – unika nachodzenia */
+        width: 100%;
+        /* Pełna szerokość */
+        margin: 10px auto 20px;
+        /* Centrowanie + odstęp pod */
+        max-height: none;
+        /* Bez limitu wysokości */
     }
+
     .legend-item {
-        gap: 8px; /* Mniejszy odstęp */
+        gap: 8px;
+        /* Mniejszy odstęp */
         margin-bottom: 10px;
     }
+
     .icon {
         width: 25px;
-        height: 25px; /* Mniejsze ikony na mobile */
+        height: 25px;
+        /* Mniejsze ikony na mobile */
     }
 }
 
@@ -2856,18 +3119,22 @@ header h1,
     padding: 20px;
     background: rgba(224, 247, 250, 0.5);
     border-radius: 10px;
-    max-width: 800px; /* Zwiększone dla dwóch kolumn */
-    margin: 0 auto; /* Centrowanie */
+    max-width: 800px;
+    /* Zwiększone dla dwóch kolumn */
+    margin: 0 auto;
+    /* Centrowanie */
 }
 
 #feedback .feedback-container {
     display: flex;
     justify-content: space-between;
-    gap: 20px; /* Odstęp między kolumnami */
+    gap: 20px;
+    /* Odstęp między kolumnami */
 }
 
 #feedback .feedback-left {
-    flex: 1; /* Lewa kolumna zajmuje większość */
+    flex: 1;
+    /* Lewa kolumna zajmuje większość */
     max-width: 60%;
 }
 
@@ -2878,9 +3145,11 @@ header h1,
 }
 
 #feedback .feedback-list {
-    list-style-type: disc; /* Punkty dla listy */
+    list-style-type: disc;
+    /* Punkty dla listy */
     padding-left: 20px;
-    text-align: left; /* Wyrównanie do lewej */
+    text-align: left;
+    /* Wyrównanie do lewej */
     margin-bottom: 20px;
 }
 
@@ -2894,9 +3163,11 @@ header h1,
     color: #555;
     font-size: 15px;
     text-align: left;
-    flex: 1; /* Prawa kolumna */
+    flex: 1;
+    /* Prawa kolumna */
     max-width: 40%;
-    margin-top: 0; /* Dopasowanie pionowe */
+    margin-top: 0;
+    /* Dopasowanie pionowe */
 }
 
 #feedback textarea {
@@ -2932,13 +3203,17 @@ header h1,
 
 @media (max-width: 768px) {
     #feedback .feedback-container {
-        flex-direction: column; /* Stack na mobile */
+        flex-direction: column;
+        /* Stack na mobile */
     }
+
     #feedback .feedback-left,
     #feedback .note {
-        max-width: 100%; /* Pełna szerokość na mobile */
+        max-width: 100%;
+        /* Pełna szerokość na mobile */
     }
 }
+
 .aquabot-section {
     padding: 60px 20px;
 }
@@ -2953,37 +3228,37 @@ header h1,
         border-radius: 16px;
         margin: 0 16px;
     }
-    
+
     .aquabot-header {
         padding: 16px 20px;
         flex-direction: column;
         gap: 12px;
         align-items: flex-start;
     }
-    
+
     .aquabot-change-station {
         align-self: stretch;
         justify-content: center;
     }
-    
+
     .aquabot-chat-container {
         min-height: 400px;
         max-height: 400px;
     }
-    
+
     .aquabot-messages {
         padding: 20px 16px;
     }
-    
+
     .quick-chips-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .bot-message,
     .user-message {
         max-width: 90%;
     }
-    
+
     .aquabot-input-area {
         padding: 16px 20px 20px 20px;
     }
@@ -3116,14 +3391,18 @@ header h1,
         flex-direction: column;
         gap: 20px;
     }
-    .community-topics, .community-join {
+
+    .community-topics,
+    .community-join {
         flex: none;
         width: 100%;
     }
+
     .discord-link {
         font-size: 16px;
         padding: 12px 25px;
     }
+
     .discord-icon {
         width: 80px;
         height: 60px;
@@ -3142,33 +3421,45 @@ header h1,
 
 
 .support-section {
-    padding: 20px; /* Zachowane dla oddechu */
-    background: #f9f9f9; /* Twoje neutralne tło */
+    padding: 20px;
+    /* Zachowane dla oddechu */
+    background: #f9f9f9;
+    /* Twoje neutralne tło */
     border-radius: 10px;
-    font-family: 'Poppins', sans-serif; /* Elegancka czcionka dla nagłówków */
+    font-family: 'Poppins', sans-serif;
+    /* Elegancka czcionka dla nagłówków */
     color: #333;
 }
 
 .support-container {
-    max-width: 1200px; /* Twój container */
+    max-width: 1200px;
+    /* Twój container */
     margin: 0 auto;
-    background: white; /* Białe tło */
-    padding: 20px; /* Kompaktowe, by zmieścić */
+    background: white;
+    /* Białe tło */
+    padding: 20px;
+    /* Kompaktowe, by zmieścić */
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Twój cień */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Twój cień */
 }
 
 .support-container h2 {
-    font-size: 26px; /* Powiększony */
+    font-size: 26px;
+    /* Powiększony */
     font-weight: 700;
-    color: #0288d1; /* Brandowy niebieski */
+    color: #0288d1;
+    /* Brandowy niebieski */
     text-align: center;
-    margin-bottom: 12px; /* Mniejszy margines */
+    margin-bottom: 12px;
+    /* Mniejszy margines */
 }
 
 .support-container p {
-    font-family: 'Open Sans', sans-serif; /* Lżejsza czcionka dla tekstu */
-    font-size: 16px; /* Powiększony, czytelny */
+    font-family: 'Open Sans', sans-serif;
+    /* Lżejsza czcionka dla tekstu */
+    font-size: 16px;
+    /* Powiększony, czytelny */
     line-height: 1.5;
     text-align: center;
     margin-bottom: 12px;
@@ -3177,27 +3468,33 @@ header h1,
 .support-columns {
     display: flex;
     justify-content: space-between;
-    gap: 20px; /* Kompaktowy gap */
+    gap: 20px;
+    /* Kompaktowy gap */
 }
 
 .support-left {
-    flex: 2; /* Lewa kolumna szersza */
+    flex: 2;
+    /* Lewa kolumna szersza */
 }
 
 .support-right {
-    flex: 1; /* Prawa kolumna węższa */
+    flex: 1;
+    /* Prawa kolumna węższa */
     text-align: center;
 }
 
 .support-levels {
     list-style: none;
     padding: 0;
-    margin-bottom: 10px; /* Mniejszy margines */
+    margin-bottom: 10px;
+    /* Mniejszy margines */
 }
 
 .support-levels li {
-    margin-bottom: 12px; /* Kompaktowe */
-    font-size: 15px; /* Powiększony */
+    margin-bottom: 12px;
+    /* Kompaktowe */
+    font-size: 15px;
+    /* Powiększony */
     line-height: 1.4;
     padding: 8px;
     background: rgba(255, 255, 255, 0.95);
@@ -3205,26 +3502,42 @@ header h1,
 }
 
 .support-levels strong {
-    font-size: 16px; /* Powiększony */
+    font-size: 16px;
+    /* Powiększony */
     font-weight: 600;
     display: block;
     margin-bottom: 6px;
 }
 
-.bronze { color: #8b4513; } /* Ciemniejszy brąz, czytelny */
-.silver { color: #696969; } /* Ciemniejszy srebrny/szary, czytelny */
-.gold { color: #b8860b; } /* Ciemniejszy złoty, czytelny */
+.bronze {
+    color: #8b4513;
+}
+
+/* Ciemniejszy brąz, czytelny */
+.silver {
+    color: #696969;
+}
+
+/* Ciemniejszy srebrny/szary, czytelny */
+.gold {
+    color: #b8860b;
+}
+
+/* Ciemniejszy złoty, czytelny */
 
 .easter-egg {
-    color: #000; /* Czarny */
-    font-weight: bold; /* Pogrubiony */
+    color: #000;
+    /* Czarny */
+    font-weight: bold;
+    /* Pogrubiony */
 }
 
 .sub-items {
     list-style: disc;
     padding-left: 20px;
     font-family: 'Open Sans', sans-serif;
-    font-size: 14px; /* Powiększony */
+    font-size: 14px;
+    /* Powiększony */
 }
 
 .sub-items li {
@@ -3232,11 +3545,13 @@ header h1,
 }
 
 .support-reports {
-    margin-top: 10px; /* Kompaktowe */
+    margin-top: 10px;
+    /* Kompaktowe */
 }
 
 .support-reports h3 {
-    font-size: 17px; /* Powiększony */
+    font-size: 17px;
+    /* Powiększony */
     font-weight: 600;
     color: #0288d1;
     margin-bottom: 8px;
@@ -3255,14 +3570,17 @@ header h1,
 
 .coffee-link {
     display: inline-block;
-    padding: 10px 20px; /* Mniejszy padding */
-    background: linear-gradient(45deg, #ff6f61, #ff8f00); /* Elegancki gradient */
+    padding: 10px 20px;
+    /* Mniejszy padding */
+    background: linear-gradient(45deg, #ff6f61, #ff8f00);
+    /* Elegancki gradient */
     color: white;
     text-decoration: none;
     border-radius: 8px;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
-    font-size: 18px; /* Powiększony dla "Postaw kawę" */
+    font-size: 18px;
+    /* Powiększony dla "Postaw kawę" */
     transition: transform 0.3s;
 }
 
@@ -3271,46 +3589,142 @@ header h1,
 }
 
 .coffee-img {
-    width: 100px; /* Mniejszy, by zmieścić */
+    width: 100px;
+    /* Mniejszy, by zmieścić */
     height: auto;
     display: block;
     margin: 8px auto 0;
 }
 
 @media (max-width: 768px) {
-    .support-section { padding: 15px; }
-    .support-container { padding: 15px; }
-    .support-columns { flex-direction: column; gap: 15px; }
-    .support-levels li { font-size: 14px; }
-    .coffee-img { width: 80px; }
+    .support-section {
+        padding: 15px;
+    }
+
+    .support-container {
+        padding: 15px;
+    }
+
+    .support-columns {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .support-levels li {
+        font-size: 14px;
+    }
+
+    .coffee-img {
+        width: 80px;
+    }
 }
 
 
 
 
 
-.compare-wrapper { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-.city-column { flex: 1; min-width: 250px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
-.compare-column { flex: 0.5; min-width: 150px; padding: 10px; text-align: center; border: 1px dashed #ddd; }
-.parameter { margin-bottom: 10px; }
+.compare-wrapper {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.city-column {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.compare-column {
+    flex: 0.5;
+    min-width: 150px;
+    padding: 10px;
+    text-align: center;
+    border: 1px dashed #ddd;
+}
+
+.parameter {
+    margin-bottom: 10px;
+}
+
 /* Kolory kropek - dostosuj jeśli masz już w CSS */
-.red-dot { color: red; font-weight: bold; }
-.orange-dot { color: orange; }
-.green-dot { color: green; }
-.grey-dot { color: grey; }
-.compare-columns { display: flex; gap: 20px; flex-wrap: wrap; justify-content: space-between; }
-.city-left, .city-right { flex: 1; min-width: 300px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #f8f8f8; }
-.parameter { margin-bottom: 10px; font-size: 1em; line-height: 1.4; }
-.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+.red-dot {
+    color: red;
+    font-weight: bold;
+}
+
+.orange-dot {
+    color: orange;
+}
+
+.green-dot {
+    color: green;
+}
+
+.grey-dot {
+    color: grey;
+}
+
+.compare-columns {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.city-left,
+.city-right {
+    flex: 1;
+    min-width: 300px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f8f8f8;
+}
+
+.parameter {
+    margin-bottom: 10px;
+    font-size: 1em;
+    line-height: 1.4;
+}
+
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
 /* Sugestie autouzupełniania (jeśli nie masz, dodaj) */
-#city1-suggestions, #city2-suggestions { position: absolute; background: white; border: 1px solid #ddd; max-height: 150px; overflow-y: auto; z-index: 10; }
-.suggestion-item { padding: 5px; cursor: pointer; }
-.suggestion-item:hover { background: #eee; }
+#city1-suggestions,
+#city2-suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.suggestion-item {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background: #eee;
+}
 
 /* Style dla sekcji Nasza Misja */
 .mission-section {
     padding: 20px;
-    background-color: var(--light-bg, #f9f9f9); /* Zakładam, że masz zmienne CSS */
+    background-color: var(--light-bg, #f9f9f9);
+    /* Zakładam, że masz zmienne CSS */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -3327,7 +3741,8 @@ header h1,
 .mission-intro {
     font-size: 1.2em;
     font-weight: bold;
-    color: var(--primary-color, #007bff); /* Dopasuj do palety */
+    color: var(--primary-color, #007bff);
+    /* Dopasuj do palety */
     margin-bottom: 15px;
 }
 
@@ -3339,14 +3754,22 @@ header h1,
 }
 
 .mission-logo {
-    width: 150px; /* Dostosuj rozmiar */
+    width: 150px;
+    /* Dostosuj rozmiar */
     margin-top: 20px;
     animation: fadeIn 1s ease-in-out;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
@@ -3354,7 +3777,8 @@ header h1,
 /* Style dla sekcji Aktualizacje */
 .updates-section {
     padding: 20px;
-    background-color: var(--light-bg, #f9f9f9); /* Dopasuj do zmiennych CSS */
+    background-color: var(--light-bg, #f9f9f9);
+    /* Dopasuj do zmiennych CSS */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -3371,7 +3795,8 @@ header h1,
 .updates-intro {
     font-size: 1.2em;
     font-weight: bold;
-    color: var(--primary-color, #007bff); /* Dopasuj kolor */
+    color: var(--primary-color, #007bff);
+    /* Dopasuj kolor */
     margin-bottom: 15px;
 }
 
@@ -3383,22 +3808,31 @@ header h1,
 }
 
 .updates-logo {
-    width: 150px; /* Dostosuj */
+    width: 150px;
+    /* Dostosuj */
     margin-top: 20px;
     animation: fadeIn 1s ease-in-out;
 }
 
 /* Jeśli nie masz, dodaj animację */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
 /* Style dla sekcji Regulamin */
 .regulamin-section {
     padding: 20px;
-    background-color: var(--light-bg, #f9f9f9); /* Dopasuj do zmiennych CSS */
+    background-color: var(--light-bg, #f9f9f9);
+    /* Dopasuj do zmiennych CSS */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
@@ -3415,7 +3849,8 @@ header h1,
 .regulamin-intro {
     font-size: 1.2em;
     font-weight: bold;
-    color: var(--primary-color, #007bff); /* Dopasuj kolor */
+    color: var(--primary-color, #007bff);
+    /* Dopasuj kolor */
     margin-bottom: 15px;
 }
 
@@ -3427,15 +3862,23 @@ header h1,
 }
 
 .regulamin-logo {
-    width: 150px; /* Dostosuj */
+    width: 150px;
+    /* Dostosuj */
     margin-top: 20px;
     animation: fadeIn 1s ease-in-out;
 }
 
 /* Jeśli nie masz, dodaj animację */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
@@ -3446,29 +3889,42 @@ header h1,
 /*notka*/
 
 .section {
-    position: relative; /* Dla pozycjonowania absolutnego notki */
-    padding: 30px; /* Zwiększ padding, aby dać więcej miejsca dla notki */
-    background: white; /* Zakładam, że to biały kontener, dostosuj jeśli inaczej */
-    min-height: 300px; /* Upewnij się, że kontener ma dość miejsca na notkę */
+    position: relative;
+    /* Dla pozycjonowania absolutnego notki */
+    padding: 30px;
+    /* Zwiększ padding, aby dać więcej miejsca dla notki */
+    background: white;
+    /* Zakładam, że to biały kontener, dostosuj jeśli inaczej */
+    min-height: 300px;
+    /* Upewnij się, że kontener ma dość miejsca na notkę */
 }
 
 .right-note {
     position: absolute;
-    top: 10px; /* Lekko podniesione, ale nie 1px, aby uniknąć przycięcia */
-    right: 30px; /* Zwiększ odstęp od prawej krawędzi, aby uniknąć kolizji */
-    width: 280px; /* Zwiększ szerokość, aby tekst się mieścił */
+    top: 10px;
+    /* Lekko podniesione, ale nie 1px, aby uniknąć przycięcia */
+    right: 30px;
+    /* Zwiększ odstęp od prawej krawędzi, aby uniknąć kolizji */
+    width: 280px;
+    /* Zwiększ szerokość, aby tekst się mieścił */
     font-size: 0.9em;
     color: #555;
-    font-style: italic; /* Delikatna kursywa */
-    overflow-wrap: break-word; /* Zapobiega wystającym wyrazom */
-    padding: 10px; /* Dodaj padding dla lepszego wyglądu */
-    box-sizing: border-box; /* Upewnij się, że padding nie zwiększa szerokości */
+    font-style: italic;
+    /* Delikatna kursywa */
+    overflow-wrap: break-word;
+    /* Zapobiega wystającym wyrazom */
+    padding: 10px;
+    /* Dodaj padding dla lepszego wyglądu */
+    box-sizing: border-box;
+    /* Upewnij się, że padding nie zwiększa szerokości */
 }
 
 @media (max-width: 768px) {
     .right-note {
-        position: static; /* Na mobile - pod treścią */
-        width: 100%; /* Pełna szerokość na mobile */
+        position: static;
+        /* Na mobile - pod treścią */
+        width: 100%;
+        /* Pełna szerokość na mobile */
         margin-top: 20px;
         padding: 10px;
     }
@@ -3511,106 +3967,160 @@ header h1,
 */
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Dodaj na dole style.css – nowy container biały z cieniem (nadpisuje stare, dodaje elegancję); animacja fade-in na kraniku po 2s (JS pokaże go). */
 .about-container {
-    background: white; /* Biały dla czystości. */
-    padding: 20px; /* Oddech wewnątrz. */
-    border-radius: 10px; /* Zaokrąglone krawędzie. */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Lekki cień dla głębi. */
-    max-width: 1200px; /* Ogranicz szerokość. */
-    margin: 0 auto; /* Centrowanie. */
+    background: white;
+    /* Biały dla czystości. */
+    padding: 20px;
+    /* Oddech wewnątrz. */
+    border-radius: 10px;
+    /* Zaokrąglone krawędzie. */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Lekki cień dla głębi. */
+    max-width: 1200px;
+    /* Ogranicz szerokość. */
+    margin: 0 auto;
+    /* Centrowanie. */
 }
 
 .icon-coffe {
-    width: 40px; /* Mała ikonka inline po tekście. */
+    width: 40px;
+    /* Mała ikonka inline po tekście. */
     height: auto;
-    vertical-align: middle; /* Wyśrodkowana w linii tekstu. */
+    vertical-align: middle;
+    /* Wyśrodkowana w linii tekstu. */
 }
 
 .animated-kranik {
-    display: none; /* Ukryty na start, pokazuje JS po 2s. */
-    animation: fadeIn 1s ease-in-out forwards; /* Fade-in jak slogan. */
+    display: none;
+    /* Ukryty na start, pokazuje JS po 2s. */
+    animation: fadeIn 1s ease-in-out forwards;
+    /* Fade-in jak slogan. */
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); } /* Z dołu. */
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    /* Z dołu. */
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Dodaj/aktualizuj na dole style.css – szerszy container (1400px), styl dla wypunktowania (czysty, modularny). */
 .about-container {
-    background: white; /* Biały dla czystości. */
-    padding: 20px; /* Oddech. */
-    border-radius: 10px; /* Zaokrąglone. */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Cień. */
-    max-width: 1400px; /* Szerszy – walczymy z ciasnotą systemu! */
-    margin: 0 auto; /* Centrowanie. */
+    background: white;
+    /* Biały dla czystości. */
+    padding: 20px;
+    /* Oddech. */
+    border-radius: 10px;
+    /* Zaokrąglone. */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Cień. */
+    max-width: 1400px;
+    /* Szerszy – walczymy z ciasnotą systemu! */
+    margin: 0 auto;
+    /* Centrowanie. */
 }
 
 .about-text ul {
-    list-style-type: disc; /* Punkty dla porządku. */
-    margin-left: 20px; /* Wcięcie. */
-    margin-bottom: 15px; /* Odstęp. */
+    list-style-type: disc;
+    /* Punkty dla porządku. */
+    margin-left: 20px;
+    /* Wcięcie. */
+    margin-bottom: 15px;
+    /* Odstęp. */
 }
 
 .icon-coffe {
-    width: 40px; /* Mała, inline. */
+    width: 40px;
+    /* Mała, inline. */
     height: auto;
-    vertical-align: middle; /* Wyśrodkowana. */
+    vertical-align: middle;
+    /* Wyśrodkowana. */
 }
 
 .animated-kranik {
-    display: none; /* Ukryty, pokazuje JS. */
-    animation: fadeIn 1s ease-in-out forwards; /* Fade-in. */
+    display: none;
+    /* Ukryty, pokazuje JS. */
+    animation: fadeIn 1s ease-in-out forwards;
+    /* Fade-in. */
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
 
 
 #bottled-water {
-    background: white; /* Biały container. */
+    background: white;
+    /* Biały container. */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Cień. */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Cień. */
 }
 
 #bottle-result .parameter {
     display: flex;
     align-items: center;
-    gap: 5px; /* Odstęp dot/tekst. */
+    gap: 5px;
+    /* Odstęp dot/tekst. */
 }
 
-#check-tapwater, #rankings {
+#check-tapwater,
+#rankings {
     background: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 1400px;
     margin: 0 auto;
 }
 
 .auth-container {
-    max-width: 400px; /* Szerokość jak forma. */
-    margin: 100px auto; /* Centrowanie, odstęp od góry. */
+    max-width: 400px;
+    /* Szerokość jak forma. */
+    margin: 100px auto;
+    /* Centrowanie, odstęp od góry. */
     padding: 20px;
     background: white;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Cień jak sekcje. */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Cień jak sekcje. */
     text-align: center;
-    font-family: 'Poppins', sans-serif; /* Pasuje do strony. */
+    font-family: 'Poppins', sans-serif;
+    /* Pasuje do strony. */
 }
 
 .auth-logo {
-    width: 100px; /* Małe logo. */
+    width: 100px;
+    /* Małe logo. */
     margin-bottom: 20px;
 }
 
@@ -3619,20 +4129,23 @@ header h1,
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
-    border-radius: 5px; /* Rounded. */
+    border-radius: 5px;
+    /* Rounded. */
     font-size: 1em;
 }
 
 .auth-button {
     width: 100%;
     padding: 10px;
-    background: linear-gradient(45deg, #0288d1, #ff8f00); /* Niebiesko-pomarańczowy gradient jak brand. */
+    background: linear-gradient(45deg, #0288d1, #ff8f00);
+    /* Niebiesko-pomarańczowy gradient jak brand. */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-    transition: transform 0.3s; /* Hover efekt. */
+    transition: transform 0.3s;
+    /* Hover efekt. */
 }
 
 .auth-button:hover {
@@ -3642,49 +4155,71 @@ header h1,
 .auth-link {
     display: block;
     margin-top: 10px;
-    color: #0288d1; /* Niebieski link. */
+    color: #0288d1;
+    /* Niebieski link. */
     text-decoration: none;
 }
 
 .messages {
     list-style: none;
     padding: 0;
-    color: #f44336; /* Czerwony dla błędów. */
+    color: #f44336;
+    /* Czerwony dla błędów. */
 }
 
 .input-container {
-    background: white; /* Biały kontener tylko wokół inputów */
-    padding: 15px; /* Lekki oddech wewnątrz */
-    border-radius: 10px; /* Zaokrąglone rogi */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Cień jak w innych sekcjach */
-    display: flex; /* Inputy obok siebie */
-    flex-wrap: wrap; /* Wrap na mobile */
-    justify-content: space-between; /* Lewy i prawy input */
-    gap: 10px; /* Odstęp między elementami */
-    margin-bottom: 20px; /* Odstęp pod kontenerem (przed resultem) */
-    position: relative; /* Dla absolute sugestii */
+    background: white;
+    /* Biały kontener tylko wokół inputów */
+    padding: 15px;
+    /* Lekki oddech wewnątrz */
+    border-radius: 10px;
+    /* Zaokrąglone rogi */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Cień jak w innych sekcjach */
+    display: flex;
+    /* Inputy obok siebie */
+    flex-wrap: wrap;
+    /* Wrap na mobile */
+    justify-content: space-between;
+    /* Lewy i prawy input */
+    gap: 10px;
+    /* Odstęp między elementami */
+    margin-bottom: 20px;
+    /* Odstęp pod kontenerem (przed resultem) */
+    position: relative;
+    /* Dla absolute sugestii */
 }
 
 .input-container input {
-    flex: 1; /* Równa szerokość, min 45% */
-    min-width: 200px; /* Nie za wąskie */
+    flex: 1;
+    /* Równa szerokość, min 45% */
+    min-width: 200px;
+    /* Nie za wąskie */
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    position: relative; /* Parent dla sugestii */
+    position: relative;
+    /* Parent dla sugestii */
 }
 
-.input-container #city1-suggestions, .input-container #city2-suggestions {
-    position: absolute; /* Pod inputem, nie rozjeżdża */
-    top: 100%; /* Tuż pod inputem */
-    left: 0; /* Wyrównane do lewej inputa */
-    width: 100%; /* Szerokość jak input */
+.input-container #city1-suggestions,
+.input-container #city2-suggestions {
+    position: absolute;
+    /* Pod inputem, nie rozjeżdża */
+    top: 100%;
+    /* Tuż pod inputem */
+    left: 0;
+    /* Wyrównane do lewej inputa */
+    width: 100%;
+    /* Szerokość jak input */
     max-height: 150px;
     overflow-y: auto;
     background: white;
     border: 1px solid #ddd;
-    z-index: 10; /* Nad innymi */
-    display: none; /* Ukryte domyślnie, JS pokazuje */
+    z-index: 10;
+    /* Nad innymi */
+    display: none;
+    /* Ukryte domyślnie, JS pokazuje */
 }
 
 .input-container button {
@@ -3694,7 +4229,8 @@ header h1,
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin: 10px auto 0; /* Wyśrodkowany pod inputami */
+    margin: 10px auto 0;
+    /* Wyśrodkowany pod inputami */
     display: block;
     transition: background 0.3s;
 }
@@ -3706,53 +4242,91 @@ header h1,
 /* Responsywność: Na mobile stack pionowo */
 @media (max-width: 768px) {
     .input-container {
-        flex-direction: column; /* Inputy jeden pod drugim */
+        flex-direction: column;
+        /* Inputy jeden pod drugim */
     }
+
     .input-container input {
-        width: 100%; /* Full szerokość */
+        width: 100%;
+        /* Full szerokość */
     }
 }
 
 
-.input-container #city1-suggestions, .input-container #city2-suggestions {
-    position: absolute; /* Pod inputem */
-    top: calc(100% + 5px); /* Tuż pod, z lekkim odstępem */
-    left: 0; /* Do lewej inputa (city1) */
-    width: calc(100% - 20px); /* Szerokość jak input minus padding */
+.input-container #city1-suggestions,
+.input-container #city2-suggestions {
+    position: absolute;
+    /* Pod inputem */
+    top: calc(100% + 5px);
+    /* Tuż pod, z lekkim odstępem */
+    left: 0;
+    /* Do lewej inputa (city1) */
+    width: calc(100% - 20px);
+    /* Szerokość jak input minus padding */
     max-height: 150px;
     overflow-y: auto;
     background: white;
     border: 1px solid #ddd;
-    z-index: 1000; /* Wyżej niż reszta */
-    display: none; /* Domyślnie ukryte */
+    z-index: 1000;
+    /* Wyżej niż reszta */
+    display: none;
+    /* Domyślnie ukryte */
     padding: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Lekki cień dla widoczności */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* Lekki cień dla widoczności */
 }
 
 /* Specyficzne dla city2 */
 .input-container #city2-suggestions {
     left: auto;
-    right: 0; /* Do prawej inputa city2 */
+    right: 0;
+    /* Do prawej inputa city2 */
 }
 
 /* Force visible kiedy JS doda content (jeśli JS ustawia class 'active' lub coś – dostosuj jeśli Twój JS używa innej klasy) */
-.input-container #city1-suggestions:not(:empty), .input-container #city2-suggestions:not(:empty) {
-    display: block; /* Pokaż jeśli nie puste (JS wypełnia) */
+.input-container #city1-suggestions:not(:empty),
+.input-container #city2-suggestions:not(:empty) {
+    display: block;
+    /* Pokaż jeśli nie puste (JS wypełnia) */
 }
 
 /* Mobile fix */
 @media (max-width: 768px) {
-    .input-container #city1-suggestions, .input-container #city2-suggestions {
-        position: relative; /* Nie absolute na mobile */
+
+    .input-container #city1-suggestions,
+    .input-container #city2-suggestions {
+        position: relative;
+        /* Nie absolute na mobile */
         top: 0;
         left: 0;
         right: auto;
         width: 100%;
     }
 }
-.dot { width: 20px; height: 20px; aspect-ratio: 1/1; margin-right: 10px; } /* Force okrągłe, odstęp */
-.compare-middle { flex: 0.5; text-align: center; font-weight: bold; } /* Środkowa kolumna */
-.parameter { display: flex; align-items: center; justify-content: flex-start; gap: 5px; } /* Wyśrodkuj kółko/tekst */
+
+.dot {
+    width: 20px;
+    height: 20px;
+    aspect-ratio: 1/1;
+    margin-right: 10px;
+}
+
+/* Force okrągłe, odstęp */
+.compare-middle {
+    flex: 0.5;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Środkowa kolumna */
+.parameter {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+}
+
+/* Wyśrodkuj kółko/tekst */
 
 
 
@@ -3760,76 +4334,151 @@ header h1,
 
 
 .feedback-container {
-    display: flex; /* Flex dla left/right na desktop */
-    justify-content: space-between; /* Rozsuń */
-    gap: 20px; /* Odstęp */
-    max-width: 800px; /* Centrowany container – szerszy dla "pokoju" */
-    margin: 0 auto; /* Wyśrodkowany */
-    padding: 20px; /* Oddech wewnątrz */
-    background: linear-gradient(135deg, #e0f7fa, #b3e5fc); /* Kosmos gradient tło */
-    border-radius: 10px; /* Zaokrąglone */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15); /* Cień w kosmos */
+    display: flex;
+    /* Flex dla left/right na desktop */
+    justify-content: space-between;
+    /* Rozsuń */
+    gap: 20px;
+    /* Odstęp */
+    max-width: 800px;
+    /* Centrowany container – szerszy dla "pokoju" */
+    margin: 0 auto;
+    /* Wyśrodkowany */
+    padding: 20px;
+    /* Oddech wewnątrz */
+    background: linear-gradient(135deg, #e0f7fa, #b3e5fc);
+    /* Kosmos gradient tło */
+    border-radius: 10px;
+    /* Zaokrąglone */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    /* Cień w kosmos */
 }
 
 .feedback-left {
-    flex: 1; /* Lewa elastyczna */
-    text-align: left; /* Lewo wyrównane */
-    min-width: 300px; /* Nie za wąsko */
+    flex: 1;
+    /* Lewa elastyczna */
+    text-align: left;
+    /* Lewo wyrównane */
+    min-width: 300px;
+    /* Nie za wąsko */
 }
 
-#feedback .note { /* Tylko w feedback – fix nachodzenia! */
-    flex: 1; /* Prawa elastyczna */
-    font-size: 15px; /* Większy tekst */
-    color: #555; /* Szary */
-    line-height: 1.5; /* Oddech */
+#feedback .note {
+    /* Tylko w feedback – fix nachodzenia! */
+    flex: 1;
+    /* Prawa elastyczna */
+    font-size: 15px;
+    /* Większy tekst */
+    color: #555;
+    /* Szary */
+    line-height: 1.5;
+    /* Oddech */
     min-width: 250px;
 }
 
 .feedback-list {
-    list-style: disc; /* Punkty */
-    padding-left: 20px; /* Wcięcie */
-    font-size: 16px; /* Większy dla czytelności */
+    list-style: disc;
+    /* Punkty */
+    padding-left: 20px;
+    /* Wcięcie */
+    font-size: 16px;
+    /* Większy dla czytelności */
 }
 
 #feedback-text {
-    width: 100%; /* Pełna szer. – nie 2mx2m! */
-    padding: 15px; /* Większy oddech */
-    border: 1px solid #ccc; /* Ramka */
-    border-radius: 8px; /* Miękksze */
-    min-height: 150px; /* Wyższa dla komfortu */
-    font-size: 15px; /* Większy tekst */
+    width: 100%;
+    /* Pełna szer. – nie 2mx2m! */
+    padding: 15px;
+    /* Większy oddech */
+    border: 1px solid #ccc;
+    /* Ramka */
+    border-radius: 8px;
+    /* Miękksze */
+    min-height: 150px;
+    /* Wyższa dla komfortu */
+    font-size: 15px;
+    /* Większy tekst */
 }
 
 #send-feedback-btn {
-    background: #0288d1; /* Niebieski */
-    color: white; /* Biały tekst */
-    padding: 12px 25px; /* Większy button */
-    border: none; /* Bez ramki */
-    border-radius: 8px; /* Miękksze */
-    cursor: pointer; /* Ręka */
-    margin: 15px auto; /* Wyśrodkowany */
-    display: block; /* Center */
-    font-size: 16px; /* Większy */
-    transition: transform 0.3s, background-color 0.3s; /* Kosmos hover */
+    background: #0288d1;
+    /* Niebieski */
+    color: white;
+    /* Biały tekst */
+    padding: 12px 25px;
+    /* Większy button */
+    border: none;
+    /* Bez ramki */
+    border-radius: 8px;
+    /* Miękksze */
+    cursor: pointer;
+    /* Ręka */
+    margin: 15px auto;
+    /* Wyśrodkowany */
+    display: block;
+    /* Center */
+    font-size: 16px;
+    /* Większy */
+    transition: transform 0.3s, background-color 0.3s;
+    /* Kosmos hover */
 }
 
 #send-feedback-btn:hover {
-    background: #01579b; /* Ciemniejszy */
-    transform: scale(1.05); /* Zoom na hover */
+    background: #01579b;
+    /* Ciemniejszy */
+    transform: scale(1.05);
+    /* Zoom na hover */
 }
 
 @media (max-width: 768px) {
-    .feedback-container { flex-direction: column; gap: 15px; } /* Stack pionowo na mobile – nie rozjeżdża */
-    .feedback-left, #feedback .note { width: 100%; } /* Full szer. */
-    #feedback-text { min-height: 120px; } /* Niższa na mobile */
+    .feedback-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Stack pionowo na mobile – nie rozjeżdża */
+    .feedback-left,
+    #feedback .note {
+        width: 100%;
+    }
+
+    /* Full szer. */
+    #feedback-text {
+        min-height: 120px;
+    }
+
+    /* Niższa na mobile */
 }
 
-.feedback-container { max-width: 1000px; } /* Poszerzony container na dane */
-.feedback-list li { margin-bottom: 15px; } /* Większe odstępy między punktami */
+.feedback-container {
+    max-width: 1000px;
+}
 
-.darkgreen-winner { color: darkgreen; font-weight: bold; } /* Kontrast lepszy */
-.darkorange-winner { color: darkorange; font-weight: bold; } /* Kontrast gorszy */
-.grey-winner { color: grey; font-style: italic; } /* Szary remis/brak */
+/* Poszerzony container na dane */
+.feedback-list li {
+    margin-bottom: 15px;
+}
+
+/* Większe odstępy między punktami */
+
+.darkgreen-winner {
+    color: darkgreen;
+    font-weight: bold;
+}
+
+/* Kontrast lepszy */
+.darkorange-winner {
+    color: darkorange;
+    font-weight: bold;
+}
+
+/* Kontrast gorszy */
+.grey-winner {
+    color: grey;
+    font-style: italic;
+}
+
+/* Szary remis/brak */
 
 
 
@@ -3871,25 +4520,33 @@ header h1,
 /* === Zapobieganie nachodzeniu "Panel" na "Wesprzyj mnie kawą" === */
 /* Zwiększony odstęp między elementami w top-right-nav. Eksperymentuj z 40px dla większego. */
 .top-right-nav {
-    gap: 35px; /* Odstęp – zmień na 35px jeśli nadal nachodzi. */
+    gap: 35px;
+    /* Odstęp – zmień na 35px jeśli nadal nachodzi. */
 }
 
 /* Większy margines prawy dla linku kawy, by "Panel" miał miejsce. Eksperymentuj z 140px jeśli nadal problem na PythonAnywhere. */
 .coffee-support {
-    margin-right: 150px; /* Margines – zmniejsz na 100px dla węższej strony. */
+    margin-right: 150px;
+    /* Margines – zmniejsz na 100px dla węższej strony. */
 }
 
 /* Responsywność dla nachodzenia na mobile/tablecie. Eksperymentuj z max-width: 1024px dla tabletów. */
 @media (max-width: 768px) {
     .coffee-support {
-        margin-right: 180px; /* Mniejszy margines na małych ekranach. */
+        margin-right: 180px;
+        /* Mniejszy margines na małych ekranach. */
     }
+
     .panel-menu {
-        font-size: 12px; /* Mniejszy tekst "Panel". */
-        padding: 6px 12px; /* Mniejszy padding. */
+        font-size: 12px;
+        /* Mniejszy tekst "Panel". */
+        padding: 6px 12px;
+        /* Mniejszy padding. */
     }
+
     .panel-menu::after {
-        font-size: 10px; /* Mniejsza strzałeczka. */
+        font-size: 10px;
+        /* Mniejsza strzałeczka. */
     }
 }
 
@@ -3899,10 +4556,11 @@ header h1,
     padding: 15px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.no-station-box, .active-station-box {
+.no-station-box,
+.active-station-box {
     text-align: center;
     color: white;
 }
@@ -3918,7 +4576,8 @@ header h1,
     font-size: 1em;
 }
 
-.select-station-btn, .change-station-btn {
+.select-station-btn,
+.change-station-btn {
     background: white;
     color: #667eea;
     border: none;
@@ -3928,12 +4587,13 @@ header h1,
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.select-station-btn:hover, .change-station-btn:hover {
+.select-station-btn:hover,
+.change-station-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .change-station-btn {
@@ -3956,8 +4616,13 @@ header h1,
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-overlay {
@@ -3979,7 +4644,7 @@ header h1,
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease;
 }
 
@@ -3988,6 +4653,7 @@ header h1,
         transform: translateY(50px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -4079,7 +4745,7 @@ header h1,
     border-radius: 8px;
     overflow: hidden;
     margin: 15px 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .modal-actions {
@@ -4124,13 +4790,16 @@ header h1,
         font-size: 0.95em;
     }
 }
+
 /* FIX: Modal musi być widoczny gdy parent ma display: none */
 .section .station-modal {
-    display: none !important; /* Domyślnie ukryty */
+    display: none !important;
+    /* Domyślnie ukryty */
 }
 
 .section .station-modal[style*="display: flex"] {
-    display: flex !important; /* Force pokazanie gdy JS ustawi flex */
+    display: flex !important;
+    /* Force pokazanie gdy JS ustawi flex */
 }
 
 
@@ -4169,7 +4838,7 @@ header h1,
     max-height: 120px;
     overflow-y: auto;
     z-index: 10001;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .modal-btn-confirm-small {
@@ -4225,17 +4894,19 @@ header h1,
 /* Legenda rozwijana */
 .legend {
     position: absolute;
-    top: 60px; /* Pod togglem */
+    top: 60px;
+    /* Pod togglem */
     left: 10px;
     /* Ujednolicone tło i odstępy, żeby legenda nie była przezroczysta */
-    background: rgba(255,255,255,0.98);
+    background: rgba(255, 255, 255, 0.98);
     padding: 12px;
     border: 1px solid #e5e7eb;
     border-radius: 10px;
     box-shadow: 0 6px 18px rgba(2, 119, 189, 0.12);
     z-index: 1002;
     width: 340px;
-    max-height: calc(100vh - 100px); /* nie wychodzi poza widok, ale zwykle mieści całość */
+    max-height: calc(100vh - 100px);
+    /* nie wychodzi poza widok, ale zwykle mieści całość */
     overflow-y: auto;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
@@ -4266,10 +4937,12 @@ header h1,
         max-height: calc(60vh);
         left: 10px;
         right: 10px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
     }
 }
-.nav-aquabot-icon, .btn-aquabot-icon {
+
+.nav-aquabot-icon,
+.btn-aquabot-icon {
     width: 20px;
     height: 20px;
 }
@@ -4278,7 +4951,8 @@ header h1,
 /* === FIOLETOWY PRZYCISK AQUABOT Z MIGANIEM === */
 .aquabot-hero-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    color: #FFFFFF !important; /* Biały tekst na fioletowym tle */
+    color: #FFFFFF !important;
+    /* Biały tekst na fioletowym tle */
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
     animation: aquabotPulse 2s ease-in-out infinite;
 }
@@ -4289,10 +4963,13 @@ header h1,
 }
 
 @keyframes aquabotPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         transform: scale(1);
     }
+
     50% {
         box-shadow: 0 6px 25px rgba(102, 126, 234, 0.7);
         transform: scale(1.03);
@@ -4302,7 +4979,8 @@ header h1,
 .aquabot-hero-btn:hover {
     background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
     transform: translateY(-2px) scale(1.05);
-    animation: none; /* Zatrzymaj miganie na hover */
+    animation: none;
+    /* Zatrzymaj miganie na hover */
 }
 
 .nav-aquabot-icon {
@@ -4312,15 +4990,23 @@ header h1,
 }
 
 @keyframes bulbGlow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
 }
 
 
 /* === FIOLETOWY PRZYCISK AQUABOT Z MIGANIEM === */
 .sticky-nav .aquabot-hero-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    color: #FFFFFF !important; /* Biały tekst na fioletowym tle */
+    color: #FFFFFF !important;
+    /* Biały tekst na fioletowym tle */
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
     animation: aquabotPulse 2s ease-in-out infinite !important;
 }
@@ -4331,10 +5017,13 @@ header h1,
 }
 
 @keyframes aquabotPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         transform: scale(1);
     }
+
     50% {
         box-shadow: 0 6px 25px rgba(102, 126, 234, 0.7);
         transform: scale(1.03);
@@ -4354,8 +5043,15 @@ header h1,
 }
 
 @keyframes bulbGlow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
 }
 
 /* === PULSE ANIMATION (PULSUJĄCE PRZYCISKI AQUABOT) === */
@@ -4364,10 +5060,12 @@ header h1,
         transform: scale(1);
         box-shadow: 0 4px 20px rgba(2, 136, 209, 0.3);
     }
+
     50% {
         transform: scale(1.05);
         box-shadow: 0 8px 30px rgba(2, 136, 209, 0.6);
     }
+
     100% {
         transform: scale(1);
         box-shadow: 0 4px 20px rgba(2, 136, 209, 0.3);
@@ -4463,20 +5161,330 @@ header h1,
     .coffee-support {
         display: none;
     }
-    
+
     .cta-aquabot-large {
         padding: 16px 32px !important;
         font-size: 18px !important;
         min-height: 60px;
     }
-    
+
     .btn-aquabot-icon-large {
         width: 40px !important;
         height: 40px !important;
     }
-    
+
     .cta-aquabot-station {
         padding: 16px 28px;
         font-size: 16px;
+    }
+}
+
+/* ============================================
+   RANK CHANGE INDICATORS - Ranking Movement
+   ============================================ */
+
+.rank-change {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Awans = zielony (pozytywna zmiana) */
+.rank-up {
+    color: #16a34a;
+    background: rgba(22, 163, 74, 0.1);
+}
+
+/* Spadek = czerwony (negatywna zmiana) */
+.rank-down {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.1);
+}
+
+/* Bez zmian = szary */
+.rank-stable {
+    color: #6b7280;
+    background: rgba(107, 114, 128, 0.1);
+}
+
+/* ============================================
+   📈 INLINE HISTORY CHARTS
+   ============================================ */
+
+/* Przycisk "Historia" przy parametrze */
+.history-btn {
+    background: linear-gradient(135deg, #0288d1, #0277bd);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+}
+
+.history-btn:hover {
+    background: linear-gradient(135deg, #0277bd, #01579b);
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(2, 136, 209, 0.4);
+}
+
+.history-btn:active {
+    transform: scale(0.95);
+}
+
+/* Kontener wykresu */
+.history-chart-container {
+    margin-top: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    animation: slideDown 0.3s ease-out;
+}
+
+.history-chart-container canvas {
+    width: 100% !important;
+    height: 200px !important;
+    border-radius: 8px;
+    background: white;
+}
+
+.history-chart-info {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #64748b;
+    text-align: center;
+}
+
+/* Loading state */
+.history-chart-loading {
+    padding: 20px;
+    text-align: center;
+    color: #0288d1;
+    font-size: 14px;
+    animation: pulse 1.5s infinite;
+}
+
+/* Animacja pojawiania się */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        max-height: 400px;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Parameter item layout fix dla przycisku */
+.param-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+
+.param-content {
+    flex: 1;
+}
+
+/* ============================================
+   🤖 AQUABOT - SMART LOCATION PICKER
+   ============================================ */
+
+/* Location Badge (in header) */
+.location-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.location-badge:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.location-icon {
+    font-size: 16px;
+}
+
+.location-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ef4444; /* Red = Missing location */
+    transition: color 0.2s ease;
+}
+
+.location-text.has-location {
+    color: #059669; /* Green = Location set */
+}
+
+.location-arrow {
+    font-size: 10px;
+    color: #6b7280;
+    transition: transform 0.2s ease;
+}
+
+.location-badge.expanded .location-arrow {
+    transform: rotate(180deg);
+}
+
+/* Expandable Location Picker */
+.aquabot-location-picker {
+    padding: 20px;
+    background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    animation: slideDown 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.picker-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 16px 0;
+    text-align: center;
+}
+
+.picker-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.picker-input-wrapper {
+    position: relative;
+}
+
+.picker-input-wrapper input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #ffffff;
+}
+
+.picker-input-wrapper input:focus {
+    border-color: #0288d1;
+    box-shadow: 0 0 0 4px rgba(2, 136, 209, 0.1);
+}
+
+.picker-input-wrapper input::placeholder {
+    color: #9ca3af;
+}
+
+/* Suggestions dropdown */
+#aquabot-city-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: -8px;
+}
+
+#aquabot-city-suggestions .suggestion-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #333;
+    transition: background 0.2s ease;
+}
+
+#aquabot-city-suggestions .suggestion-item:hover {
+    background: #f0f9ff;
+    color: #0288d1;
+}
+
+/* Confirm button */
+.confirm-location-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #0288d1 0%, #26c6da 100%);
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(2, 136, 209, 0.3);
+}
+
+.confirm-location-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(2, 136, 209, 0.4);
+}
+
+.confirm-location-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(2, 136, 209, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .location-badge {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+    
+    .picker-title {
+        font-size: 15px;
+    }
+    
+    .picker-input-wrapper input {
+        font-size: 14px;
     }
 }

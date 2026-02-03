@@ -1,4 +1,4 @@
-import { getParameterDescription, getColor, suggestWaterFilter, getSelectedParameters, getPremiumParameters } from './utils.js';
+import { getParameterDescription, getColor, suggestWaterFilter, getSelectedParameters, getPremiumParameters, smartFormat, formatTrendPercent } from './utils.js';
 import { trackCitySearch, trackStationSearch } from './analytics.js';
 export let map = null;
 export function getDistance(lat1, lon1, lat2, lon2) {
@@ -87,6 +87,450 @@ export function calculateCityAverages() {
 }
 calculateCityAverages();
 
+// ============================================
+// TRENDS RENDERING HELPER
+// ============================================
+
+/**
+ * Renderuje wskaźnik trendu dla parametru
+ * @param {string} parameter - nazwa parametru (np. 'twardosc')
+ * @param {object} trendData - dane trendu z API {current, previous, diff, change_pct, trend, prev_date, unit}
+ * @returns {string} HTML wskaźnika trendu
+ */
+export function renderTrendIndicator(parameter, trendData) {
+    console.log(`🔍 renderTrendIndicator called for ${parameter}:`, trendData);
+
+    if (!trendData) {
+        console.log(`  ⏭️ No trend data available`);
+        return '';
+    }
+
+    const { diff, change_pct, previous, prev_date, trend, unit } = trendData;
+
+    // Obsługa stabilnych wartości - pokazujemy "→ bez zmian"
+    if (trend === 'stable') {
+        const formattedDate = prev_date ? new Date(prev_date).toLocaleDateString('pl-PL', { month: 'short', year: 'numeric' }) : '';
+        return ` <span class="trend-indicator trend-stable" title="Bez zmian od ${formattedDate}">→ bez zmian</span>`;
+    }
+
+    // Określ klasę CSS i ikonkę na podstawie trendu
+    // Wzrost = czerwony (niekorzystny dla większości parametrów)
+    // Spadek = zielony (korzystny)
+    const trendClass = trend === 'up' ? 'trend-up' : 'trend-down';
+    const arrow = trend === 'up' ? '↑' : '↓';
+
+    // Formatuj zmianę procentową używając nowej funkcji
+    const changePctText = formatTrendPercent(change_pct);
+
+    // Formatuj poprzednią wartość używając smartFormat
+    const formattedPrevious = smartFormat(previous, parameter);
+    const prevText = `poprzednia: ${formattedPrevious} ${unit || ''}`;
+
+    // Formatuj datę
+    const dateText = prev_date ? `(${prev_date})` : '';
+
+    return `<span class="trend-indicator ${trendClass}">
+        <span class="trend-arrow">${arrow}</span>
+        <span class="trend-value">${changePctText}</span>
+        <span class="trend-prev">${prevText}</span>
+        <span class="trend-date">${dateText}</span>
+    </span>`;
+}
+
+// ============================================
+// PULS WODY (HISTORY SECTION)
+// ============================================
+
+let pulseChartInstance = null;
+
+// Helper: Get thresholds for background zones (Mirrors utils2.js getColor logic)
+function getThresholds(parameter) {
+    // Returns [warningLimit, dangerLimit]
+    // If warningLimit is reached -> Yellow. If dangerLimit is reached -> Red.
+    // Example: twardosc > 150 (Yellow), > 220 (Red)
+
+    switch (parameter) {
+        case 'pH': return [8.5, 9.5]; // Special case: pH also has lower bounds, simplistic for now
+        case 'twardosc': return [150, 220]; // 0-150 Green, 150-220 Yellow, >220 Red
+        case 'azotany': return [10, 20];
+        case 'zelazo': return [0.1, 0.2];
+        case 'fluorki': return [1.2, 1.5];
+        case 'chlor': return [0.15, 0.27];
+        case 'mangan': return [20, 50];
+        case 'chlorki': return [125, 250];
+        case 'siarczany': return [125, 250];
+        case 'barwa': return [7.5, 15];
+        case 'magnez': return [25, 50];
+        case 'potas': return [6, 12];
+        case 'olow': return [5, 10];
+        case 'rtec': return [0.5, 1];
+        default: return [null, null];
+    }
+}
+
+function getPointColor(value, thresholds) {
+    const [warn, danger] = thresholds;
+    if (warn === null) return '#2196f3'; // Blue default if no thresholds
+    if (value >= danger) return '#ef4444'; // Red
+    if (value >= warn) return '#f59e0b'; // Yellow/Orange
+    return '#10b981'; // Green
+}
+
+function getQualityText(value, thresholds, param) {
+    const [warn, danger] = thresholds;
+    if (warn === null) return '';
+
+    if (param === 'twardosc') {
+        if (value > danger) return 'Woda Twarda';
+        if (value > warn) return 'Woda Średnio Twarda';
+        return 'Woda Miękka'; // Or "Woda Optymalna"
+    }
+
+    if (value >= danger) return 'Przekroczenie Normy!';
+    if (value >= warn) return 'Podwyższony Poziom';
+    return 'Poziom Optymalny';
+}
+
+function generatePulseSectionHTML(stations) {
+    if (!stations || stations.length === 0) return '';
+
+    const stationOptions = stations.map((s, index) =>
+        `<option value="${s.id}" ${index === 0 ? 'selected' : ''}>${s.name} (${s.address})</option>`
+    ).join('');
+
+    return `
+    <div class="card" style="padding: 24px; border: 1px solid #e0e0e0; border-radius: 16px; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
+        
+        <!-- Legenda Stref -->
+        <div style="display: flex; gap: 12px; margin-bottom: 20px; padding: 16px; background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 6px; box-shadow: 0 2px 4px rgba(16,185,129,0.3);"></div>
+                <div>
+                    <div style="font-size: 11px; font-weight: 600; color: #10b981;">BEZPIECZNA</div>
+                    <div style="font-size: 10px; color: #6b7280;">Strefa zielona</div>
+                </div>
+            </div>
+            <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 6px; box-shadow: 0 2px 4px rgba(245,158,11,0.3);"></div>
+                <div>
+                    <div style="font-size: 11px; font-weight: 600; color: #f59e0b;">OSTRZEŻENIE</div>
+                    <div style="font-size: 10px; color: #6b7280;">Podwyższony poziom</div>
+                </div>
+            </div>
+            <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 6px; box-shadow: 0 2px 4px rgba(239,68,68,0.3);"></div>
+                <div>
+                    <div style="font-size: 11px; font-weight: 600; color: #ef4444;">NIEBEZPIECZEŃSTWO</div>
+                    <div style="font-size: 10px; color: #6b7280;">Przekroczenie progów</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kontrolki -->
+        <div class="pulse-controls" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 24px;">
+            <div style="flex: 1; min-width: 250px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9em; color: #374151;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #0288d1; border-radius: 50%; margin-right: 6px;"></span>
+                    Wybierz Stację
+                </label>
+                <select id="pulse-station-select" style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 2px solid #e5e7eb; font-family: inherit; font-size: 14px; transition: all 0.2s; background: white;">
+                    ${stationOptions}
+                </select>
+            </div>
+            <div style="flex: 1; min-width: 250px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9em; color: #374151;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #0288d1; border-radius: 50%; margin-right: 6px;"></span>
+                    Wybierz Parametr
+                </label>
+                <select id="pulse-param-select" style="width: 100%; padding: 12px 16px; border-radius: 10px; border: 2px solid #e5e7eb; font-family: inherit; font-size: 14px; transition: all 0.2s; background: white;">
+                    <option value="twardosc" selected>Twardość ogólna</option>
+                    <option value="chlor">Chlor wolny</option>
+                    <option value="mangan">Mangan</option>
+                    <option value="zelazo">Żelazo</option>
+                    <option value="pH">pH</option>
+                    <option value="azotany">Azotany</option>
+                    <option value="fluorki">Fluorki</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Wykres -->
+        <div id="pulse-chart-container" style="position: relative; height: 400px; width: 100%; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #f3f4f6;">
+            <canvas id="pulse-chart"></canvas>
+            <div id="pulse-loading" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; z-index: 10; border-radius: 12px; backdrop-filter: blur(4px);">
+                <div style="text-align: center;">
+                    <div style="width: 48px; height: 48px; border: 4px solid #e5e7eb; border-top-color: #0288d1; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px;"></div>
+                    <span style="font-size: 14px; color: #6b7280; font-weight: 500;">Ładowanie danych...</span>
+                </div>
+            </div>
+        </div>
+        <p id="pulse-meta" style="text-align: center; font-size: 0.85em; color: #6b7280; margin-top: 16px; font-weight: 500;"></p>
+        
+        <style>
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+            #pulse-station-select:hover, #pulse-param-select:hover {
+                border-color: #0288d1;
+                box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
+            }
+            #pulse-station-select:focus, #pulse-param-select:focus {
+                outline: none;
+                border-color: #0288d1;
+                box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.2);
+            }
+        </style>
+    </div>`;
+}
+
+async function updatePulseChart(stationId, parameter) {
+    const loadingEl = document.getElementById('pulse-loading');
+    const metaEl = document.getElementById('pulse-meta');
+    if (loadingEl) loadingEl.style.display = 'flex';
+
+    if (pulseChartInstance) {
+        pulseChartInstance.destroy();
+        pulseChartInstance = null;
+    }
+
+    try {
+        const response = await fetch(`/api/history/${stationId}/${encodeURIComponent(parameter)}`);
+        const result = await response.json();
+
+        if (loadingEl) loadingEl.style.display = 'none';
+
+        if (!result.success || !result.data || result.data.length < 2) {
+            if (metaEl) metaEl.innerText = "Brak wystarczających danych historycznych.";
+            return;
+        }
+
+        const labels = result.data.map(d => d.date);
+        const values = result.data.map(d => d.value);
+        const unit = result.unit || '';
+        const thresholds = getThresholds(parameter);
+
+        // Calculate statistics
+        const avgValue = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
+        const maxValue = Math.max(...values);
+        const minValue = Math.min(...values);
+        const latestValue = values[values.length - 1];
+        const previousValue = values[values.length - 2];
+        const trend = latestValue > previousValue ? '↗️' : latestValue < previousValue ? '↘️' : '→';
+        const trendPercent = previousValue !== 0 ? (((latestValue - previousValue) / previousValue) * 100).toFixed(1) : '0';
+
+        // Color each bar based on its value
+        const barColors = values.map(v => {
+            const color = getPointColor(v, thresholds);
+            return color;
+        });
+
+        const ctx = document.getElementById('pulse-chart').getContext('2d');
+
+        pulseChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: parameter.charAt(0).toUpperCase() + parameter.slice(1),
+                    data: values,
+                    backgroundColor: barColors,
+                    borderColor: barColors.map(c => c.replace('0.8', '1')),
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    barPercentage: 0.8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#374151',
+                        borderWidth: 1,
+                        padding: 16,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        displayColors: false,
+                        callbacks: {
+                            label: function (context) {
+                                const val = context.parsed.y;
+                                const quality = getQualityText(val, thresholds, parameter);
+                                return [
+                                    `Wartość: ${val} ${unit}`,
+                                    `Ocena: ${quality}`
+                                ];
+                            },
+                            title: function (context) {
+                                return `📅 ${context[0].label}`;
+                            }
+                        }
+                    },
+                    // Threshold lines
+                    annotation: {
+                        annotations: {
+                            ...(thresholds[0] !== null ? {
+                                warningLine: {
+                                    type: 'line',
+                                    yMin: thresholds[0],
+                                    yMax: thresholds[0],
+                                    borderColor: '#f59e0b',
+                                    borderWidth: 3,
+                                    borderDash: [8, 4],
+                                    label: {
+                                        content: `⚠️ OSTRZEŻENIE: ${thresholds[0]} ${unit}`,
+                                        enabled: true,
+                                        position: 'end',
+                                        backgroundColor: '#f59e0b',
+                                        color: 'white',
+                                        font: { size: 11, weight: 'bold' },
+                                        padding: 6
+                                    }
+                                }
+                            } : {}),
+                            ...(thresholds[1] !== null ? {
+                                dangerLine: {
+                                    type: 'line',
+                                    yMin: thresholds[1],
+                                    yMax: thresholds[1],
+                                    borderColor: '#ef4444',
+                                    borderWidth: 3,
+                                    borderDash: [8, 4],
+                                    label: {
+                                        content: `🚨 NIEBEZPIECZEŃSTWO: ${thresholds[1]} ${unit}`,
+                                        enabled: true,
+                                        position: 'end',
+                                        backgroundColor: '#ef4444',
+                                        color: 'white',
+                                        font: { size: 11, weight: 'bold' },
+                                        padding: 6
+                                    }
+                                }
+                            } : {})
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#e5e7eb',
+                            drawBorder: false
+                        },
+                        title: {
+                            display: true,
+                            text: unit,
+                            color: '#374151',
+                            font: { size: 13, weight: 'bold' }
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: { size: 12 }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#6b7280',
+                            font: { size: 11 },
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+
+        // Update meta with rich statistics
+        if (metaEl) {
+            const latestColor = getPointColor(latestValue, thresholds);
+            const latestQuality = getQualityText(latestValue, thresholds, parameter);
+
+            metaEl.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">
+                    <div style="background: linear-gradient(135deg, ${latestColor} 0%, ${latestColor.replace('0.8', '0.6')} 100%); padding: 16px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <div style="font-size: 11px; color: rgba(0,0,0,0.7); font-weight: 600; margin-bottom: 4px;">AKTUALNY STAN</div>
+                        <div style="font-size: 28px; font-weight: bold; color: #111; margin-bottom: 4px;">${latestValue} ${unit}</div>
+                        <div style="font-size: 12px; color: rgba(0,0,0,0.8); font-weight: 600;">${latestQuality}</div>
+                    </div>
+                    <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 11px; color: #6b7280; font-weight: 600; margin-bottom: 4px;">TREND</div>
+                        <div style="font-size: 28px; font-weight: bold; color: #111; margin-bottom: 4px;">${trend} ${trendPercent}%</div>
+                        <div style="font-size: 12px; color: #6b7280;">vs poprzedni pomiar</div>
+                    </div>
+                    <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 11px; color: #6b7280; font-weight: 600; margin-bottom: 4px;">ŚREDNIA</div>
+                        <div style="font-size: 28px; font-weight: bold; color: #111; margin-bottom: 4px;">${avgValue} ${unit}</div>
+                        <div style="font-size: 12px; color: #6b7280;">Min: ${minValue} | Max: ${maxValue}</div>
+                    </div>
+                    <div style="background: #f3f4f6; padding: 16px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 11px; color: #6b7280; font-weight: 600; margin-bottom: 4px;">LICZBA POMIARÓW</div>
+                        <div style="font-size: 28px; font-weight: bold; color: #111; margin-bottom: 4px;">${result.count}</div>
+                        <div style="font-size: 12px; color: #6b7280;">Ostatni: ${labels[labels.length - 1]}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+    } catch (error) {
+        console.error('Pulse Chart Error:', error);
+        if (loadingEl) loadingEl.innerHTML = '<span style="color:red">Błąd ładowania danych.</span>';
+    }
+}
+
+function initPulseSection() {
+    const stationSelect = document.getElementById('pulse-station-select');
+    const paramSelect = document.getElementById('pulse-param-select');
+
+    if (!stationSelect || !paramSelect) return;
+
+    const render = () => {
+        const sId = stationSelect.value;
+        const param = paramSelect.value;
+        if (sId && param) updatePulseChart(sId, param);
+    };
+
+    stationSelect.addEventListener('change', render);
+    paramSelect.addEventListener('change', render);
+
+    // Initial load
+    render();
+}
+
+export async function loadPulseForCity(city) {
+    const pulseArea = document.getElementById('pulse-content-area');
+    if (!pulseArea) return;
+
+    pulseArea.innerHTML = '<div style="text-align: center; padding: 40px;"><span class="spinner">🔄 Pobieram dane dla miasta ' + city + '...</span></div>';
+
+    try {
+        const response = await fetch(`/api/water-data/${encodeURIComponent(city)}`);
+        const result = await response.json();
+
+        if (result.success && result.data && result.data.stations && result.data.stations.length > 0) {
+            pulseArea.innerHTML = generatePulseSectionHTML(result.data.stations);
+            initPulseSection();
+        } else {
+            pulseArea.innerHTML = '<div class="alert alert-warning" style="text-align: center;">Nie znaleziono stacji pomiarowych dla tego miasta w naszej bazie historycznej (PostgreSQL).</div>';
+        }
+
+    } catch (error) {
+        console.error("Error loading pulse city:", error);
+        pulseArea.innerHTML = '<div class="alert alert-danger">Wystąpił błąd podczas pobierania danych.</div>';
+    }
+}
+
+window.generatePulseSectionHTML = generatePulseSectionHTML;
+window.initPulseSection = initPulseSection;
+window.loadPulseForCity = loadPulseForCity;
+
 export async function checkWater(inputId) {
     let resultDiv;
     try {
@@ -103,9 +547,15 @@ export async function checkWater(inputId) {
             // 🛰️ SATELITA: Track city search
             trackCitySearch(city);
 
+            // 💾 SAVE CITY TO LOCALSTORAGE (for AquaBot pre-fill)
+            localStorage.setItem('lastCheckedCity', city);
+
             // 🚀 POSTGRESQL API FETCH (Single Source of Truth)
             let data = null;
             let dataSource = 'postgresql';
+            let availableStations = [];
+
+
 
             try {
                 const response = await fetch(`/api/water-data/${encodeURIComponent(city)}`);
@@ -114,6 +564,10 @@ export async function checkWater(inputId) {
                 if (result.success && result.data && result.data.average) {
                     data = result.data.average;
                     dataSource = result.source || 'postgresql';
+                    if (result.data.stations && result.data.stations.length > 0) {
+                        availableStations = result.data.stations;
+                    }
+
                     console.log(`✅ Loaded ${city} from ${dataSource}`, data);
                 } else {
                     throw new Error(result.error || 'API returned no data');
@@ -130,6 +584,69 @@ export async function checkWater(inputId) {
                 return;
             }
 
+            // 📊 FETCH TRENDS DATA
+            let cityTrends = {};
+            try {
+                const trendsResponse = await fetch(`/api/city-trends/${encodeURIComponent(city)}`);
+                const trendsResult = await trendsResponse.json();
+
+                if (trendsResult.success && trendsResult.trends) {
+                    // ✅ OBLICZ ŚREDNIĄ TRENDÓW ZE WSZYSTKICH STACJI
+                    const allStationTrends = Object.values(trendsResult.trends);
+                    if (allStationTrends.length > 0) {
+                        // Agreguj trendy per parametr
+                        const paramAggregates = {};
+
+                        allStationTrends.forEach(stationTrends => {
+                            Object.entries(stationTrends).forEach(([param, trendData]) => {
+                                if (!paramAggregates[param]) {
+                                    paramAggregates[param] = {
+                                        currentValues: [],
+                                        previousValues: [],
+                                        prevDates: [],
+                                        units: []
+                                    };
+                                }
+
+                                paramAggregates[param].currentValues.push(trendData.current);
+                                paramAggregates[param].previousValues.push(trendData.previous);
+                                paramAggregates[param].prevDates.push(trendData.prev_date);
+                                if (trendData.unit) {
+                                    paramAggregates[param].units.push(trendData.unit);
+                                }
+                            });
+                        });
+
+                        // Oblicz średnie
+                        Object.entries(paramAggregates).forEach(([param, data]) => {
+                            const avgCurrent = data.currentValues.reduce((a, b) => a + b, 0) / data.currentValues.length;
+                            const avgPrevious = data.previousValues.reduce((a, b) => a + b, 0) / data.previousValues.length;
+                            const diff = avgCurrent - avgPrevious;
+                            const change_pct = avgPrevious !== 0 ? (diff / avgPrevious) * 100 : 0;
+
+                            let trend = 'stable';
+                            if (Math.abs(diff) >= 0.01) {
+                                trend = diff > 0 ? 'up' : 'down';
+                            }
+
+                            cityTrends[param] = {
+                                current: avgCurrent,
+                                previous: avgPrevious,
+                                diff: diff,
+                                change_pct: change_pct,
+                                trend: trend,
+                                prev_date: data.prevDates[0], // Bierz pierwszą datę (wszystkie powinny być takie same)
+                                unit: data.units[0] || ''
+                            };
+                        });
+
+                        console.log(`📊 Loaded city trends (averaged from ${allStationTrends.length} stations) for ${city}`, cityTrends);
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ Failed to load trends:', error.message);
+            }
+
             let result = `<h3>Jakość wody w ${city}</h3>`;
             if (dataSource === 'hardcoded-json-fallback') {
                 result += `<div class="note" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 8px; margin-bottom: 10px;">⚠️ Wyświetlam dane archiwalne (baza niedostępna)</div>`;
@@ -140,7 +657,8 @@ export async function checkWater(inputId) {
                 const color = getColor(param.name, param.value);
                 const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
                 const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm;
-                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${normWithUnit}) – ${getParameterDescription(param.name, param.value, color)}</div>`;
+                const trendIndicator = cityTrends[param.name] ? renderTrendIndicator(param.name, cityTrends[param.name]) : '';
+                return `<div class="parameter"><span class="dot ${color}"></span> ${param.name.charAt(0).toUpperCase() + param.name.slice(1)}: ${displayValue} (norma: ${normWithUnit}) – ${getParameterDescription(param.name, param.value, color)}${trendIndicator}</div>`;
             });
             result += `Jakość wody:<br>${parameters.join('')}`;
 
@@ -150,6 +668,8 @@ export async function checkWater(inputId) {
             }
 
             resultDiv.innerHTML = result;
+
+
         } else if (inputId === 'bottle') {
             const bottle = document.getElementById('bottle').value.trim();
             if (!bottle) {
@@ -265,6 +785,20 @@ export async function findWaterStation() {
 
         let waterInfoHTML = `<h3 style="text-align: center; font-family: 'Poppins', sans-serif; color: #0277bd; margin-bottom: 24px;">Wyniki dla adresu: ${street}, ${city}</h3>`;
 
+        // 📊 FETCH TRENDS DATA
+        let cityTrends = {};
+        try {
+            const trendsResponse = await fetch(`/api/city-trends/${encodeURIComponent(city)}`);
+            const trendsResult = await trendsResponse.json();
+
+            if (trendsResult.success && trendsResult.trends) {
+                cityTrends = trendsResult.trends;
+                console.log(`📊 Loaded trends for ${city}`, cityTrends);
+            }
+        } catch (error) {
+            console.warn('⚠️ Failed to load trends:', error.message);
+        }
+
         if (dataSource === 'hardcoded-json-fallback') {
             waterInfoHTML += `<div class="note" style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 8px; margin-bottom: 10px;">⚠️ Wyświetlam dane archiwalne (baza niedostępna)</div>`;
         }
@@ -275,19 +809,35 @@ export async function findWaterStation() {
             const params = (closestStation.data && Object.keys(closestStation.data).length > 0)
                 ? closestStation.data
                 : cityData.average;
+            // Pobierz trendy dla tej stacji (jeśli dostępne)
+            const stationTrends = cityTrends[closestStation.name] || {};
+
+            const stationId = closestStation.id;
+            console.log('📈 DEBUG: closestStation =', closestStation);
+            console.log('📈 DEBUG: stationId =', stationId);
             const allParams = [...getSelectedParameters(params), ...getPremiumParameters(params)];
             const parameters = allParams.map(param => {
                 const color = getColor(param.name, param.value);
                 const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
                 const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm;
                 const desc = getParameterDescription(param.name, param.value, color);
-                return `<div class="parameter-item">
-                    <span class="dot ${color}"></span>
-                    <div>
-                        <div><strong>${param.name.charAt(0).toUpperCase() + param.name.slice(1)}:</strong> <span class="param-value">${displayValue}</span> <span class="param-norm">(norma: ${normWithUnit})</span></div>
-                        <div class="param-desc">${desc}</div>
-                    </div>
-                </div>`;
+
+                // Dodaj wskaźnik trendu jeśli dostępny
+                const trendIndicator = stationTrends[param.name] ? renderTrendIndicator(param.name, stationTrends[param.name]) : '';
+
+                // 📈 Przycisk historii USUNIĘTY (przeniesiony do sekcji Puls Wody)
+                // const historyBtn = ...
+
+
+                return `<div class="parameter-item" data-station-id="${stationId || ''}" data-param="${param.name}">
+                        <span class="dot ${color}"></span>
+                        <div class="param-content">
+                            <div class="param-header">
+                                <strong>${param.name.charAt(0).toUpperCase() + param.name.slice(1)}:</strong> <span class="param-value">${displayValue}</span> <span class="param-norm">(norma: ${normWithUnit})</span>${trendIndicator}
+                            </div>
+                            <div class="param-desc">${desc}</div>
+                        </div>
+                    </div>`;
             }).join('');
 
             // 🛰️ SATELITA: Track station search
@@ -318,16 +868,23 @@ export async function findWaterStation() {
             const pointParams = (closestPoint.data && Object.keys(closestPoint.data).length > 0)
                 ? closestPoint.data
                 : cityData.average;
+            // Pobierz trendy dla punktu pomiarowego (jeśli dostępne)
+            const pointTrends = cityTrends[closestPoint.name] || {};
+
             const allPointParams = [...getSelectedParameters(pointParams), ...getPremiumParameters(pointParams)];
             const pointParameters = allPointParams.map(param => {
                 const color = getColor(param.name, param.value);
                 const displayValue = param.displayValue === 'Brak danych' ? 'Brak danych' : `${param.displayValue} ${param.unit || ''}`;
                 const normWithUnit = param.unit ? `${param.norm} ${param.unit}` : param.norm;
                 const desc = getParameterDescription(param.name, param.value, color);
+
+                // Dodaj wskaźnik trendu jeśli dostępny
+                const trendIndicator = pointTrends[param.name] ? renderTrendIndicator(param.name, pointTrends[param.name]) : '';
+
                 return `<div class="parameter-item">
                     <span class="dot ${color}"></span>
                     <div>
-                        <div><strong>${param.name.charAt(0).toUpperCase() + param.name.slice(1)}:</strong> <span class="param-value">${displayValue}</span> <span class="param-norm">(norma: ${normWithUnit})</span></div>
+                        <div><strong>${param.name.charAt(0).toUpperCase() + param.name.slice(1)}:</strong> <span class="param-value">${displayValue}</span> <span class="param-norm">(norma: ${normWithUnit})</span>${trendIndicator}</div>
                         <div class="param-desc">${desc}</div>
                     </div>
                 </div>`;
@@ -353,6 +910,11 @@ export async function findWaterStation() {
         }
 
         waterInfo.innerHTML = waterInfoHTML;
+
+
+
+
+
 
         // Smooth scroll do wyników
         setTimeout(() => {

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Śledzenie kliknięć w przyciski nawigacji
   const navButtons = [
     { selector: 'button[onclick="showSection(\'check-tapwater\')"]', label: 'Check Tapwater Nav' },
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
   navButtons.forEach(button => {
     const element = document.querySelector(button.selector);
     if (element) {
-      element.addEventListener('click', function() {
+      element.addEventListener('click', function () {
         gtag('event', 'section_click', {
           'event_category': 'Navigation',
           'event_label': button.label,
@@ -46,11 +46,14 @@ document.addEventListener('DOMContentLoaded', function() {
             startTime = Date.now();
           } else if (startTime) {
             const timeSpent = (Date.now() - startTime) / 1000;
-            gtag('event', 'section_time', {
-              'event_category': 'Engagement',
-              'event_label': section,
-              'value': Math.round(timeSpent)
-            });
+            // Check if gtag exists before calling
+            if (typeof gtag !== 'undefined') {
+              gtag('event', 'section_time', {
+                'event_category': 'Engagement',
+                'event_label': section,
+                'value': Math.round(timeSpent)
+              });
+            }
             startTime = null;
           }
         });
@@ -81,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
   buttons.forEach(button => {
     const element = document.querySelector(`#${button.id}`);
     if (element) {
-      element.addEventListener('click', function() {
+      element.addEventListener('click', function () {
         gtag('event', 'button_click', {
           'event_category': 'Interaction',
           'event_label': button.label,
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Śledzenie formularzy
   const feedbackForm = document.querySelector('#feedback-form');
   if (feedbackForm) {
-    feedbackForm.addEventListener('submit', function() {
+    feedbackForm.addEventListener('submit', function () {
       gtag('event', 'form_submit_custom', {
         'event_category': 'Form',
         'event_label': 'Feedback Form Submit',
@@ -106,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Śledzenie udanych logowań
   const loginButton = document.querySelector('#login-button');
   if (loginButton) {
-    loginButton.addEventListener('click', function() {
+    loginButton.addEventListener('click', function () {
       fetch('/login', { method: 'POST' })
         .then(response => {
           if (response.ok) {
@@ -122,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Śledzenie udanych rejestracji
   const registerButton = document.querySelector('#register-button');
   if (registerButton) {
-    registerButton.addEventListener('click', function() {
+    registerButton.addEventListener('click', function () {
       fetch('/register', { method: 'POST' })
         .then(response => {
           if (response.ok) {
@@ -137,74 +140,74 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Legenda dropdown toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const legendToggle = document.getElementById('legend-toggle');
-    const legendContent = document.getElementById('legend-content');
+document.addEventListener('DOMContentLoaded', function () {
+  const legendToggle = document.getElementById('legend-toggle');
+  const legendContent = document.getElementById('legend-content');
 
-    if (legendToggle && legendContent) {
-        legendToggle.addEventListener('click', function() {
-            if (legendContent.style.display === 'none') {
-                legendContent.style.display = 'block';
-                this.classList.add('active');
-            } else {
-                legendContent.style.display = 'none';
-                this.classList.remove('active');
-            }
-        });
-    }
+  if (legendToggle && legendContent) {
+    legendToggle.addEventListener('click', function () {
+      if (legendContent.style.display === 'none') {
+        legendContent.style.display = 'block';
+        this.classList.add('active');
+      } else {
+        legendContent.style.display = 'none';
+        this.classList.remove('active');
+      }
+    });
+  }
 });
 
 // NOWE CTAs do AquaBota - zaktualizowane
-document.addEventListener('DOMContentLoaded', function() {
-    // CTA ze sekcji "Sprawdź kranówkę"
-    const gotoFromCheck = document.getElementById('goto-aquabot-from-check');
-    if (gotoFromCheck) {
-        gotoFromCheck.onclick = function() {
-            window.showSection('aqua-bot');
-        };
-    }
+document.addEventListener('DOMContentLoaded', function () {
+  // CTA ze sekcji "Sprawdź kranówkę"
+  const gotoFromCheck = document.getElementById('goto-aquabot-from-check');
+  if (gotoFromCheck) {
+    gotoFromCheck.onclick = function () {
+      window.showSection('aqua-bot');
+    };
+  }
 
-    // CTA po znalezieniu stacji - pojawia się dynamicznie
-    const waterInfoObserver = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            const waterInfo = document.getElementById('waterInfo');
-            const stationCTA = document.getElementById('station-cta');
-            if (waterInfo && stationCTA && waterInfo.innerHTML.trim() !== '' && waterInfo.innerHTML !== 'Proszę wpisać miasto!' && waterInfo.innerHTML !== 'Proszę wpisać ulicę!') {
-                // Sprawdź czy faktycznie znaleziono stację
-                if (waterInfo.innerHTML.includes('Najbliższa stacja')) {
-                    stationCTA.style.display = 'block';
-                }
-            }
-        });
+  // CTA po znalezieniu stacji - pojawia się dynamicznie
+  const waterInfoObserver = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      const waterInfo = document.getElementById('waterInfo');
+      const stationCTA = document.getElementById('station-cta');
+      if (waterInfo && stationCTA && waterInfo.innerHTML.trim() !== '' && waterInfo.innerHTML !== 'Proszę wpisać miasto!' && waterInfo.innerHTML !== 'Proszę wpisać ulicę!') {
+        // Sprawdź czy faktycznie znaleziono stację
+        if (waterInfo.innerHTML.includes('Najbliższa stacja')) {
+          stationCTA.style.display = 'block';
+        }
+      }
     });
+  });
 
-    const waterInfo = document.getElementById('waterInfo');
-    if (waterInfo) {
-        waterInfoObserver.observe(waterInfo, { 
-            childList: true, 
-            subtree: true,
-            characterData: true 
-        });
-    }
+  const waterInfo = document.getElementById('waterInfo');
+  if (waterInfo) {
+    waterInfoObserver.observe(waterInfo, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  }
 
-    // Obsługa kliknięcia CTA ze stacji
-    const gotoFromStation = document.getElementById('goto-aquabot-from-station');
-    if (gotoFromStation) {
-        gotoFromStation.onclick = function() {
-            // Sprawdź czy dane są w localStorage
-            const lastStation = localStorage.getItem('lastCheckedStation');
-            if (lastStation) {
-                console.log('Przechodzimy do AquaBota z danymi stacji:', lastStation);
-            }
-            window.showSection('aqua-bot');
-        };
-    }
+  // Obsługa kliknięcia CTA ze stacji
+  const gotoFromStation = document.getElementById('goto-aquabot-from-station');
+  if (gotoFromStation) {
+    gotoFromStation.onclick = function () {
+      // Sprawdź czy dane są w localStorage
+      const lastStation = localStorage.getItem('lastCheckedStation');
+      if (lastStation) {
+        console.log('Przechodzimy do AquaBota z danymi stacji:', lastStation);
+      }
+      window.showSection('aqua-bot');
+    };
+  }
 
-    // Przycisk powrotu do sekcji "Znajdź stacje" z AquaBota
-    const backToStations = document.getElementById('back-to-stations-btn');
-    if (backToStations) {
-        backToStations.onclick = function() {
-            window.showSection('find-stations');
-        };
-    }
+  // Przycisk powrotu do sekcji "Znajdź stacje" z AquaBota
+  const backToStations = document.getElementById('back-to-stations-btn');
+  if (backToStations) {
+    backToStations.onclick = function () {
+      window.showSection('find-stations');
+    };
+  }
 });
