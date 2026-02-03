@@ -1,7 +1,7 @@
 /* globals L, gtag */
 
 // Import wszystkich modułów
-import { checkWater, findWaterStation, displayHistory, waterStations, showAllSUW } from '/static/js/waterAnalysis.js';
+import { checkWater, findWaterStation, displayHistory, waterStations, showAllSUW, loadPulseForCity } from '/static/js/waterAnalysis.js';
 import { startAquaBot } from '/static/js/aquaBot.js';
 import { generateRanking, generateSUWRanking, generateDistrictRanking } from '/static/js/ranking.js';
 // --- POPRAWKA: Importujemy kluczową funkcję z utils2.js ---
@@ -33,7 +33,7 @@ function showSection(sectionId, shouldScroll = true) {
 }
 window.showSection = showSection;
 
-window.toggleHamburgerMenu = function() {
+window.toggleHamburgerMenu = function () {
     const hamburgerMenu = document.getElementById('hamburger-menu');
     hamburgerMenu.style.display = hamburgerMenu.style.display === 'none' ? 'block' : 'none';
 };
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).addTo(window.map);
     }
     const initialSection = document.getElementById('check-tapwater');
-    if(initialSection) {
+    if (initialSection) {
         initialSection.classList.add('active');
     }
 
@@ -60,12 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('about-btn').addEventListener('click', () => showSection('about'));
     document.getElementById('community-btn').addEventListener('click', () => showSection('community'));
     document.getElementById('aqua-bot-btn').addEventListener('click', () => showSection('aqua-bot'));
+    document.getElementById('pulse-btn')?.addEventListener('click', () => showSection('pulse-section'));
 
     // Podpięcie przycisków funkcyjnych
     document.getElementById('check-kranowka-btn')?.addEventListener('click', () => checkWater('city'));
     document.getElementById('find-station-btn')?.addEventListener('click', findWaterStation);
     document.getElementById('show-suw-btn')?.addEventListener('click', showAllSUW);
     document.getElementById('show-history-btn')?.addEventListener('click', displayHistory);
+    document.getElementById('pulse-search-btn')?.addEventListener('click', () => {
+        const city = document.getElementById('pulse-city-input').value;
+        if (city) loadPulseForCity(city);
+    });
 
     document.getElementById('generate-city-ranking')?.addEventListener('click', () => {
         const param = document.getElementById('cityRankingParameter').value;
@@ -94,6 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('city')?.addEventListener('input', (e) => suggestCities(e.target.value, 'city'));
     document.getElementById('city-premium')?.addEventListener('input', (e) => suggestCities(e.target.value, 'city-premium'));
     document.getElementById('city-for-suw')?.addEventListener('input', (e) => suggestCities(e.target.value, 'city-for-suw'));
+    document.getElementById('pulse-city-input')?.addEventListener('input', (e) => suggestCities(e.target.value, 'pulse-city-input'));
+    document.getElementById('aquabot-city-input')?.addEventListener('input', (e) => suggestCities(e.target.value, 'aquabot-city-input'));
 });
 
 // === TOGGLE LEGENDY ===

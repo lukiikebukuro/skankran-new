@@ -256,7 +256,8 @@ class AquaBot:
         
     def get_colored_params(self):
         """Gets a list of all parameters with their colors for the current station."""
-        station_data = session.get('user_context', {}).get('station', {}).get('data', {})
+        # aquaBot.js sends station object directly as context, so data is at context['data']
+        station_data = session.get('user_context', {}).get('data', {})
         params_with_colors = []
         for param, value in station_data.items():
             color = self._get_color(param, value)

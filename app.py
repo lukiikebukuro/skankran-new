@@ -332,6 +332,10 @@ def health():
 def index():
     return render_template('index.html')
 
+@app.route('/test-trends')
+def test_trends():
+    return render_template('test_trends.html')
+
 @app.route('/sitemap.xml')
 def sitemap():
     """Sitemap dla Google Search Console"""
@@ -511,6 +515,103 @@ def aquabot_send():
         return jsonify({'reply': reply})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/find-station', methods=['POST'])
+@limiter.limit("20 per hour")
+@csrf.exempt
+def find_station():
+    """Find nearest water station based on city and street"""
+    # 🔒 SECURITY FIX: Verify origin
+    if not verify_origin():
+        return jsonify({'error': 'Unauthorized origin'}), 403
+    
+    try:
+        data = request.get_json()
+        city = data.get('city', '').strip()
+        street = data.get('street', '').strip()
+        
+        if not city or not street:
+            return jsonify({'error': 'City and street required'}), 400
+        
+        # Get stations from PostgreSQL (use global Station model)
+        # Station has city_id FK, not city string - need to join via City
+        city_obj = City.query.filter(City.name.ilike(city)).first()
+        if not city_obj:
+            return jsonify({'station': None, 'message': f'City {city} not found'}), 200
+        
+        stations = Station.query.filter_by(city_id=city_obj.id).all()
+        
+        if not stations:
+            return jsonify({'station': None, 'message': f'No stations found for {city}'}), 200
+        
+        # Geocode user address
+        import requests
+        geo_url = f"https://nominatim.openstreetmap.org/search?q={street}, {city}, Polska&format=json&limit=1"
+        geo_response = requests.get(geo_url, headers={'User-Agent': 'Skankran/1.0'})
+        geo_data = geo_response.json()
+        
+        if not geo_data:
+            # Return first station if geocoding fails (with water data)
+            station = stations[0]
+            station_dict = station.to_dict(include_measurements=True)
+            
+            return jsonify({
+                'station': {
+                    'id': station.id,
+                    'name': station.name,
+                    'city': station.city.name,
+                    'street': station.address,
+                    'coords': [station.latitude, station.longitude],
+                    'data': station_dict.get('data', {})  # Water parameters for AquaBot
+                }
+            }), 200
+        
+        user_lat = float(geo_data[0]['lat'])
+        user_lon = float(geo_data[0]['lon'])
+        
+        # Find closest station
+        import math
+        def haversine(lat1, lon1, lat2, lon2):
+            R = 6371  # Earth radius in km
+            dLat = math.radians(lat2 - lat1)
+            dLon = math.radians(lon2 - lon1)
+            a = math.sin(dLat/2) * math.sin(dLat/2) + \
+                math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * \
+                math.sin(dLon/2) * math.sin(dLon/2)
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+            return R * c
+        
+        closest_station = None
+        min_distance = float('inf')
+        
+        for station in stations:
+            distance = haversine(user_lat, user_lon, station.latitude, station.longitude)
+            if distance < min_distance:
+                min_distance = distance
+                closest_station = station
+        
+        if closest_station:
+            # Get full station data including water measurements (like "Znajdź stacje" does)
+            station_dict = closest_station.to_dict(include_measurements=True)
+            
+            return jsonify({
+                'station': {
+                    'id': closest_station.id,
+                    'name': closest_station.name,
+                    'city': closest_station.city.name,
+                    'street': closest_station.address,
+                    'coords': [closest_station.latitude, closest_station.longitude],
+                    'distance': round(min_distance, 2),
+                    'data': station_dict.get('data', {})  # Water parameters for AquaBot
+                }
+            }), 200
+        else:
+            return jsonify({'station': None}), 200
+            
+    except Exception as e:
+        app.logger.error(f'[FIND STATION ERROR] {e}')
+        return jsonify({'error': 'Internal server error'}), 500
+
 
 # ============================================
 # 🛰️ SATELITA - VISITOR TRACKING ENDPOINTS
@@ -1501,7 +1602,83 @@ def api_city_trends(city_name):
 
 
 # ============================================
-# �🛰️ SOCKET.IO EVENTS (Real-time updates)
+# 📈 WATER HISTORY API (For Inline Charts)
+# ============================================
+
+@app.route('/api/history/<int:station_id>/<parameter_name>', methods=['GET'])
+@limiter.limit("100 per minute")
+def api_water_history(station_id, parameter_name):
+    """
+    Endpoint zwracający historię pomiarów dla stacji i parametru.
+    Używany przez inline wykresy na kartach stacji.
+    
+    Returns:
+        JSON: {success: True, data: [{date, value}, ...], norm: float}
+    """
+    try:
+        # Znajdź stację
+        station = Station.query.get(station_id)
+        
+        if not station:
+            # Może to punkt pomiarowy?
+            point = MeasurementPoint.query.get(station_id)
+            if point:
+                measurements_query = point.measurements
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': f'Station/Point ID {station_id} not found'
+                }), 404
+        else:
+            measurements_query = station.measurements
+        
+        # Pobierz wszystkie pomiary dla tego parametru, posortowane chronologicznie
+        measurements = measurements_query.filter_by(
+            parameter=parameter_name
+        ).order_by(WaterMeasurement.measurement_date.asc()).all()
+        
+        if not measurements:
+            return jsonify({
+                'success': True,
+                'data': [],
+                'message': f'No measurements for parameter {parameter_name}'
+            })
+        
+        # Formatuj dane dla wykresu
+        history_data = []
+        norm_value = None
+        unit = None
+        
+        for m in measurements:
+            if m.measurement_date and m.value is not None:
+                history_data.append({
+                    'date': m.measurement_date.strftime('%Y-%m-%d'),
+                    'value': float(m.value)
+                })
+                # Zapisz jednostkę z pierwszego pomiaru
+                if unit is None and m.unit:
+                    unit = m.unit
+        
+        return jsonify({
+            'success': True,
+            'data': history_data,
+            'count': len(history_data),
+            'parameter': parameter_name,
+            'station_id': station_id,
+            'norm': norm_value,
+            'unit': unit
+        })
+        
+    except Exception as e:
+        app.logger.error(f"[API ERROR] /api/history/{station_id}/{parameter_name} failed: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+# ============================================
+# SOCKET.IO EVENTS (Real-time updates)
 # ============================================
 
 
